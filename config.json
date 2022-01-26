@@ -1,0 +1,8 @@
+{
+    "connectionString": "mongodb://localhost:27017/dealmanager",
+    "apiUrl":  "http://localhost:5000/api",
+    "secret": "Saas Team Secret",
+    "user": "saasteamaws@gmail.com",
+    "pass": "12angDum^^y",
+    "from": "\"MEAN team 👻\" <saasteamaws@gmail.com>"
+}

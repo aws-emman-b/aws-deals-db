@@ -1,0 +1,3 @@
+//"connectionString": "mongodb://localhost:27017/dealmanager",
+//PORT = 5000
+//CONNECTION_URL = mongodb+srv://javascriptmastery:javascriptmastery123@cluster0.uxgyo.mongodb.net/myFirstDatabase?retryWrites=true&w=majority

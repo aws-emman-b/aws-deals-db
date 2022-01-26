@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="app-content/bootstrap-tour.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/ng-toast/2.0.0/ngToast-animations.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/ng-toast/2.0.0/ngToast.min.css" rel="stylesheet" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="app-content/app.css" rel="stylesheet" />
+</head>
+<body ng-app="app" class="bg">
+    <div class="lighten">
+        <!-- main -->
+        <toast></toast>
+        <main ui-view></main>
+        
+        <!-- footer -->
+        <footer></footer>
+    </div>
+
+    <!-- modal serbisyo -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="app-content/bootstrap-tour.min.js"></script>
+ 
+    <!-- external scripts -->
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.7.2/angular.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-sortable/0.15.0/sortable.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.4.2/angular-ui-router.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ng-toast/2.0.0/ngToast.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.js"></script>
+    <script src="/scripts/xlsx/dist/xlsx.full.min.js"></script>
+
+
+    <!-- added by jeremy to implement ng-csv (angular included above) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.2/angular-sanitize.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ng-csv/0.3.6/ng-csv.min.js"></script>    
+
+	<!-- added by glenn for charts -->
+	<script src="app-content/zingchart.min.js"></script>
+
+    <!-- added by glenn for excel file export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/alasql/0.4.9/alasql.min.js"></script> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/linways/table-to-excel@v1.0.4/dist/tableToExcel.js"></script>
+    
+    <!-- added by jeremy for ui-bootstrap -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.0/ui-bootstrap-tpls.min.js"></script>
+    
+    <!-- application scripts (controllers) -->
+    <script src="app.js"></script>  	
+    <script src="login/login.js"></script>
+    <script src="home/home.js"></script> 
+    <script src="main/main.js"></script>
+    <script src="clients/list.js"></script>
+    <script src="clients/new.js"></script>
+    <script src="deals/list.js"></script>
+    <script src="deals/dealForm.js"></script>
+    <script src="fields/fields.js"></script>
+    <script src="businessunits/list.js"></script>
+    <script src="businessunits/businessUnitForm.js"></script>
+    <script src="users/list.js"></script>
+    <script src="users/userForm.js"></script>
+    <script src="changePassword/changePassword.js"></script>
+    
+    <!-- application scripts (services) -->
+    <script src="app-services/user.service.js"></script>
+    <script src="app-services/client.service.js"></script>
+    <script src="app-services/modules.service.js"></script>
+    <script src="app-services/deals.service.js"></script>
+    <script src="app-services/inputType.service.js"></script>
+    <script src="app-services/table.service.js"></script>
+    <script src="app-services/inputValidation.service.js"></script>
+    
+</body>
+</html>

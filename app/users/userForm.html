@@ -1,0 +1,28 @@
+<div class="row">
+    <div class="col-md-6">
+        <form ng-submit="submit()">
+            <div ng-repeat="field in module.fields" ng-if="field.name !== 'status'">
+                <label>{{field.name}}</label>
+                <span style="color:red" ng-if="field.required">*</span>
+
+                <input type="{{field.type}}" class="form-control" ng-if="field.type !== 'dropdown' && field.type !== 'textarea'" ng-model="userForm[field.name]"
+                    ng-required="field.required" ng-readOnly="field.name == 'email' && emailInputEnabled == false" />
+
+                <!-- show confirm password -->
+                <label ng-show="field.type=='password'" for=field.name>Confirm {{field.name}}: </label>
+                <input name="{{'confirm '+field.type}}" data="{{field.type}}" type="{{field.type=='password'?'password':'text';}}" ng-show="field.type=='password'" ng-model="confirmPassword[field.name]" class="form-control">
+
+                <select class="form-control" ng-model="userForm[field.name]" ng-if="field.type === 'dropdown'" ng-required="field.required">
+                    <option value=""></option>
+                    <option ng-repeat="option in field.options" value="{{option}}">{{option}}</option>
+                </select>
+
+                <textarea class="form-control" ng-model="userForm[field.name]" ng-if="field.type === 'textarea'" ng-required="field.required">
+                        </textarea>
+            </div>
+            <br/>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+    <div class="col-md-6"></div>
+</div>

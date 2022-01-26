@@ -1,0 +1,107 @@
+<div class="row">
+    <div class="col-md-3">
+        
+        <select class="form-control" ng-model="module.name" ng-change="getModuleByName();">
+            <!--<option value="deals">Deals</option>
+            <option value="clients">Clients</option>-->
+            <option value="dealessential">Deal Essential</option>
+            <option value="dealprofile">Deal Profile</option>
+            <option value="dealprocess">Deal Process</option>
+            <option value="dealdistribution">Deal Distribution</option>
+            <option value="dealstatus">Deal Status</option>
+            <option value="dealcontent">Deal Content</option>
+            <option value="businessunits">Business Units</option>
+            <option value="clients">Clients</option>
+            <option value="users">Users</option>
+        </select>
+        <hr/>
+        <form ng-submit="submitField()" class="form-group">
+            <!-- <div ng-if="module.name === 'deals'">
+                <label>Category</label>
+                <select class="form-control" ng-model="fieldForm.category" required>
+                    <option value="essential">Essential</option>
+                    <option value="profile">Profile</option>
+                    <option value="process">Process</option>
+                    <option value="distribution">Distribution</option>
+                    <option value="status">Status</option>
+                </select>
+            </div> -->
+            <label>Name</label>
+            <input type="text" class="form-control" ng-model="fieldForm.name" placeholder="do not include . or $" required ng-readonly="fieldForm.default"
+                pattern="[^.$]+" />
+            <br/>
+            <input type="checkbox" ng-model="fieldForm.unique" ng-disabled="fieldForm.default" />
+            <b>Unique</b>
+            <br/>
+            <input type="checkbox" ng-model="fieldForm.required" />
+            <b>Required</b>
+            <br/>
+            <input type="checkbox" ng-model="fieldForm.showInList" />
+            <b>Show in List</b>
+            <br/>
+            <br/>
+            <label>Type</label>
+            <select class="form-control" ng-model="fieldForm.type" required ng-disabled="fieldForm.default">
+                <option>text</option>
+                <option>number</option>
+                <option>email</option>
+                <option>date</option>
+                <option>password</option>
+                <option>textarea</option>
+                <option>dropdown</option>
+            </select>
+            <br/>
+            <div ng-show="hasFieldOptions()">
+                <label>Options</label>
+                <br/>
+                <small>input options separated by comma (,)</small>
+                <textarea class="form-control" rows="5" ng-model="fieldOptions"></textarea>
+            </div>
+            <br/>
+            <div class="pull-right">
+                <button type="button" class="btn btn-default" ng-click="resetFieldForm()">Cancel</button>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+            <br/>
+            <br/>
+        </form>
+    </div>
+    <div class="col-md-9">
+        <p>Note: Only Deals Essential, Profile, and Process are shown in Deals List Table</p>
+        <table class="table">
+            <thead>
+                <th>Name</th>
+                <th>Required</th>
+                <th>Show in List</th>
+                <th></th>
+            </thead>
+            <tbody>
+                <!-- status for module is not shown and cannot be edited -->
+                <tr ng-repeat="field in module.fields" ng-if=" field.name !== 'status' ">
+                    <td>{{field.name}}</td>
+                    <td>
+                        <i class="fa fa-check" ng-if="field.required" style="color:green"></i>
+                        <i class="fa fa-times" ng-if="!field.required" style="color:red"></i>
+                    </td>
+                    <td>
+                        <i class="fa fa-check" ng-if="field.showInList" style="color:green"></i>
+                        <i class="fa fa-times" ng-if="!field.showInList" style="color:red"></i>
+                    </td>
+                    <td>
+                        <div class="pull-right">
+                            <a style="cursor:pointer" ng-if="field.name !== 'ID'">
+                                <i class="fa fa-list-alt" aria-hidden="true" ng-click="editField(field)" data-toggle="tooltip" title="Edit"></i>
+                            </a>
+                            &nbsp;
+                            <a style="cursor:pointer" ng-if="!field.default">
+                                <i class="fa fa-trash" aria-hidden="true" ng-click="deleteField(field)" data-toggle="tooltip" title="Delete"></i>
+                            </a>
+                            <text ng-if="field.default">DEFAULT</text>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        
+    </div>
+</div>

@@ -1,0 +1,59 @@
+<%- include('partials/header') %>
+<div class="form-container">
+    <h2><%= languages.loginPage.login %></h2>
+    <% if(locals.error && !locals.modal) { %>
+        <div class="alert alert-danger"><%= error %></div>
+    <% } %>
+    <% if(locals.success) { %>
+        <div class="alert alert-success"><%= success %></div>
+    <% } %>
+    <form method="post">
+        <div class="form-group">
+            <label for="email"><%= languages.loginPage.email %></label>
+            <input type="email" name="email" id="email" value="<%= locals.email || '' %>" class="form-control" required autofocus/>
+        </div>
+        <div class="form-group">
+            <label for="password"><%= languages.loginPage.password %></label>
+            <input type="password" name="password" id="password" class="form-control" required/>
+        </div>
+        <div class="form-group">
+            <input type="hidden" name="formType" value="login"/>
+            <button type="submit" class="btn btn-primary"><%= languages.loginPage.loginButton %></button>
+            <a href="#forgotPass" data-toggle="modal" class="btn btn-link pull-right"><%= languages.loginPage.forgotPass %></a>
+        </div>
+    </form>
+</div>
+
+<div class="modal fade" id="forgotPass" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4><%= languages.loginPage.forgotPassModal.accountHelp %></h4>
+            </div>
+            <% if(locals.modal) { %>
+                <div class="alert alert-danger"><%= error %></div>
+            <% } %>
+            <form method="post">
+            <div class="modal-body">
+                <h5><%= languages.loginPage.forgotPassModal.email %></h5>
+                <input type="email" required placeholder="sample@email.com" name="email" id="forgotPassEmail" value="<%= locals.email || '' %>" class="form-control"/>
+            </div>
+            <div class="modal-footer">
+                <input type="hidden" name="formType" value="forgotPass"/>
+                <button type="submit" class="btn btn-primary"><%= languages.loginPage.forgotPassModal.send %></button>
+                <a class="btn btn-default" data-dismiss="modal"><%= languages.loginPage.forgotPassModal.close %></a>
+            </div>
+        </form>
+        </div>
+    </div>
+</div>
+
+<% if(locals.modal) { %>
+    <script type="text/javascript">
+        $(window).on('load',function(){
+            $('#forgotPass').modal('show');
+        });
+    </script>
+<% } %>
+
+<%- include('partials/footer') %>

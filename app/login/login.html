@@ -1,0 +1,54 @@
+
+<!-- <div class="row">
+    <div class="col-md-4"></div>
+    <div class="col-md-4" style="padding-top: 75px;">
+        <form ng-submit="login()">
+            <label>Email:</label>
+            <input type="email" name="email" class="form-control" ng-model="loginForm.email" required>
+            <label>Password:</label>
+            <input type="password" class="form-control" ng-model="loginForm.password" required>
+            <br/>
+            <button type="submit" class="btn btn-primary">Login</button>
+        </form>
+        <br/>
+        <i ng-bind="message" style="color: red"></i>
+    </div>
+    <div class="col-md-4"></div>
+</div> -->
+
+<div class="form-container">
+    <div class="form-group">
+        <img src="./app-content/awslogo.png" length="70px" width="70px"/>
+        <i><label><font color="#30369F" size="4">Deals Management</font></label></i>
+    </div>
+    
+    <div class="alert alert-danger" ng-show="wrongInput">{{message}}</div>
+    
+    <form ng-submit="login()">
+        <div class="form-group">
+            <label><font color="#30369F" size="2">Username:</font></label>
+            <input type="email" name="email" class="form-control" ng-model="loginForm.email" required><br>
+
+            <label><font color="#30369F" size="2">Password:</font></label>
+            <input id="password" type="password" class="form-control" ng-model="loginForm.password" required>
+            <label id="warning" align="center" ><img src="./app-content/alert.png" length="17px" width="17px"/><font color="#30369F" size="2">Caps lock is on.</font></label><br>
+         
+            <button id="login" type="submit" class="btn btn-primary pull-right">Login</button>
+            <br>
+        </div>
+    </form>
+</div>
+
+<script>
+    var input = document.getElementById("password");
+    var text = document.getElementById("warning");
+    text.style.display = "none"
+    input.addEventListener("keyup", function(event) {
+    
+    if (event.getModifierState("CapsLock")) {
+        text.style.display = "block";
+      } else {
+        text.style.display = "none"
+      }
+    });
+</script>

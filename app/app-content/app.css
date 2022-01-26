@@ -1,0 +1,354 @@
+@import url('https://fonts.googleapis.com/css?family=Exo+2');
+
+body {
+    padding: 0;
+    overflow-x: hidden;
+	font-family: "Verdana";
+	height: 100%;
+}
+
+/* login format */
+.form-container {
+    width: 380px;
+    margin: auto;
+    background-color: rgb(204, 204, 204);
+    padding: 50px;
+    padding-top: 40px;
+    border-radius: 5px;
+    box-shadow: 7px 7px #666666;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+}
+
+#login { 
+    padding: 5px;
+    padding-left: 15px;
+    padding-right: 15px;
+    font-size: 15px;
+    border-radius: 5px;
+    color: white;
+    background-color: rgb(94, 101, 235);
+}
+
+.login-p {
+    font-size: 40px;
+    margin: 50px;
+    text-align: center;
+    color: black;
+    font-weight: bold;
+}
+
+#awslogo {
+    font-style: italic;
+    color: rgb(13, 13, 148);
+}
+
+.dashboard {
+	height: 100%;
+  	min-height:400px;
+}
+
+th {
+	background-color: rgba(199, 219, 252, 0.65);
+}
+
+td {
+	background-color: rgba(232, 239, 252, 0.65);
+}
+
+.lighten{
+	background-color: rgba(237, 241, 247, 0.4);
+	min-height: 100vh;
+}
+
+#overlay {
+    position: fixed; /* Sit on top of the page content */
+    display: none;
+    width: 100%; /* Full width (cover the whole page) */
+    height: 100%; /* Full height (cover the whole page) */
+    top: 0; 
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: none; /* Black background with opacity */
+    z-index: 2; /* Specify a stack order in case you're using a different order for other elements */
+    cursor: pointer; /* Add a pointer on hover */
+}
+
+.bg {
+    background-image: url("homepage.jpg");
+    height: 100%;
+    background-position: center;
+    /*background-repeat: no-repeat;*/
+    background-size: cover;
+    background-attachment: fixed;
+}
+
+.logo {
+    float: left;
+    padding-left: 10px;
+    height: 60px;
+}
+
+.compact{
+  	width: auto;
+}
+
+.dealTable {
+	font-size: 10px;
+}
+
+/*.normal-table th, .normal-table td {
+	text-align: center;
+}*/
+
+.div-padded {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+ 
+.flash-message {
+    margin-top: 20px;
+}
+
+.arrow-down:after,.arrow-up:after,.arrow-dormant:after{
+ content: ' ';
+ position: relative;
+ left: 2px;
+ border: 8px solid transparent;
+}
+
+.arrow-down:after{
+ top: 10px;
+ border-top-color: black;
+}
+
+.arrow-up:after{
+ bottom: 15px;
+ border-bottom-color: black;
+}
+
+.arrow-dormant:after{
+ bottom: 15px;
+ border-bottom-color: gray;
+}
+
+.arrow-down,.arrow-up,.arrow-dormant{
+ padding-right: 10px;
+}
+
+.modal-body {
+    max-height: calc(100vh - 210px);
+    overflow-y: auto;
+}
+
+.avatar-circle {
+	width: 30px;
+	height: 30px;
+    text-align: center;
+	border-radius: 50%;
+	-webkit-border-radius: 50%;
+	-moz-border-radius: 50%;
+}
+
+.initials {
+	position: relative;
+	top: 5px; /* 25% of parent */
+	font-size: 15px; /* 50% of parent */
+	line-height: 15px; /* 50% of parent */
+	color: #fff;
+	font-family: "Trebuchet MS", monospace;
+	font-weight: bold;
+}
+
+.avatar-circle-big {
+	width: 200px;
+	height: 200px;
+    text-align: center;
+	border-radius: 50%;
+	-webkit-border-radius: 50%;
+	-moz-border-radius: 50%;
+}
+
+.initials-big {
+	position: relative;
+	top: 45px; /* 25% of parent */
+	font-size: 105px; /* 50% of parent */
+	line-height: 105px; /* 50% of parent */
+	color: #fff;
+	font-family: "Trebuchet MS", monospace;
+	font-weight: bold;
+}
+
+.noselect {
+	-webkit-touch-callout: none; /* iOS Safari */
+	  -webkit-user-select: none; /* Safari */
+	   -khtml-user-select: none; /* Konqueror HTML */
+		 -moz-user-select: none; /* Firefox */
+		  -ms-user-select: none; /* Internet Explorer/Edge */
+			  user-select: none; /* Non-prefixed version, currently
+									supported by Chrome and Opera */
+}
+
+.a50px {
+	height: 50px;
+}
+
+p:hover {
+    background-color: #f8f8f8 !important;
+    
+}
+
+.okSakin {
+	height: 100vh;
+}
+
+/* #content, .container-fluid, .span9
+{
+    border: 1px solid #000;
+    overflow-y:auto;
+    height:100%;
+} */
+
+.avatar-image {
+	object-fit: cover;
+	width: 30px;
+	height: 30px;
+    text-align: center;
+	border-radius: 50%;
+	-webkit-border-radius: 50%;
+	-moz-border-radius: 50%;
+}
+
+.avatar-image-big {
+	object-fit: cover;
+	width: 200px;
+	height: 200px;
+    text-align: center;
+	border-radius: 50%;
+	-webkit-border-radius: 50%;
+	-moz-border-radius: 50%;
+}
+
+#profilepicture {
+    margin: auto;
+    padding: 10px;
+    position: relative;
+}
+
+#parentProfileDiv {
+	text-align:center;
+}
+
+#imgFileModal {
+	margin: 20px;
+}
+
+.accountSettingsAdmin {
+	width:100%; 
+	margin-left: auto; 
+	margin-right: auto;
+}
+
+.accountSettingsUser {
+	width:70%; 
+	margin-left: auto; 
+	margin-right: auto;
+}
+
+/* The sidebar menu */
+.sidenav {
+    /*width: 160px; /* Set the width of the sidebar */
+    /*z-index: 1;*/ /* Stay on top */
+    margin-top: 0; /* Stay at the top */
+    left: 0;
+	background-color: #c2d1e8;
+	position: fixed;	
+	height: 100%;
+	overflow-x: hidden; /* Disable horizontal scroll */
+	padding-top: 12px;
+	float: left;
+	width: 17%;
+	padding-left: 5px;
+	padding-right: 3px;
+}
+
+/* The navigation menu links */
+.sidenav a {
+    padding: 6px 8px 6px 20px;
+    text-decoration: none;
+    font-size: 11pt;
+    color: #0c0f14;
+    display: block;
+    transition: 0.1s;
+}
+
+/* When you mouse over the navigation links, change their color */
+.sidenav a:hover, .offcanvas a:focus{
+    color: #edefef;
+    text-shadow: 2px 2px 5px black;
+}
+
+/* Style page content */
+.main {
+	/*margin-left: 160px; /* Same as the width of the sidebar */
+	width:83%;
+	padding-top: 35px;
+	float: right;
+	padding-left: 15px;
+	padding-right: 15px;
+	font-size: 10pt;
+}
+
+/* On smaller screens, where height is less than 450px, change the style of the sidebar (less padding and a smaller font size) */
+@media screen and (max-height: 450px) {
+    .sidenav {padding-top: 15px;}
+    .sidenav a {font-size: 18px;}
+}
+
+/* turning input boxes beige */	
+/* made by glenn */
+.deal-form-control .form-control {
+    background-color: #f8fcc7;
+}
+
+.panel-heading {
+	background: rgba(112, 129, 158, 0.8);
+	padding: 3px 5px;
+    color: white;
+}
+
+.profile-heading {
+	padding-left: 20px;
+}
+
+.navCategory{
+	color: #48636b;
+	font-weight: bold;
+    padding-left: 9px;
+}
+
+.sidenav hr {
+	border-top: dotted 1px #aaaaaa;
+}
+
+.dealsCollapsible {
+	margin-top: 5px;
+	margin-bottom: 5px;
+}
+
+textarea {
+	resize: none;
+}
+
+select {
+	max-width: 150px;
+}
+
+.table-responsive {
+	height: 450px;
+	overflow-y: auto;
+	width: 100%;
+}

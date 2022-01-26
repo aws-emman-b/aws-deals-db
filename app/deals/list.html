@@ -1,0 +1,164 @@
+<!-- <div class="col-md-5">
+        <form ng-submit="uploadFile()">
+            <div class="input-group">
+                <input type="file" class="form-control" id="newDealFile" accept="application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    required />
+                <div class="input-group-btn">
+                    <button type="submit" class="btn btn-success">Upload File as New Deal</button>
+                </div>
+            </div>
+        </form>
+    </div> -->
+<div class="row">
+    <div class="col-md-10 form-inline">
+        <label for="pageSize">Page size: </label>
+        <input id="pageSize" type="number" ng-model="pageSize" class="form-control" min="1" max={{deals.length}}>
+        <label>Options: </label>
+        <select class="form-control displayOptionsBox" ng-model="displayOption" ng-change="getDeals()">
+            <option>Active</option>
+            <option>Mine</option>
+            <option>1 Month</option>
+            <option>2-3 Months</option>
+            <option>Over Due</option>
+            <option>Closed in 2018</option>
+            <option>ALL</option>
+        </select>
+        &nbsp;&nbsp;
+        <label>Search by Column: </label>
+        <select ng-model="searchColumn" class="form-control">
+            <option value="all,$"> -- ALL -- </option>
+            <option ng-repeat="essentialField in fields.essential" ng-if="essentialField.showInList" value="{{'essential,' + essentialField.name}}">{{columnNames['essential'][essentialField.name]}}</option>
+            <option ng-repeat="profileField in fields.profile" ng-if="profileField.showInList" value="{{'profile,' + profileField.name}}">{{columnNames['profile'][profileField.name]}}</option>
+            <option ng-repeat="processField in fields.process" ng-if="processField.showInList" value="{{'process,' + processField.name}}">{{columnNames['process'][processField.name]}}</option>
+            <option ng-repeat="distributionField in fields.distribution" ng-if="distributionField.showInList" value="{{'distribution,' + distributionField.name}}">{{columnNames['distribution'][distributionField.name]}}</option>
+            <option ng-repeat="statusField in fields.status" ng-if="statusField.showInList" value="{{'status,' + statusField.name}}">{{columnNames['status'][statusField.name]}}</option>
+            <option ng-repeat="contentField in fields.content" ng-if="contentField.showInList" value="{{'content,' + contentField.name}}">{{columnNames['content'][contentField.name]}}</option>
+        </select>
+        <input type="text" class="form-control" ng-model="searchText" ng-change="setSearch()" placeholder="Search">
+    </div>
+    <div class="col-md-2 pull-right">
+        <button class="btn btn-primary" ui-sref="dealForm">New Deal</button>
+    </div>
+</div>
+<br/>
+<div class="row">
+    <div class="col-md-10 form-inline">
+        <button class="btn btn-success" ng-click="exportData()">Export as Excel</button>
+    </div>
+</div>
+<br/>
+<div class="row">
+    <div class="col-md-12 table-responsive">
+        <div style="text-align:center" class="spinner" ng-show="loading">
+            <img src="loader.gif" />
+        </div>
+        <div id="exportForExcel" >
+        <table class="table table-hover compact dealTable  normal-table">
+            <thead>
+                <tr>
+                    <th class="th_ID" ng-click="sortColumn('essential', 'ID')" ng-class="sortClass('essential', 'ID')">{{columnNames['essential']['ID']}}
+                    </th>
+                    <!--<th ng-click="sortColumn('profile', 'Client')" ng-class="sortClass('profile', 'Client')">{{columnNames['profile']['Client']}}</th>
+                    <th ng-click="sortColumn('essential', 'Deal Name')" ng-class="sortClass('essential', 'Deal Name')">{{columnNames['essential']['Deal Name']}}</th>
+                    <th ng-click="sortColumn('profile', 'AWS Resp (Sales) person')" ng-class="sortClass('profile', 'AWS Resp (Sales) person')">{{columnNames['profile']['AWS Resp (Sales) person']}}</th>
+                    <th ng-click="sortColumn('profile', 'AWS Resp (Dev) person')" ng-class="sortClass('profile', 'AWS Resp (Dev) person')">{{columnNames['profile']['AWS Resp (Dev) person']}}</th>
+                    <th ng-click="sortColumn('profile', 'Type')" ng-class="sortClass('profile', 'Type')">{{columnNames['profile']['Type']}}</th>
+                    <th ng-click="sortColumn('profile', 'Level')" ng-class="sortClass('profile', 'Level')">{{columnNames['profile']['Level']}}</th>
+                    <th ng-click="sortColumn('profile', 'Confidence')" ng-class="sortClass('profile', 'Confidence')">{{columnNames['profile']['Confidence']}}</th>
+                    <th ng-click="sortColumn('profile', 'Resource Size (FTE)')" ng-class="sortClass('profile', 'Resource Size (FTE)')">{{columnNames['profile']['Resource Size (FTE)']}}</th>
+                    <th ng-click="sortColumn('profile', 'Resource Size (MM)')" ng-class="sortClass('profile', 'Resource Size (MM)')">{{columnNames['profile']['Resource Size (MM)']}}</th>
+                    <th ng-click="sortColumn('profile', 'Revenue')" ng-class="sortClass('profile', 'Revenue')">{{columnNames['profile']['Revenue']}}</th>
+                    <th ng-click="sortColumn('profile', 'CM')" ng-class="sortClass('profile', 'CM')">{{columnNames['profile']['CM']}}</th>
+                    <th ng-click="sortColumn('profile', 'Duration (Start)')" ng-class="sortClass('profile', 'Duration (Start)')">{{columnNames['profile']['Duration (Start)']}}</th>
+                    <th ng-click="sortColumn('profile', 'Duration (End)')" ng-class="sortClass('profile', 'Duration (End)')">{{columnNames['profile']['Duration (End)']}}</th>
+                    <th ng-click="sortColumn('process', 'SRB No')" ng-class="sortClass('process', 'SRB No')">{{columnNames['process']['SRB No']}}</th>
+                    <th ng-click="sortColumn('process', 'SRB Date')" ng-class="sortClass('process', 'SRB Date')">{{columnNames['process']['SRB Date']}}</th>
+                    <th ng-click="sortColumn('process', 'SRB Status')" ng-class="sortClass('process', 'SRB Status')">{{columnNames['process']['SRB Status']}}</th>
+                    <th ng-click="sortColumn('process', 'SOW Scheme')" ng-class="sortClass('process', 'SOW Scheme')">{{columnNames['process']['SOW Scheme']}}</th>
+                    <th ng-click="sortColumn('process', 'SOW Date')" ng-class="sortClass('process', 'SOW Date')">{{columnNames['process']['SOW Date']}}</th>
+                    <th ng-click="sortColumn('essential', 'Due Date')" ng-class="sortClass('essential', 'Due Date')">{{columnNames['essential']['Due Date']}}</th>-->
+                    <th ng-repeat="essentialField in fields.essential" ng-if="essentialField.showInList && essentialField.name !== 'ID'" ng-click="sortColumn('essential', essentialField.name)"
+                        ng-class="sortClass('essential', essentialField.name)">
+                        {{essentialField.name}}
+                    </th>
+                    <th ng-repeat="profileField in fields.profile" ng-if="profileField.showInList" ng-click="sortColumn('profile', profileField.name)"
+                        ng-class="sortClass('profile', profileField.name)">
+                        {{profileField.name}}
+                    </th>
+                    <th ng-repeat="processField in fields.process" ng-if="processField.showInList" ng-click="sortColumn('process', processField.name)"
+                        ng-class="sortClass('process', processField.name)">
+                        {{processField.name}}
+                    </th>
+                    <!--<th ng-repeat="distributionField in fields.distribution" ng-if="distributionField.showInList && !distributionField.default"
+                        ng-click="sortColumn('distribution', distributionField.name)" ng-class="sortClass('distribution', distributionField.name)">
+                        {{distributionField.name}}
+                    </th>
+                    <th ng-repeat="statusField in fields.status" ng-if="statusField.showInList && !statusField.default" ng-click="sortColumn('status', statusField.name)"
+                        ng-class="sortClass('status', statusField.name)">
+                        {{statusField.name}}
+                    </th>-->
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="deal in filteredDeals | orderBy: column : reverse | pagination: (currentPage - 1) * pageSize | limitTo: pageSize"
+                    class="">
+                    <td>
+                        <a href="" ng-click="open(deal['ID'])">{{deal['ID']}}</a>
+                    </td>
+                    <!--<td>{{deal['profile']['Client']}}</td>
+                    <td>{{deal['essential']['Deal Name']}}</td>
+                    <td>{{deal['profile']['AWS Resp (Sales) person']}}</td>
+                    <td>{{deal['profile']['AWS Resp (Dev) person']}}</td>
+                    <td>{{deal['profile']['Type']}}</td>
+                    <td>{{deal['profile']['Level']}}</td>
+                    <td>{{deal['profile']['Confidence']}}</td>
+                    <td>{{deal['profile']['Resource Size (FTE)']}}</td>
+                    <td>{{deal['profile']['Resource Size (MM)']}}</td>
+                    <td>{{deal['profile']['Revenue']}}</td>
+                    <td>{{deal['profile']['CM']}}</td>
+                    <td>{{deal['profile']['Duration (Start)']}}</td>
+                    <td>{{deal['profile']['Duration (End)']}}</td>
+                    <td>{{deal['process']['SRB No']}}</td>
+                    <td>{{deal['process']['SRB Date']}}</td>
+                    <td>{{deal['process']['SRB Status']}}</td>
+                    <td>{{deal['process']['SOW Scheme']}}</td>
+                    <td>{{deal['process']['SOW Date']}}</td>
+                    <td>{{deal['essential']['Due Date']}}</td>-->
+                    <td ng-repeat="essentialField in fields.essential" ng-if="essentialField.showInList && essentialField.name !== 'ID'">
+                        {{deal.essential[essentialField.name]}}
+                    </td>
+                    <td ng-repeat="profileField in fields.profile" ng-if="profileField.showInList">
+                        {{deal.profile[profileField.name]}}
+                    </td>
+                    <td ng-repeat="processField in fields.process" ng-if="processField.showInList">
+                        {{deal.process[processField.name]}}
+                    </td>
+                    <!--<td ng-repeat="distributionField in fields.distribution" ng-if="distributionField.showInList && !distributionField.default">
+                        {{deal.distribution[distributionField.name]}}
+                    </td>
+                    <td ng-repeat="statusField in fields.status" ng-if="statusField.showInList && !statusField.default">
+                        {{deal.status[statusField.name]}}
+                    </td>-->
+                </tr>
+            </tbody>
+        </table>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-4"></div>
+    <div class="col-md-4">
+        <ul class="pagination" uib-pagination total-items="filteredDeals.length" ng-model="currentPage" items-per-page="pageSize" boundary-links="true"
+            max-size="3" force-ellipses="true" first-text="<<" previous-text="<" next-text=">" last-text=">>"></ul>
+    </div>
+    <div class="col-md-4"></div>
+</div>
+<!-- link is disabled after click -->
+<script> 
+    function clickAndDisable(link) {
+        // disable subsequent clicks
+        link.onclick = function (event) {
+            event.preventDefault();
+        }
+    }   
+</script>

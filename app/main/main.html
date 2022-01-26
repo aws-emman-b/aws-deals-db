@@ -1,0 +1,39 @@
+<div class="container-fluid">
+    <div id="overlay"></div>
+    <div class="row">
+        <div class="sidenav">
+            <svg width="30" height="30">
+                <img class="logo" src="logo.png"/>
+            </svg>
+            <br><br><br>
+            <div>
+                <a class="nav_home" ui-sref="home"><b>Home</b></a>
+            </div>
+            <hr>
+            <label class='navCategory'>Main</label>
+            <div>
+                <a class="nav_deals" ui-sref="dealList">Deals</a>
+                <a class="nav_clients" ui-sref="clientList">Clients</a>
+            </div>
+            <hr>
+            <div ng-if="user.role === 'Admin'">
+                <label class='navCategory'>Admin</label>
+                <a ui-sref="fields">Fields</a>
+                <a ui-sref="BUList">Business Units</a>
+                <a ui-sref="UserList">Manage Users</a>
+                <hr>
+            </div>
+            
+            <label class='navCategory'>Settings</label>
+            <div>
+                <a ui-sref="changePassword">Change Password</a>
+                <a href="#" ng-click="logout()">Logout</a>
+            </div>
+        </div>
+        <div class="main">
+            <div ui-view class="main-page"></div>
+        </div>
+    </div>
+</div>
+
+

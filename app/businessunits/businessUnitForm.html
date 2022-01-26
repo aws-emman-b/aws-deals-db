@@ -1,0 +1,25 @@
+<div class="row">
+    <div class="col-md-6">
+        <form ng-submit="submit()">
+            <div ng-repeat="field in module.fields" ng-if="field.name !== 'status' ">
+                <label>{{field.name}}</label>
+                <span style="color:red" ng-if="field.required">*</span>
+
+                <input type="{{field.type}}" class="form-control" ng-if="field.type !== 'dropdown' && field.type !== 'textarea'" ng-model="businessUnitForm[field.name]"
+                    ng-required="field.required" />
+
+                <select class="form-control" ng-model="businessUnitForm[field.name]" ng-if="field.type === 'dropdown'" ng-required="field.required">
+                    <option value=""></option>
+                    <option ng-if="field.name != 'Manager'" ng-repeat="option in field.options" value="{{option}}">{{option}}</option>
+                    <option ng-if="field.name == 'Manager'" ng-repeat="option in userList" value="{{option.email}}">{{option.nickname}}</option>
+                </select>
+
+                <textarea class="form-control" ng-model="businessUnitForm[field.name]" ng-if="field.type === 'textarea'" ng-required="field.required">
+                        </textarea>
+            </div>
+            <br/>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+    <div class="col-md-6"></div>
+</div>
