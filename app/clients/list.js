@@ -26,6 +26,21 @@
           };
         })
 
+        .filter('titleCase', [function () {
+            return function (input) {
+          
+              if (typeof input !== "string") {
+                return input;
+              }
+          
+              return input
+                .replace(/([A-Z])/g, (match) => ` ${match}`)
+                .replace(/^./, (match) => match.toUpperCase());
+          
+            };
+        }])
+      
+
         /*
             Function name: Pagination filter
             Author(s): Flamiano, Glenn
@@ -47,11 +62,11 @@
         //enable load if data for table is not yet fetched
         $scope.loading = true;
 
-        $scope.pageSize = 6;
+        $scope.pageSize = 15;
         $scope.currentPage = 1;
 
         $scope.reverse = false;
-        $scope.allClients = [];
+        $scope.clients = [];
         
         /*
             Function name: Calculate Object size
@@ -85,10 +100,9 @@
             }).finally(function() {
                 $scope.loading = false;
             });*/
-
             ModulesService.getAllModuleDocs('clients').then(function(clients) {                
-                $scope.allClients = clients;
-                $scope.clientLength = Object.size(clients);
+                $scope.clients = clients.filter(unit => unit.status === true);
+                // console.log(clients.length)
             }).catch(function(err) {
                 console.log(err);
             }).finally(function() {

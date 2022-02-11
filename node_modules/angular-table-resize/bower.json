@@ -1,0 +1,27 @@
+{
+  "name": "angular-table-resize",
+  "authors": [
+    "Mathias Mortensen"
+  ],
+  "description": "An AngularJS module for resizing table columns!",
+  "main": [
+      "./dist/angular-table-resize.js",
+      "./dist/table-resize.css"
+  ],
+  "license": "MIT",
+  "private": false,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "devDependencies": {
+    "semantic": "^2.2.1"
+  },
+  "dependencies": {
+    "angular": "^1.5.7",
+    "jquery": "^3.0.0"
+  }
+}
