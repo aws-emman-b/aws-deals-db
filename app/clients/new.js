@@ -3,7 +3,21 @@
 
     angular
         .module('app')
-        .controller('NewClientController', Controller);
+        .controller('NewClientController', Controller)
+
+        .filter('titleCase', [function () {
+            return function (input) {
+          
+              if (typeof input !== "string") {
+                return input;
+              }
+          
+              return input
+                .replace(/([A-Z])/g, (match) => ` ${match}`)
+                .replace(/^./, (match) => match.toUpperCase());
+          
+            };
+        }]);
 
     
     function Controller($scope, $state, ngToast, ModulesService, $stateParams) {    
@@ -80,10 +94,10 @@
                 toSave.moduleDoc.status = true;
 
                 ModulesService.addModuleDoc(toSave).then(function() {
-                    ngToast.success('Client added');
+                    ngToast.success('Client Added');
                     $state.transitionTo('clientList');
                 }).catch(function(err){
-                    ngToast.danger(err);
+                    ngToast.danger('The Client already exist');
                 });
             } else {
                 ModulesService.updateModuleDoc(toSave).then(function() {
