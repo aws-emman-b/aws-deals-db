@@ -1,3 +1,4 @@
+
 (function () {
     'use strict';
 
@@ -23,6 +24,7 @@
 
 
 
+
     function Controller($scope, $rootScope, $state, ModulesService, DealsService, TableService, ngToast, $filter) {
 
         //enable load if data for table is not yet fetched
@@ -42,7 +44,7 @@
         };
 
         $scope.currentPage = 1;
-        $scope.pageSize = 7;
+        $scope.pageSize = 15;
 
         $scope.reverse = false;
 
