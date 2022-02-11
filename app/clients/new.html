@@ -14,7 +14,7 @@
             <button type="submit" class="btn btn-primary">Submit</button> -->
 
             <div ng-repeat="field in module.fields" ng-if="field.name !== 'status' ">
-                <label>{{field.name}}</label>
+                <label>{{field.name | titleCase}}</label>
                 <span style="color:red" ng-if="field.required">*</span>
 
                 <input type="{{field.type}}" class="form-control" ng-if="field.type !== 'dropdown' && field.type !== 'textarea'" ng-model="clientForm[field.name]"

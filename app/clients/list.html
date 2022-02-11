@@ -1,7 +1,7 @@
 <div class="row">
     <div class="col-md-8 form-inline">
         <label for="pageSize">Page size: </label>
-        <input id="pageSize" type="number" ng-model="pageSize" class="form-control" min="1" max={{allClients.length}}>
+        <input id="pageSize" type="number" onkeypress="return event.charCode >= 48 && event.charCode <= 57" ng-model="pageSize" class="form-control" min="1" max={{clients.length}}>
         <input type="text" class="form-control" ng-model="searchText" placeholder="Search">
     </div>
     <div class="col-md-2 pull-right">
@@ -14,15 +14,20 @@
         <div style="text-align:center" class="spinner" ng-show="loading">
             <img src="loader.gif" />
         </div>
-        <table class="table table-hover normal-table">
+        <table class="table table-hover clientTable normal-table">
             <thead>
-                <th ng-repeat="field in module.fields | filter:{ showInList: true }" ng-click="sortColumn(field.name)" ng-class="sortClass(field.name)">
-                    {{field.name}}
+                <th ng-repeat="field in module.fields | filter:{ showInList: true }" >
+                    <div class="inline">
+                        {{field.name | titleCase}}
+                        <div class="sorter" ng-click="sortColumn(field.name)" ng-class="sortClass(field.name)"/>
+                    </div>
+             
                 </th>
+                <th class="tools"></th>
             </thead>
             <tbody>
                 <tr>
-                    <tr ng-repeat="client in allClients | orderObjectBy : column : reverse | filter : searchText | filter: {status: true} | pagination: (currentPage - 1) * pageSize | limitTo: pageSize ">
+                    <tr ng-repeat="client in clients | orderBy : column : reverse | filter : searchText | filter: {status: true} | pagination: (currentPage - 1) * pageSize | limitTo: pageSize ">
                         <td ng-repeat="field in module.fields | filter:{ showInList: true} ">
                             {{client[field.name]}}
                         </td>
@@ -32,23 +37,16 @@
                             </a>
                             &nbsp;
                             <a>
-                                <i class="fa fa-trash" aria-hidden="true" ng-click="deleteClient(client._id)" data-toggle="tooltip" title="Delete"></i>
+                                <i class="fa fa-trash" aria-hidden="true" ng-click="deleteClient(client._id)" data-toggle="tooltip" title="Deactivate"></i>
                             </a>
-                            <!--<a>
-                                <i class="fa fa-list-alt" aria-hidden="true" ng-click="" data-toggle="tooltip"></i>
-                            <a>-->
                         </td>
                     </tr>
                 </tr>
             </tbody>
         </table>
+        <div>
+            <ul class="pagination" uib-pagination total-items="clients.length" ng-model="currentPage" items-per-page="pageSize" boundary-links="true"
+                max-size="3" force-ellipses="true" first-text="<<" previous-text="<" next-text=">" last-text=">>"></ul>
+        </div>
     </div>
-</div>
-<div class="row">
-    <div class="col-md-4"></div>
-    <div class="col-md-4">
-        <ul class="pagination" uib-pagination total-items="allClients.length" ng-model="currentPage" items-per-page="pageSize" boundary-links="true"
-            max-size="3" force-ellipses="true" first-text="<<" previous-text="<" next-text=">" last-text=">>"></ul>
-    </div>
-    <div class="col-md-4"></div>
 </div>

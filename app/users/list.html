@@ -3,7 +3,7 @@
 <div class="row">
     <div class="col-md-10 form-inline">
         <label for="pageSize">Page size: </label>
-        <input id="pageSize" type="number" ng-model="pageSize" class="form-control" min="1" max={{users.length}}>
+        <input id="pageSize" type="number" onkeypress="return event.charCode >= 48 && event.charCode <= 57" ng-model="pageSize" class="form-control" min="1" max={{users.length}}>
         <input type="text" class="form-control" ng-model="searchText" placeholder="Search">
     </div>
     <div class="col-md-2 pull-right">
@@ -18,10 +18,13 @@
         </div>
         <table class="table table-hover normal-table" style="font-size: 10px;">
             <thead>
-                <th ng-repeat="field in module.fields | filter:{ showInList: true }" ng-click="sortColumn(field.name)" ng-class="sortClass(field.name)">
-                    {{field.name}}
+                <th ng-repeat="field in module.fields | filter:{ showInList: true }" >
+                    <div class="inline">
+                        {{field.name | titleCase}}
+                        <div ng-click="sortColumn(field.name)" ng-class="sortClass(field.name)"/>
+                    </div>
                 </th>
-                <th></th>
+                <th class="tools"></th>
             </thead>
             <tbody>
                 <tr ng-repeat="user in users | orderBy : column : reverse | filter : searchText | filter: {status: true} | pagination: (currentPage - 1) * pageSize | limitTo: pageSize ">
@@ -34,19 +37,15 @@
                         </a>
                         &nbsp;
                         <a>
-                            <i class="fa fa-trash" aria-hidden="true" ng-click="deleteUser(user._id)" data-toggle="tooltip" title="Delete"></i>
+                            <i class="fa fa-trash" aria-hidden="true" ng-click="deleteUser(user._id)" data-toggle="tooltip" title="Deactivate"></i>
                         </a>
                     </td>
                 </tr>
             </tbody>
         </table>
+        <div>
+            <ul class="pagination" uib-pagination total-items="users.length" ng-model="currentPage" items-per-page="pageSize" boundary-links="true"
+                max-size="3" force-ellipses="true" first-text="<<" previous-text="<" next-text=">" last-text=">>"></ul>
+        </div>
     </div>
-</div>
-<div class="row">
-    <div class="col-md-4"></div>
-    <div class="col-md-4">
-        <ul class="pagination" uib-pagination total-items="users.length" ng-model="currentPage" items-per-page="pageSize" boundary-links="true"
-            max-size="3" force-ellipses="true" first-text="<<" previous-text="<" next-text=">" last-text=">>"></ul>
-    </div>
-    <div class="col-md-4"></div>
 </div>

@@ -9,7 +9,8 @@
             </div>
         </form>
     </div> -->
-<div class="row">
+
+    <div class="row">
     <div class="col-md-10 form-inline">
         <label for="pageSize">Page size: </label>
         <input id="pageSize" type="number" ng-model="pageSize" class="form-control" min="1" max={{deals.length}}>
@@ -53,10 +54,13 @@
             <img src="loader.gif" />
         </div>
         <div id="exportForExcel" >
-        <table class="table table-hover compact dealTable  normal-table">
+        <table class="table table-hover dealTable normal-table">
             <thead>
                 <tr>
-                    <th class="th_ID" ng-click="sortColumn('essential', 'ID')" ng-class="sortClass('essential', 'ID')">{{columnNames['essential']['ID']}}
+                    <!-- ID -->
+                    <th class="th_ID dealNo">
+                        {{columnNames['essential']['ID']}}
+                        <div ng-click="sortColumn('essential', 'ID')" ng-class="sortClass('essential', 'ID')"/>
                     </th>
                     <!--<th ng-click="sortColumn('profile', 'Client')" ng-class="sortClass('profile', 'Client')">{{columnNames['profile']['Client']}}</th>
                     <th ng-click="sortColumn('essential', 'Deal Name')" ng-class="sortClass('essential', 'Deal Name')">{{columnNames['essential']['Deal Name']}}</th>
@@ -77,17 +81,23 @@
                     <th ng-click="sortColumn('process', 'SOW Scheme')" ng-class="sortClass('process', 'SOW Scheme')">{{columnNames['process']['SOW Scheme']}}</th>
                     <th ng-click="sortColumn('process', 'SOW Date')" ng-class="sortClass('process', 'SOW Date')">{{columnNames['process']['SOW Date']}}</th>
                     <th ng-click="sortColumn('essential', 'Due Date')" ng-class="sortClass('essential', 'Due Date')">{{columnNames['essential']['Due Date']}}</th>-->
-                    <th ng-repeat="essentialField in fields.essential" ng-if="essentialField.showInList && essentialField.name !== 'ID'" ng-click="sortColumn('essential', essentialField.name)"
-                        ng-class="sortClass('essential', essentialField.name)">
+                    <!-- deals essential -->
+                    <th class="th_ID" ng-class="{'dealName': essentialField.name === 'Deal Name'}" ng-repeat="essentialField in fields.essential" ng-if="essentialField.showInList && essentialField.name !== 'ID'">
                         {{essentialField.name}}
+                        <div ng-click="sortColumn('essential', essentialField.name)"
+                        ng-class="sortClass('essential', essentialField.name)"/>
                     </th>
-                    <th ng-repeat="profileField in fields.profile" ng-if="profileField.showInList" ng-click="sortColumn('profile', profileField.name)"
-                        ng-class="sortClass('profile', profileField.name)">
+                    <!--deals profile -->
+                    <th class="th_ID" ng-class="{'client': profileField.name === 'Client'}" ng-repeat="profileField in fields.profile" ng-if="profileField.showInList">
                         {{profileField.name}}
+                        <div  ng-click="sortColumn('profile', profileField.name)"
+                        ng-class="sortClass('profile', profileField.name)"/>
                     </th>
-                    <th ng-repeat="processField in fields.process" ng-if="processField.showInList" ng-click="sortColumn('process', processField.name)"
-                        ng-class="sortClass('process', processField.name)">
+                    <!-- deals process -->
+                    <th class="th_ID" ng-repeat="processField in fields.process" ng-if="processField.showInList" >
                         {{processField.name}}
+                        <div ng-click="sortColumn('process', processField.name)"
+                        ng-class="sortClass('process', processField.name)"/>
                     </th>
                     <!--<th ng-repeat="distributionField in fields.distribution" ng-if="distributionField.showInList && !distributionField.default"
                         ng-click="sortColumn('distribution', distributionField.name)" ng-class="sortClass('distribution', distributionField.name)">
@@ -100,8 +110,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr ng-repeat="deal in filteredDeals | orderBy: column : reverse | pagination: (currentPage - 1) * pageSize | limitTo: pageSize"
-                    class="">
+                <tr ng-repeat="deal in filteredDeals | orderBy: column : reverse | pagination: (currentPage - 1) * pageSize | limitTo: pageSize" class="">
                     <td>
                         <a href="" ng-click="open(deal['ID'])">{{deal['ID']}}</a>
                     </td>
@@ -128,10 +137,10 @@
                         {{deal.essential[essentialField.name]}}
                     </td>
                     <td ng-repeat="profileField in fields.profile" ng-if="profileField.showInList">
-                        {{deal.profile[profileField.name]}}
+                        {{deal.profile[profileField.name].toLocaleString('en', {useGrouping: true})}}<!--toLocaleString() to display big numbers in commas-->
                     </td>
                     <td ng-repeat="processField in fields.process" ng-if="processField.showInList">
-                        {{deal.process[processField.name]}}
+                        {{deal.process[processField.name]}} 
                     </td>
                     <!--<td ng-repeat="distributionField in fields.distribution" ng-if="distributionField.showInList && !distributionField.default">
                         {{deal.distribution[distributionField.name]}}
@@ -142,17 +151,15 @@
                 </tr>
             </tbody>
         </table>
+        <div >
+            <ul class="pagination" uib-pagination total-items="deals.length" ng-model="currentPage" items-per-page="pageSize" boundary-links="true"
+                max-size="3" force-ellipses="true" first-text="<<" previous-text="<" next-text=">" last-text=">>"></ul>
+        </div>
+        
         </div>
     </div>
 </div>
-<div class="row">
-    <div class="col-md-4"></div>
-    <div class="col-md-4">
-        <ul class="pagination" uib-pagination total-items="filteredDeals.length" ng-model="currentPage" items-per-page="pageSize" boundary-links="true"
-            max-size="3" force-ellipses="true" first-text="<<" previous-text="<" next-text=">" last-text=">>"></ul>
-    </div>
-    <div class="col-md-4"></div>
-</div>
+
 <!-- link is disabled after click -->
 <script> 
     function clickAndDisable(link) {
