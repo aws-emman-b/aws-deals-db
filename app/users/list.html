@@ -24,7 +24,7 @@
                 <th></th>
             </thead>
             <tbody>
-                <tr ng-repeat="user in users | orderBy : column : reverse | filter : searchText | filter: {status: true} | pagination: (currentPage - 1) * pageSize | limitTo: pageSize ">
+                <tr style="font-size: 10px;" ng-repeat="user in users | orderBy : column : reverse | filter : searchText | filter: {status: true} | pagination: (currentPage - 1) * pageSize | limitTo: pageSize ">
                     <td ng-repeat="field in module.fields | filter:{ showInList: true }">
                         {{user[field.name]}}
                     </td>

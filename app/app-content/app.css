@@ -63,6 +63,12 @@ td {
 	min-height: 100vh;
 }
 
+.pagination{
+	display: flex;
+	justify-content: center;
+}
+
+
 #overlay {
     position: fixed; /* Sit on top of the page content */
     display: none;
@@ -96,10 +102,15 @@ td {
   	width: auto;
 }
 
-.dealTable {
+.dealTable, .clientTable td, th {
+	overflow: hidden;
+	white-space: nowrap;
+	-moz-text-overflow: ellipsis;
+	-ms-text-overflow: ellipsis;
+	-o-text-overflow: ellipsis;
+	text-overflow: ellipsis;
 	font-size: 10px;
 }
-
 /*.normal-table th, .normal-table td {
 	text-align: center;
 }*/
@@ -143,6 +154,10 @@ td {
     max-height: calc(100vh - 210px);
     overflow-y: auto;
 }
+
+.backbtn {
+	background-color: #e7e7e7; color: black;
+} 
 
 .avatar-circle {
 	width: 30px;
@@ -348,7 +363,7 @@ select {
 }
 
 .table-responsive {
-	height: 450px;
+	height: 800px;
 	overflow-y: auto;
 	width: 100%;
 }

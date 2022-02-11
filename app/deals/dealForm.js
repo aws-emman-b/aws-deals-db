@@ -4,8 +4,6 @@
     angular
         .module('app')
         .controller('DealFormController', Controller);
-
-
     function Controller($scope, $rootScope, $state, $stateParams, $filter, ModulesService, DealsService, ClientService, ngToast) {
 
         //ng-model for a deal
@@ -143,6 +141,7 @@
                 $scope.devBU = $scope.businessUnits.filter(function(businessUnit) {
                     return businessUnit['Category'] === 'Dev';
                 });
+
             }).catch(function (err) {
 
             });
@@ -623,3 +622,4 @@
         }
     }
 })();
+

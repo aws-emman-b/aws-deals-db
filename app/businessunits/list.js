@@ -30,9 +30,10 @@
 
         getBUFields();
 
+
         function getAllBUs() {
-            ModulesService.getAllModuleDocs('businessunits').then(function(businessUnits) {                
-                $scope.businessUnits = businessUnits;
+            ModulesService.getAllModuleDocs('businessunits').then(function(businessUnits) {              
+                $scope.businessUnits = businessUnits.filter(unit => unit.status === true);
             }).catch(function(err) {
 
             }).finally(function() {

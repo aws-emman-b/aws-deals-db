@@ -1,7 +1,7 @@
 <div class="row">
     <div class="col-md-10 form-inline">
         <label for="pageSize">Page size: </label>
-        <input id="pageSize" type="number" ng-model="pageSize" class="form-control" min="1" max={{businessUnits.length}}>
+        <input id="pageSize" type="number" ng-model="pageSize" class="form-control" min="1" max={{businessUnits.length}} step="1" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
         <input type="text" class="form-control" ng-model="searchText" placeholder="Search">
     </div>
     <div class="col-md-2 pull-right">
@@ -22,7 +22,7 @@
                 <th></th>
             </thead>
             <tbody>
-                <tr ng-repeat="businessUnit in businessUnits | orderBy : column : reverse | filter : searchText | filter: {status: true} | pagination: (currentPage - 1) * pageSize | limitTo: pageSize ">
+                <tr style="font-size: 10px;" ng-repeat="businessUnit in businessUnits | orderBy : column : reverse | filter : searchText | filter: {status: true} | pagination: (currentPage - 1) * pageSize | limitTo: pageSize ">
                     <td ng-repeat="field in module.fields | filter:{ showInList: true }">
                         {{businessUnit[field.name]}}
                     </td>
@@ -32,19 +32,18 @@
                         </a>
                         &nbsp;
                         <a>
-                            <i class="fa fa-trash" aria-hidden="true" ng-click="deleteBU(businessUnit._id)" data-toggle="tooltip" title="Delete"></i>
+                            <i class="fa fa-trash" aria-hidden="true" ng-click="deleteBU(businessUnit._id)" data-toggle="tooltip" title="Deactivate"></i>
                         </a>
                     </td>
                 </tr>
             </tbody>
         </table>
-    </div>
-</div>
-<div class="row">
-    <div class="col-md-4"></div>
-    <div class="col-md-4">
-        <ul class="pagination" uib-pagination total-items="businessUnits.length" ng-model="currentPage" items-per-page="pageSize"
+        <div >
+            <ul class="pagination" uib-pagination total-items="businessUnits.length" ng-model="currentPage" items-per-page="pageSize"
             boundary-links="true" max-size="3" force-ellipses="true" first-text="<<" previous-text="<" next-text=">" last-text=">>"></ul>
+        </div>
     </div>
-    <div class="col-md-4"></div>
+    </div>
 </div>
+
+        
