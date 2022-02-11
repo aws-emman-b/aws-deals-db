@@ -16,7 +16,7 @@
         <div style="text-align:center" class="spinner" ng-show="loading">
             <img src="loader.gif" />
         </div>
-        <table class="table table-hover normal-table">
+        <table class="table table-hover normal-table" style="font-size: 10px;">
             <thead>
                 <th ng-repeat="field in module.fields | filter:{ showInList: true }" ng-click="sortColumn(field.name)" ng-class="sortClass(field.name)">
                     {{field.name}}
