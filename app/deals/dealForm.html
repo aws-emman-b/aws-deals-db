@@ -253,7 +253,8 @@
                                     <div class="form-inline" ng-class="{'has-error': myForm['profile Division'].$invalid}">
                                         <label>Division</label>
                                         <span style="color:red" ng-if="getField('profile', 'Division').required">*</span>
-                                        <select class="form-control input-sm pull-right" ng-model="dealForm.profile['Division']" name="profile Division" ng-required="getField('profile', 'Division').required"
+                                        <select class="form-control input-sm pull-right" ng-model="dealForm.profile['Division']" name="profile Division" 
+                                        ng-required="getField('profile', 'Division').required"
                                         uib-tooltip="{{getTooltipMessage(myForm['profile Division'])}}" tooltip-enable="{{myForm['profile Division'].$invalid}}">
                                             <option value="">- select -</option>
                                             <option ng-repeat="option in getField('profile', 'Division').options" value="{{option}}">
@@ -263,6 +264,22 @@
                                     </div>
                                 </td>
                             </tr>
+                            <tr>
+                                <td>
+                                    <div class="form-inline" ng-class="{'has-error': myForm['businessUnit businessUnits.BU'].$invalid}">
+                                        <label>SD</label>
+                                        <span style="color:red" ng-if="getField('businessUnit', 'businessUnits.BU').required">*</span>
+                                        <select class="form-control input-sm pull-right"  name="businessUnit businessUnits.BU" ng-model="dealForm.businessUnit['businessUnits.BU']" ng-required="getField('businessUnit', 'businessUnits.BU').required"
+                                        uib-tooltip="{{getTooltipMessage(myForm['businessUnit businessUnits.BU'])}}" tooltip-enable="{{myForm['businessUnit businessUnits.BU'].$invalid}}">
+                                            <option value="">- select -</option>
+                                            <option ng-repeat="businessUnit in businessUnits | 
+                                            filter: (dealForm.profile['Division']) | orderBy:'BU'" value="{{businessUnit}" ng-hide="businessUnit.BU === 'ALL'" >{{businessUnit.BU}}</option>
+                                          <!-- <option ng-hide="businessUnit.BU === 'ALL'" ng-repeat="businessUnit in businessUnits | orderBy:'BU'" value="{{businessUnit.BU}}">{{businessUnit.BU}}</option> --> 
+                                        </select>
+                                    </div>
+                                </td>
+                            </tr>     
+                            <tr>
                             <tr>
                                 <td>
                                     <div class="form-inline" ng-class="{'has-error': myForm['profile Client Resp'].$invalid}">
