@@ -262,7 +262,7 @@
                         //format date to MM/DD
                         //console.log(aDeal[category][aField.name]);
                         if (aField.type === 'date' && aDeal[category][aField.name] !== undefined) {
-                            aDeal[category][aField.name] = moment(aDeal[category][aField.name].replace(/\//g, '-')).format('MM/DD');
+                            aDeal[category][aField.name] = moment(aDeal[category][aField.name].replace(/\//g, '-')).format('YYYY/MM/DD');
                         }
 
                     });

@@ -13,7 +13,8 @@
     <div class="row">
     <div class="col-md-10 form-inline">
         <label for="pageSize">Page size: </label>
-        <input id="pageSize" type="number" ng-model="pageSize" class="form-control" min="1" max={{deals.length}}>
+        <input id="pageSize" type="number" ng-model="pageSize" class="form-control" min="1" max={{deals.length}}
+            onkeypress="return event.charCode >= 48 && event.charCode <= 57">
         <label>Options: </label>
         <select class="form-control displayOptionsBox" ng-model="displayOption" ng-change="getDeals()">
             <option>Active</option>
@@ -28,12 +29,24 @@
         <label>Search by Column: </label>
         <select ng-model="searchColumn" class="form-control">
             <option value="all,$"> -- ALL -- </option>
-            <option ng-repeat="essentialField in fields.essential" ng-if="essentialField.showInList" value="{{'essential,' + essentialField.name}}">{{columnNames['essential'][essentialField.name]}}</option>
-            <option ng-repeat="profileField in fields.profile" ng-if="profileField.showInList" value="{{'profile,' + profileField.name}}">{{columnNames['profile'][profileField.name]}}</option>
-            <option ng-repeat="processField in fields.process" ng-if="processField.showInList" value="{{'process,' + processField.name}}">{{columnNames['process'][processField.name]}}</option>
-            <option ng-repeat="distributionField in fields.distribution" ng-if="distributionField.showInList" value="{{'distribution,' + distributionField.name}}">{{columnNames['distribution'][distributionField.name]}}</option>
-            <option ng-repeat="statusField in fields.status" ng-if="statusField.showInList" value="{{'status,' + statusField.name}}">{{columnNames['status'][statusField.name]}}</option>
-            <option ng-repeat="contentField in fields.content" ng-if="contentField.showInList" value="{{'content,' + contentField.name}}">{{columnNames['content'][contentField.name]}}</option>
+            <option ng-repeat="essentialField in fields.essential" ng-if="essentialField.showInList" value="{{'essential,' + essentialField.name}}">
+                {{ columnNames['essential'].includes(essentialField.name) ? columnNames['essential'][essentialField.name] : essentialField.name }}
+            </option>
+            <option ng-repeat="profileField in fields.profile" ng-if="profileField.showInList" value="{{'profile,' + profileField.name}}">
+                {{ columnNames['profile'].includes(profileField.name) ? columnNames['profile'][profileField.name] : profileField.name }}
+            </option>
+            <option ng-repeat="processField in fields.process" ng-if="processField.showInList" value="{{'process,' + processField.name}}">
+                {{ columnNames['process'].includes(processField.name) ? columnNames['process'][processField.name] : processField.name }}
+            </option>
+            <option ng-repeat="distributionField in fields.distribution" ng-if="distributionField.showInList" value="{{'distribution,' + distributionField.name}}">
+                {{ columnNames['distribution'].includes(distributionField.name) ? columnNames['distribution'][distributionField.name] : distributionField.name }}
+            </option>
+            <option ng-repeat="statusField in fields.status" ng-if="statusField.showInList" value="{{'status,' + statusField.name}}">
+                {{ columnNames['status'].includes(statusField.name) ? columnNames['status'][statusField.name] : statusField.name }}
+            </option>
+            <option ng-repeat="contentField in fields.content" ng-if="contentField.showInList" value="{{'content,' + contentField.name}}">
+                {{ columnNames['content'].includes(contentField.name) ? columnNames['content'][contentField.name] : contentField.name }}
+            </option>
         </select>
         <input type="text" class="form-control" ng-model="searchText" ng-change="setSearch()" placeholder="Search">
     </div>
