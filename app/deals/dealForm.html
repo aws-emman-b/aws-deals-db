@@ -34,7 +34,9 @@
                 <select class="form-control input-sm pull-right" name="essential Assignee" ng-model="dealForm.essential['Assignee']" ng-required="getField('essential', 'Assignee').required"
                 uib-tooltip="{{getTooltipMessage(myForm['essential Assignee'])}}" tooltip-enable="{{myForm['essential Assignee'].$invalid}}">
                     <option value="">- select -</option>
-                    <option ng-repeat="user in users" value="{{user.email}}">{{user.firstName + ' ' + user.lastName}}</option>
+                    <option ng-repeat="user in users" value="{{user.email}}">                        
+                        {{(user.firstName !== undefined || user.lastName !== undefined) ? user.firstName + ' ' + user.lastName : user.nickname}}
+                    </option>
                 </select>
             </div>
         </div>
@@ -51,10 +53,11 @@
     <div class="row">
         <div class="col-md-1"></div>
         <div class="col-md-10">
-            <div class="panel-heading profile-heading">
-                <h4 class="profileSection">Profile</h4>
+            <div class="panel-heading">
+                <h4 class="accordion-toggle profileSection" data-toggle="collapse" data-parent="#accordion" data-target="#profileSection">
+                    <span class="glyphicon glyphicon-chevron-down">&nbsp;</span>Profile</h4>
             </div>
-            <div id="profileSection">
+            <div id="profileSection" class="collapse in">
                 <div class="col-md-6">
                     <table class="table table-hover table-condensed">
                         <tbody>
@@ -138,16 +141,22 @@
                                     <span style="color:red" ng-if="getField('profile', 'Resource Size (MM)').required">*</span>
                                     <div class="pull-right">
                                         <div class="form-inline" ng-class="{'has-error': myForm['profile Resource Size (MM)'].$invalid}">
-                                            <input type="number" ng-model="dealForm.profile['Resource Size (MM)']" min="0" max="9999" step="0.01" class="form-control input-sm"
+                                            <input type="text" ng-model="dealForm.profile['Resource Size (MM)']" min="0" max="9999" step="0.01" class="form-control input-sm"
                                                 name="profile Resource Size (MM)" ng-required="getField('profile', 'Resource Size (MM)').required"
-                                                uib-tooltip="{{getTooltipMessage(myForm['profile Resource Size (MM)'])}}" tooltip-enable="{{myForm['profile Resource Size (MM)'].$invalid}}"> (MM)
+                                                uib-tooltip="{{getTooltipMessage(myForm['profile Resource Size (MM)'])}}" tooltip-enable="{{myForm['profile Resource Size (MM)'].$invalid}}"
+                                                number-input
+                                                ng-maxlength="9"
+                                                > (MM)
                                         </div>
                                         /
                                         <br/>
                                         <div class="form-inline" ng-class="{'has-error': myForm['profile Resource Size (FTE)'].$invalid}">
-                                            <input type="number" min="0" step="1" max="9999" class="form-control input-sm" name="profile Resource Size (FTE)" ng-model="dealForm.profile['Resource Size (FTE)']"
+                                            <input type="text" min="0" step="1" max="9999" class="form-control input-sm" name="profile Resource Size (FTE)" ng-model="dealForm.profile['Resource Size (FTE)']"
                                                 ng-required="getField('profile', 'Resource Size (FTE)').required"
-                                                uib-tooltip="{{getTooltipMessage(myForm['profile Resource Size (FTE)'])}}" tooltip-enable="{{myForm['profile Resource Size (FTE)'].$invalid}}"> (FTE)
+                                                uib-tooltip="{{getTooltipMessage(myForm['profile Resource Size (FTE)'])}}" tooltip-enable="{{myForm['profile Resource Size (FTE)'].$invalid}}"
+                                                number-input
+                                                ng-maxlength="9"
+                                                > (FTE)
                                         </div>
                                     </div>
                                 </td>
@@ -181,7 +190,9 @@
                                                 ng-required="getField('profile', 'AWS Resp (Sales) person').required" ng-change="setSalesBU()"
                                                 uib-tooltip="{{getTooltipMessage(myForm['profile AWS Resp (Sales) person'])}}" tooltip-enable="{{myForm['profile AWS Resp (Sales) person'].$invalid}}">
                                                 <option value="">- select -</option>
-                                                <option ng-repeat="user in users" value="{{user.email}}">{{user.firstName + ' ' + user.lastName}}</option>
+                                                <option ng-repeat="user in users" value="{{user.email}}">
+                                                    {{(user.firstName !== undefined || user.lastName !== undefined) ? user.firstName + ' ' + user.lastName : user.nickname}}
+                                                </option>
                                             </select>
                                         </div>
                                         /
@@ -273,7 +284,7 @@
                                         uib-tooltip="{{getTooltipMessage(myForm['businessUnit businessUnits.BU'])}}" tooltip-enable="{{myForm['businessUnit businessUnits.BU'].$invalid}}">
                                             <option value="">- select -</option>
                                             <option ng-repeat="businessUnit in businessUnits | 
-                                            filter: (dealForm.profile['Division']) | orderBy:'BU'" value="{{businessUnit}" ng-hide="businessUnit.BU === 'ALL'" >{{businessUnit.BU}}</option>
+                                            filter: (dealForm.profile['Division']) | orderBy:'BU'" value="{{businessUnit}}" ng-hide="businessUnit.BU === 'ALL'" >{{businessUnit.BU}}</option>
                                           <!-- <option ng-hide="businessUnit.BU === 'ALL'" ng-repeat="businessUnit in businessUnits | orderBy:'BU'" value="{{businessUnit.BU}}">{{businessUnit.BU}}</option> --> 
                                         </select>
                                     </div>
@@ -377,7 +388,9 @@
                                             <select class="form-control input-sm" name="profile AWS Resp (Dev) person" ng-model="dealForm.profile['AWS Resp (Dev) person']" ng-required="getField('profile', 'AWS Resp (Dev) person').required"
                                             uib-tooltip="{{getTooltipMessage(myForm['profile AWS Resp (Dev) person'])}}" tooltip-enable="{{myForm['profile AWS Resp (Dev) person'].$invalid}}" ng-change="setDevBU()" >
                                                 <option value="">- select -</option>
-                                                <option ng-repeat="user in users" value="{{user.email}}">{{user.firstName + ' ' + user.lastName}}</option>
+                                                <option ng-repeat="user in users" value="{{user.email}}">
+                                                    {{(user.firstName !== undefined || user.lastName !== undefined) ? user.firstName + ' ' + user.lastName : user.nickname}}
+                                                </option>
                                             </select>
                                         </div>
                                         <br/> /
@@ -690,14 +703,20 @@
                                 </td>
                                 <td ng-repeat="monthYear in currentMonths.slice(0, 6)">
                                     <div class="form-group" ng-class="{'has-error': myForm['distribution ' + contract + ' res jp ' + monthYear].$invalid}">
-                                        <input type="number" min="0" max="9999" step="1" class="form-control input-sm pull-right" name="{{'distribution ' + contract + ' res jp ' + monthYear}}"
+                                        <input type="text" min="0" max="9999" step="1" class="form-control input-sm pull-right" name="{{'distribution ' + contract + ' res jp ' + monthYear}}"
                                             ng-model="dealForm.distribution[contract].res.jp[monthYear]" 
-                                            uib-tooltip="{{getTooltipMessage(myForm['distribution ' + contract + ' res jp ' + monthYear])}}" tooltip-enable="{{myForm['distribution ' + contract + ' res jp ' + monthYear].$invalid}}"/>
+                                            uib-tooltip="{{getTooltipMessage(myForm['distribution ' + contract + ' res jp ' + monthYear])}}" tooltip-enable="{{myForm['distribution ' + contract + ' res jp ' + monthYear].$invalid}}"
+                                            number-input
+                                            ng-maxlength="9"
+                                            />
                                     </div>
                                     <div class="form-group" ng-class="{'has-error': myForm['distribution ' + contract + ' res gd ' + monthYear].$invalid}">
-                                        <input type="number" min="0" max="9999" step="1" class="form-control input-sm pull-right" name="{{'distribution ' + contract + ' res gd ' + monthYear}}"
+                                        <input type="text" min="0" max="9999" step="1" class="form-control input-sm pull-right" name="{{'distribution ' + contract + ' res gd ' + monthYear}}"
                                             ng-model="dealForm.distribution[contract].res.gd[monthYear]" 
-                                            uib-tooltip="{{getTooltipMessage(myForm['distribution ' + contract + ' res gd ' + monthYear])}}" tooltip-enable="{{myForm['distribution ' + contract + ' res gd ' + monthYear].$invalid}}"/>
+                                            uib-tooltip="{{getTooltipMessage(myForm['distribution ' + contract + ' res gd ' + monthYear])}}" tooltip-enable="{{myForm['distribution ' + contract + ' res gd ' + monthYear].$invalid}}"
+                                            number-input
+                                            ng-maxlength="9"
+                                            />
                                     </div>
                                 </td>
                             </tr>
@@ -713,14 +732,16 @@
                                 </td>
                                 <td ng-repeat="monthYear in currentMonths.slice(0, 6)">
                                     <div class="form-group" ng-class="{'has-error': myForm['distribution ' + contract + ' rev jp ' + monthYear].$invalid}">
-                                        <input type="number" min="0" step="1" class="form-control input-sm pull-right" name="{{'distribution ' + contract + ' rev jp ' + monthYear}}"
+                                        <input type="text" min="0" step="1" class="form-control input-sm pull-right" name="{{'distribution ' + contract + ' rev jp ' + monthYear}}"
                                             ng-model="dealForm.distribution[contract].rev.jp[monthYear]" 
-                                            uib-tooltip="{{getTooltipMessage(myForm['distribution ' + contract + ' rev jp ' + monthYear])}}" tooltip-enable="{{myForm['distribution ' + contract + ' rev jp ' + monthYear].$invalid}}"/>
+                                            uib-tooltip="{{getTooltipMessage(myForm['distribution ' + contract + ' rev jp ' + monthYear])}}" tooltip-enable="{{myForm['distribution ' + contract + ' rev jp ' + monthYear].$invalid}}"
+                                            number-input/>
                                     </div>
                                     <div class="form-group" ng-class="{'has-error': myForm['distribution ' + contract + ' rev gd ' + monthYear].$invalid}">
-                                        <input type="number" min="0" step="1" class="form-control input-sm pull-right" name="{{'distribution ' + contract + ' rev gd ' + monthYear}}"
+                                        <input type="text" min="0" step="1" class="form-control input-sm pull-right" name="{{'distribution ' + contract + ' rev gd ' + monthYear}}"
                                             ng-model="dealForm.distribution[contract].rev.gd[monthYear]" 
-                                            uib-tooltip="{{getTooltipMessage(myForm['distribution ' + contract + ' rev gd ' + monthYear])}}" tooltip-enable="{{myForm['distribution ' + contract + ' rev gd ' + monthYear].$invalid}}"/>
+                                            uib-tooltip="{{getTooltipMessage(myForm['distribution ' + contract + ' rev gd ' + monthYear])}}" tooltip-enable="{{myForm['distribution ' + contract + ' rev gd ' + monthYear].$invalid}}"
+                                            number-input/>
                                     </div>
                                 </td>
                             </tr>
@@ -733,9 +754,10 @@
                                 </td>
                                 <td ng-repeat="monthYear in currentMonths.slice(0, 6)">
                                     <div class="form-group" ng-class="{'has-error': myForm['distribution ' + contract + ' cm ' + monthYear].$invalid}">
-                                        <input type="number" min="0" step="1" class="form-control input-sm pull-right" name="{{'distribution ' + contract + ' cm ' + monthYear}}"
+                                        <input type="text" min="0" step="1" class="form-control input-sm pull-right" name="{{'distribution ' + contract + ' cm ' + monthYear}}"
                                             ng-model="dealForm.distribution[contract].cm[monthYear]" 
-                                            uib-tooltip="{{getTooltipMessage(myForm['distribution ' + contract + ' cm ' + monthYear])}}" tooltip-enable="{{myForm['distribution ' + contract + ' cm ' + monthYear].$invalid}}"/>
+                                            uib-tooltip="{{getTooltipMessage(myForm['distribution ' + contract + ' cm ' + monthYear])}}" tooltip-enable="{{myForm['distribution ' + contract + ' cm ' + monthYear].$invalid}}"
+                                            number-input/>
                                     </div>
                                 </td>
                             </tr>
@@ -763,14 +785,20 @@
                                 </td>
                                 <td ng-repeat="monthYear in currentMonths.slice(6, 12)">
                                     <div class="form-group" ng-class="{'has-error': myForm['distribution ' + contract + ' res jp ' + monthYear].$invalid}">
-                                        <input type="number" min="0" max="9999" step="1" class="form-control input-sm pull-right" name="{{'distribution ' + contract + ' res jp ' + monthYear}}"
+                                        <input type="text" min="0" max="9999" step="1" class="form-control input-sm pull-right" name="{{'distribution ' + contract + ' res jp ' + monthYear}}"
                                             ng-model="dealForm.distribution[contract].res.jp[monthYear]" 
-                                            uib-tooltip="{{getTooltipMessage(myForm['distribution ' + contract + ' res jp ' + monthYear])}}" tooltip-enable="{{myForm['distribution ' + contract + ' res jp ' + monthYear].$invalid}}"/>
+                                            uib-tooltip="{{getTooltipMessage(myForm['distribution ' + contract + ' res jp ' + monthYear])}}" tooltip-enable="{{myForm['distribution ' + contract + ' res jp ' + monthYear].$invalid}}"
+                                            number-input
+                                            ng-maxlength="9"
+                                            />
                                     </div>
                                     <div class="form-group" ng-class="{'has-error': myForm['distribution ' + contract + ' res gd ' + monthYear].$invalid}">
-                                        <input type="number" min="0" max="9999" step="1" class="form-control input-sm pull-right" name="{{'distribution ' + contract + ' res gd ' + monthYear}}"
+                                        <input type="text" min="0" max="9999" step="1" class="form-control input-sm pull-right" name="{{'distribution ' + contract + ' res gd ' + monthYear}}"
                                             ng-model="dealForm.distribution[contract].res.gd[monthYear]" 
-                                            uib-tooltip="{{getTooltipMessage(myForm['distribution ' + contract + ' res gd ' + monthYear])}}" tooltip-enable="{{myForm['distribution ' + contract + ' res gd ' + monthYear].$invalid}}"/>
+                                            uib-tooltip="{{getTooltipMessage(myForm['distribution ' + contract + ' res gd ' + monthYear])}}" tooltip-enable="{{myForm['distribution ' + contract + ' res gd ' + monthYear].$invalid}}"
+                                            number-input
+                                            ng-maxlength="9"
+                                            />
                                     </div>
                                 </td>
                             </tr>
@@ -786,14 +814,16 @@
                                 </td>
                                 <td ng-repeat="monthYear in currentMonths.slice(6, 12)">
                                     <div class="form-group" ng-class="{'has-error': myForm['distribution ' + contract + ' rev jp ' + monthYear].$invalid}">
-                                        <input type="number" min="0" step="1" class="form-control input-sm pull-right" name="{{'distribution ' + contract + ' rev jp ' + monthYear}}"
+                                        <input type="text" min="0" step="1" class="form-control input-sm pull-right" name="{{'distribution ' + contract + ' rev jp ' + monthYear}}"
                                             ng-model="dealForm.distribution[contract].rev.jp[monthYear]" 
-                                            uib-tooltip="{{getTooltipMessage(myForm['distribution ' + contract + ' rev jp ' + monthYear])}}" tooltip-enable="{{myForm['distribution ' + contract + ' rev jp ' + monthYear].$invalid}}"/>
+                                            uib-tooltip="{{getTooltipMessage(myForm['distribution ' + contract + ' rev jp ' + monthYear])}}" tooltip-enable="{{myForm['distribution ' + contract + ' rev jp ' + monthYear].$invalid}}"
+                                            number-input/>
                                     </div>
                                     <div class="form-group" ng-class="{'has-error': myForm['distribution ' + contract + ' rev gd ' + monthYear].$invalid}">
-                                        <input type="number" min="0" step="1" class="form-control input-sm pull-right" name="{{'distribution ' + contract + ' rev gd ' + monthYear}}"
+                                        <input type="text" min="0" step="1" class="form-control input-sm pull-right" name="{{'distribution ' + contract + ' rev gd ' + monthYear}}"
                                             ng-model="dealForm.distribution[contract].rev.gd[monthYear]" 
-                                            uib-tooltip="{{getTooltipMessage(myForm['distribution ' + contract + ' rev gd ' + monthYear])}}" tooltip-enable="{{myForm['distribution ' + contract + ' rev gd ' + monthYear].$invalid}}"/>
+                                            uib-tooltip="{{getTooltipMessage(myForm['distribution ' + contract + ' rev gd ' + monthYear])}}" tooltip-enable="{{myForm['distribution ' + contract + ' rev gd ' + monthYear].$invalid}}"
+                                            number-input/>
                                     </div>
                                 </td>
                             </tr>
@@ -806,9 +836,10 @@
                                 </td>
                                 <td ng-repeat="monthYear in currentMonths.slice(6, 12)">
                                     <div class="form-group" ng-class="{'has-error': myForm['distribution ' + contract + ' cm ' + monthYear].$invalid && myForm['distribution ' + contract + ' cm ' + monthYear].$touched}">
-                                        <input type="number" min="0" step="1" class="form-control input-sm pull-right" name="{{'distribution ' + contract + ' cm ' + monthYear}}"
+                                        <input type="text" min="0" step="1" class="form-control input-sm pull-right" name="{{'distribution ' + contract + ' cm ' + monthYear}}"
                                             ng-model="dealForm.distribution[contract].cm[monthYear]" 
-                                            uib-tooltip="{{getTooltipMessage(myForm['distribution ' + contract + ' cm ' + monthYear])}}" tooltip-enable="{{myForm['distribution ' + contract + ' cm ' + monthYear].$invalid}}"/>
+                                            uib-tooltip="{{getTooltipMessage(myForm['distribution ' + contract + ' cm ' + monthYear])}}" tooltip-enable="{{myForm['distribution ' + contract + ' cm ' + monthYear].$invalid}}"
+                                            number-input/>
                                     </div>
                                 </td>
                             </tr>
