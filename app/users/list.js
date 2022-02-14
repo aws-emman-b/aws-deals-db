@@ -3,21 +3,7 @@
 
     angular
         .module('app')
-        .controller('UserListController', Controller)
-
-        .filter('titleCase', [function () {
-            return function (input) {
-          
-              if (typeof input !== "string") {
-                return input;
-              }
-          
-              return input
-                .replace(/([A-Z])/g, (match) => ` ${match}`)
-                .replace(/^./, (match) => match.toUpperCase());
-          
-            };
-        }]);
+        .controller('UserListController', Controller);
     
     function Controller($scope, ModulesService, TableService, ngToast, $state) {
 
@@ -28,7 +14,7 @@
 
         $scope.module = [];
         $scope.currentPage = 1;
-        $scope.pageSize = 15;
+        $scope.pageSize = 10;
 
         $scope.reverse = false;
 
@@ -36,7 +22,7 @@
 
         function getUserFields() {
             ModulesService.getModuleByName('users').then(function(aModule) {
-                // console.log(aModule);
+                //console.log(aModule);
                 $scope.module = aModule;
             }).catch(function(err) {
                 console.log(err);
@@ -48,7 +34,7 @@
 
         function getAllUsers() {
             ModulesService.getAllModuleDocs('users').then(function(users) {                
-                $scope.users = users.filter(unit => unit.status === true);
+                $scope.users = users;
             }).catch(function(err) {
 
             }).finally(function() {

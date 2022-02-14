@@ -2,7 +2,7 @@
     <div class="col-md-6">
         <form ng-submit="submit()">
             <div ng-repeat="field in module.fields" ng-if="field.name !== 'status'">
-                <label>{{field.name | titleCase}}</label>
+                <label>{{field.name}}</label>
                 <span style="color:red" ng-if="field.required">*</span>
 
                 <input type="{{field.type}}" class="form-control" ng-if="field.type !== 'dropdown' && field.type !== 'textarea'" ng-model="userForm[field.name]"

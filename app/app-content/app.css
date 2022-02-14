@@ -96,6 +96,10 @@ td {
   	width: auto;
 }
 
+.dealTable {
+	font-size: 10px;
+}
+
 /*.normal-table th, .normal-table td {
 	text-align: center;
 }*/
@@ -344,54 +348,7 @@ select {
 }
 
 .table-responsive {
-	height: 600px;
+	height: 450px;
 	overflow-y: auto;
 	width: 100%;
-}
-
-.dealTable, .clientTable, .buTable, .userTable {
-	font-size: 10px;
-}
-
-table{
-	table-layout: fixed;
-	width: 100%;
-}
-
-th{
-	resize: horizontal;
-}
-
-.dealNo{
-	width: 60px;
-}
-
-.dealName{
-	width: 200px;
-}
-
-.client{
-	width: 100px;
-}
-
-td, th {
-	  overflow: hidden;
-	  white-space: nowrap;
-	  -moz-text-overflow: ellipsis;
-	  -ms-text-overflow: ellipsis;
-	  -o-text-overflow: ellipsis;
-	  text-overflow: ellipsis;
-}
-
-.pagination{
-	display: flex;
-	justify-content: center;
-}
-
-.tools{
-	width: 50px;
-}
-
-.inline{
-	display: flex;
 }
