@@ -3,7 +3,22 @@
 
     angular
         .module('app')
-        .controller('UserFormController', Controller);
+        .controller('UserFormController', Controller)
+
+        .filter('titleCase', [function () {
+            return function (input) {
+          
+              if (typeof input !== "string") {
+                return input;
+              }
+          
+              return input
+                .replace(/([A-Z])/g, (match) => ` ${match}`)
+                .replace(/^./, (match) => match.toUpperCase());
+          
+            };
+        }]);
+
     
     function Controller($scope, $rootScope, $location, $state, ModulesService, UserService, ngToast, $stateParams) {
         $scope.userForm = {};
@@ -40,6 +55,7 @@
             });
         }
 
+ 
         $scope.submit = function () {
             var toSave = {
                 moduleName: $scope.module.name,
@@ -54,30 +70,30 @@
                 //set status default active user to true
                 $scope.userForm.status = true;
 
-                UserService.Insert($scope.userForm)
-                    .then(function () {
+
+                UserService.Insert($scope.userForm).then(function () {
                     ngToast.success('User added');
                     $state.transitionTo('UserList');
 
-                }).catch(function (error) {
-                    //console.log(error);
-                    if(error.exists){
+                }).catch(function(err){
+                    // ngToast.danger('The user already exist');
+                    if(err.exists){
                         ngToast.danger('Email is already taken');
                     }
-                    else if(error.invalid){
+                    else if(err.invalid){
                         ngToast.danger('Email is invalid');
                     }
                     else{
-                        ngToast.danger(error);
+                        ngToast.danger('Cannot Add User');
                     }
-                }); 
+                });
+
             } else {
-                UserService.Update($scope.userForm)
-                    .then(function () {
+                UserService.Update($scope.userForm).then(function() {
                     ngToast.success('User updated');
                     $state.transitionTo('UserList');   
-                }).catch(function (error) {
-                    ngToast.danger(error);
+                }).catch(function (err) {
+                    ngToast.danger(err);
                 });
             }
         }

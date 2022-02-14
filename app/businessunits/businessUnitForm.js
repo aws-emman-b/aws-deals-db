@@ -75,6 +75,33 @@
                 });
             }
         }
+
+        $scope.submit = function () {
+            var toSave = {
+                moduleName: $scope.module.name,
+                moduleDoc: $scope.businessUnitForm
+            };
+
+            if($scope.businessUnitForm._id === undefined) {
+                //add status with default true
+                toSave.moduleDoc.status = true;
+                
+                ModulesService.addModuleDoc(toSave).then(function() {
+                    ngToast.success('Business Unit added');
+                    $state.transitionTo('BUList');
+                }).catch(function(err){
+                    ngToast.danger('The Business Unit already exist');
+                });
+            } else {
+                ModulesService.updateModuleDoc(toSave).then(function() {
+                    ngToast.success('Business Unit updated');
+                    $state.transitionTo('BUList');
+                }).catch(function(err){
+                    ngToast.danger(err);
+                });
+            }
+        
+    }
     }
 
 })();
