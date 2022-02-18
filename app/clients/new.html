@@ -18,13 +18,22 @@
                 <span style="color:red" ng-if="field.required">*</span>
 
                 <input type="{{field.type}}" class="form-control" ng-if="field.type !== 'dropdown' && field.type !== 'textarea'" ng-model="clientForm[field.name]"
-                    ng-required="field.required" />
+                    ng-required="field.required"/>
 
                 <textarea class="form-control" ng-model="clientForm[field.name]" ng-if="field.type === 'textarea'" ng-required="field.required">
                         </textarea>
             </div>
             <br/>
-            <button type="submit" class="btn btn-primary">Submit</button>
+            <!--*
+            * START Dullao, Joshua 02/16/2022
+            *
+            * Added a cancel button and fixed the button positions
+            *-->
+            <div class="text-right">
+                <button onclick="history.back()" class="btn btn-default">Cancel</button>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+            <!--/END 02/16/2022/-->
         </form>
     </div>
     <div class="col-md-6"></div>
