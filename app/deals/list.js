@@ -261,10 +261,16 @@
 
                         //format date to MM/DD
                         //console.log(aDeal[category][aField.name]);
+                        /*
+                        * START Francis Nash Jasmin 2022/02/10
+                        * 
+                        * Included display of year for dates in deals table.
+                        * 
+                        */
                         if (aField.type === 'date' && aDeal[category][aField.name] !== undefined) {
                             aDeal[category][aField.name] = moment(aDeal[category][aField.name].replace(/\//g, '-')).format('YYYY/MM/DD');
                         }
-
+                        /*  END Francis Nash Jasmin 2022/02/11 */ 
                     });
                 }
             });
