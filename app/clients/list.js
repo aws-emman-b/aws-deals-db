@@ -26,6 +26,12 @@
           };
         })
 
+        /*
+        * START Dullao, Joshua 02/11/2022
+        * 
+        * Filter to convert the camel case to title case
+        * 
+        */
         .filter('titleCase', [function () {
             return function (input) {
           
@@ -39,6 +45,7 @@
           
             };
         }])
+        /* END Dullao, Joshua 02/11/2022 */
       
 
         /*
@@ -100,9 +107,16 @@
             }).finally(function() {
                 $scope.loading = false;
             });*/
-            ModulesService.getAllModuleDocs('clients').then(function(clients) {                
+            ModulesService.getAllModuleDocs('clients').then(function(clients) {  
+                /*
+                * START Dullao, Joshua 02/11/2022
+                * 
+                * filtered the clients so only those with a status of true 
+                * will be passed
+                */              
                 $scope.clients = clients.filter(unit => unit.status === true);
-                // console.log(clients.length)
+                /*END Dullao, Joshua 02/11/2022*/
+               
             }).catch(function(err) {
                 console.log(err);
             }).finally(function() {
