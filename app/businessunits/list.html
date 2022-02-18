@@ -14,6 +14,9 @@
         <div style="text-align:center" class="spinner" ng-show="loading">
             <img src="loader.gif" />
         </div>
+
+    <!--Reynaldo Pena Jr. START February 18, 2022 
+    Added CSS selectors    -->
         <table class="table table-hover buTable normal-table">
             <thead>
                 <th class="tHeaders" ng-repeat="field in module.fields | filter:{showInList: true }" >
@@ -45,6 +48,8 @@
         </table>
     </div>
 </div>
+
+<!--Reynaldo Pena Jr. END February 18, 2022-->
 <div>
     <ul class="pagination" uib-pagination total-items="businessUnits.length" ng-model="currentPage" items-per-page="pageSize"
         boundary-links="true" max-size="3" force-ellipses="true" first-text="<<" previous-text="<" next-text=">" last-text=">>"></ul>
