@@ -34,9 +34,16 @@
                 <select class="form-control input-sm pull-right" name="essential Assignee" ng-model="dealForm.essential['Assignee']" ng-required="getField('essential', 'Assignee').required"
                 uib-tooltip="{{getTooltipMessage(myForm['essential Assignee'])}}" tooltip-enable="{{myForm['essential Assignee'].$invalid}}">
                     <option value="">- select -</option>
+                    <!-- /*
+                    * START Francis Nash Jasmin 2022/02/10
+                    * 
+                    * Fixed bug where user appears as blank when no first name or last name is given.
+                    * 
+                    */ -->
                     <option ng-repeat="user in users" value="{{user.email}}">                        
                         {{(user.firstName !== undefined || user.lastName !== undefined) ? user.firstName + ' ' + user.lastName : user.nickname}}
                     </option>
+                    <!-- /*  END Francis Nash Jasmin 2022/02/11 */ -->
                 </select>
             </div>
         </div>
@@ -137,6 +144,12 @@
                             </tr>
                             <tr>
                                 <td>
+                                    <!-- /*
+                                    * START Francis Nash Jasmin 2022/02/04
+                                    * 
+                                    * Displays numeric input as comma-separated in the deals form.
+                                    * 
+                                    */ -->
                                     <label>Resource</label>
                                     <span style="color:red" ng-if="getField('profile', 'Resource Size (MM)').required">*</span>
                                     <div class="pull-right">
@@ -159,6 +172,7 @@
                                                 > (FTE)
                                         </div>
                                     </div>
+                                    <!-- /*  END Francis Nash Jasmin 2022/02/08 */  -->
                                 </td>
                             </tr>
                             <tr>
@@ -190,9 +204,16 @@
                                                 ng-required="getField('profile', 'AWS Resp (Sales) person').required" ng-change="setSalesBU()"
                                                 uib-tooltip="{{getTooltipMessage(myForm['profile AWS Resp (Sales) person'])}}" tooltip-enable="{{myForm['profile AWS Resp (Sales) person'].$invalid}}">
                                                 <option value="">- select -</option>
+                                                <!-- /*
+                                                * START Francis Nash Jasmin 2022/02/10
+                                                * 
+                                                * Fixed bug where user appears as blank when no first name or last name is given.
+                                                * 
+                                                */ -->
                                                 <option ng-repeat="user in users" value="{{user.email}}">
                                                     {{(user.firstName !== undefined || user.lastName !== undefined) ? user.firstName + ' ' + user.lastName : user.nickname}}
                                                 </option>
+                                                <!-- /*  END Francis Nash Jasmin 2022/02/11 */ -->
                                             </select>
                                         </div>
                                         /
@@ -212,8 +233,15 @@
                                     <div class="form-inline" ng-class="{'has-error': myForm['profile Key Assignment'].$invalid}">
                                         <label>Key Assignment</label>
                                         <span style="color:red" ng-if="getField('profile', 'Key Assignment').required">*</span>
+                                        <!-- /*
+                                        * START Francis Nash Jasmin 2022/02/17
+                                        * 
+                                        * Added character limit of 50 in input text field.
+                                        * 
+                                        */ -->
                                         <textarea class="form-control input-sm pull-right" name="profile Key Assignment" ng-model="dealForm.profile['Key Assignment']" ng-required="getField('profile', 'Key Assignment').required"
-                                        uib-tooltip="{{getTooltipMessage(myForm['profile Key Assignment'])}}" tooltip-enable="{{myForm['profile Key Assignment'].$invalid}}"></textarea>
+                                        uib-tooltip="{{getTooltipMessage(myForm['profile Key Assignment'])}}" tooltip-enable="{{myForm['profile Key Assignment'].$invalid}}" maxlength="50"></textarea>
+                                        <!-- /*  END Francis Nash Jasmin 2022/02/17 */ -->
                                     </div>
                                 </td>
                             </tr>
@@ -279,13 +307,13 @@
                                 <td>
                                     <div class="form-inline" ng-class="{'has-error': myForm['businessUnit businessUnits.BU'].$invalid}">
                                         <label>SD</label>
-                                        <span style="color:red" ng-if="getField('businessUnit', 'businessUnits.BU').required">*</span>
-                                        <select class="form-control input-sm pull-right"  name="businessUnit businessUnits.BU" ng-model="dealForm.businessUnit['businessUnits.BU']" ng-required="getField('businessUnit', 'businessUnits.BU').required"
+                                        <span style="color:red" ng-if="getField('profile', 'businessUnit').required">*</span>
+                                        <select class="form-control input-sm pull-right"  name="businessUnit businessUnits.BU" ng-model="dealForm.profile['SD']" ng-required="getField('profile', 'businessUnit').required"
                                         uib-tooltip="{{getTooltipMessage(myForm['businessUnit businessUnits.BU'])}}" tooltip-enable="{{myForm['businessUnit businessUnits.BU'].$invalid}}">
                                             <option value="">- select -</option>
-                                            <option ng-repeat="businessUnit in businessUnits | 
-                                            filter: (dealForm.profile['Division']) | orderBy:'BU'" value="{{businessUnit}}" ng-hide="businessUnit.BU === 'ALL'" >{{businessUnit.BU}}</option>
-                                          <!-- <option ng-hide="businessUnit.BU === 'ALL'" ng-repeat="businessUnit in businessUnits | orderBy:'BU'" value="{{businessUnit.BU}}">{{businessUnit.BU}}</option> --> 
+                                            <!-- <option ng-repeat="businessUnit in businessUnits | 
+                                            filter: (dealForm.profile['Division']) | orderBy:'BU'" value="{{businessUnit}}" ng-hide="businessUnit.BU === 'ALL'" >{{businessUnit.BU}}</option> -->
+                                          <option ng-hide="businessUnit.BU === 'ALL'" ng-repeat="businessUnit in businessUnits | orderBy:'BU'" value="{{businessUnit.BU}}">{{businessUnit.BU}}</option> 
                                         </select>
                                     </div>
                                 </td>
@@ -296,9 +324,17 @@
                                     <div class="form-inline" ng-class="{'has-error': myForm['profile Client Resp'].$invalid}">
                                         <label>Client Resp</label>
                                         <span style="color:red" ng-if="getField('profile', 'Client Resp').required">*</span>
+                                        <!-- /*
+                                        * START Francis Nash Jasmin 2022/02/17
+                                        * 
+                                        * Added character limit of 50 in input text field.
+                                        * 
+                                        */ -->
                                         <input type="text" class="form-control input-sm pull-right" name="profile Client Resp" ng-model="dealForm.profile['Client Resp']"
                                             ng-required="getField('profile', 'Client Resp').required"
-                                            uib-tooltip="{{getTooltipMessage(myForm['profile Client Resp'])}}" tooltip-enable="{{myForm['profile Client Resp'].$invalid}}">
+                                            uib-tooltip="{{getTooltipMessage(myForm['profile Client Resp'])}}" tooltip-enable="{{myForm['profile Client Resp'].$invalid}}"
+                                            maxlength="50">
+                                        <!-- /*  END Francis Nash Jasmin 2022/02/17 */ -->
                                     </div>
                                 </td>
                             </tr>
@@ -388,9 +424,16 @@
                                             <select class="form-control input-sm" name="profile AWS Resp (Dev) person" ng-model="dealForm.profile['AWS Resp (Dev) person']" ng-required="getField('profile', 'AWS Resp (Dev) person').required"
                                             uib-tooltip="{{getTooltipMessage(myForm['profile AWS Resp (Dev) person'])}}" tooltip-enable="{{myForm['profile AWS Resp (Dev) person'].$invalid}}" ng-change="setDevBU()" >
                                                 <option value="">- select -</option>
+                                                <!-- /*
+                                                * START Francis Nash Jasmin 2022/02/10
+                                                * 
+                                                * Fixed bug where user appears as blank when no first name or last name is given.
+                                                * 
+                                                */ -->
                                                 <option ng-repeat="user in users" value="{{user.email}}">
                                                     {{(user.firstName !== undefined || user.lastName !== undefined) ? user.firstName + ' ' + user.lastName : user.nickname}}
                                                 </option>
+                                                <!-- /*  END Francis Nash Jasmin 2022/02/11 */ -->
                                             </select>
                                         </div>
                                         <br/> /
@@ -410,8 +453,16 @@
                                     <label>Remark</label>
                                     <span style="color:red" ng-if="getField('profile', 'Remark').required">*</span>
                                     <div class="form-group pull-right" ng-class="{'has-error': myForm['profile Remark'].$invalid}">
+                                        <!-- /*
+                                        * START Francis Nash Jasmin 2022/02/17
+                                        * 
+                                        * Added character limit of 50 in input text field.
+                                        * 
+                                        */ -->
                                         <input type="text" class="form-control input-sm" name="profile Remark" ng-model="dealForm.profile['Remark']" ng-required="getField('profile', 'Remark').required"
-                                        uib-tooltip="{{getTooltipMessage(myForm['profile Remark'])}}" tooltip-enable="{{myForm['profile Remark'].$invalid}}">
+                                        uib-tooltip="{{getTooltipMessage(myForm['profile Remark'])}}" tooltip-enable="{{myForm['profile Remark'].$invalid}}"
+                                        maxlength="50">
+                                        <!-- /*  END Francis Nash Jasmin 2022/02/17 */ -->
                                     </div>
                                 </td>
                             </tr>
@@ -481,8 +532,16 @@
                                     <label>SRB No.</label>
                                     <span style="color:red" ng-if="getField('process', 'SRB No').required">*</span>
                                     <div class="form-group pull-right" ng-class="{'has-error': myForm['process SRB No'].$invalid}">
+                                        <!-- /*
+                                        * START Francis Nash Jasmin 2022/02/17
+                                        * 
+                                        * Added character limit of 50 in input text field.
+                                        * 
+                                        */ -->
                                         <input type="text" class="form-control input-sm" name="process SRB No" ng-model="dealForm.process['SRB No']" ng-required="getField('process', 'SRB No').required"
-                                            placeholder="(e.g. PS-0095)" uib-tooltip="{{getTooltipMessage(myForm['process SRB No'])}}" tooltip-enable="{{myForm['process SRB No'].$invalid}}">
+                                            placeholder="(e.g. PS-0095)" uib-tooltip="{{getTooltipMessage(myForm['process SRB No'])}}" tooltip-enable="{{myForm['process SRB No'].$invalid}}"
+                                            maxlength="50">
+                                        <!-- /*  END Francis Nash Jasmin 2022/02/17 */ -->
                                     </div>
                                 </td>
                             </tr>
@@ -580,8 +639,16 @@
                                     <label>SOW No.</label>
                                     <span style="color:red" ng-if="getField('process', 'SOW No').required">*</span>
                                     <div class="form-group pull-right" ng-class="{'has-error': myForm['process SOW No'].$invalid}">
+                                        <!-- /*
+                                        * START Francis Nash Jasmin 2022/02/17
+                                        * 
+                                        * Added character limit of 50 in input text field.
+                                        * 
+                                        */ -->
                                         <input type="text" class="form-control input-sm" name="process SOW No" ng-model="dealForm.process['SOW No']" ng-required="getField('process', 'SOW No').required"
-                                            placeholder="(e.g. AWS-2013-2575)" uib-tooltip="{{getTooltipMessage(myForm['process SOW No'])}}" tooltip-enable="{{myForm['process SOW No'].$invalid}}">
+                                            placeholder="(e.g. AWS-2013-2575)" uib-tooltip="{{getTooltipMessage(myForm['process SOW No'])}}" tooltip-enable="{{myForm['process SOW No'].$invalid}}"
+                                            maxlength="50">
+                                        <!-- /*  END Francis Nash Jasmin 2022/02/17 */ -->
                                     </div>
                                 </td>
                             </tr>
@@ -691,6 +758,12 @@
                             </th>
                         </thead>
                         <tbody>
+                            <!-- /*
+                            * START Francis Nash Jasmin 2022/02/04
+                            * 
+                            * Displays numeric input as comma-separated in the deals form.
+                            * 
+                            */ -->
                             <tr>
                                 <td>
                                     <b>Resource (MM):</b>
@@ -761,6 +834,7 @@
                                     </div>
                                 </td>
                             </tr>
+                            <!-- /*  END Francis Nash Jasmin 2022/02/11 */ -->
                         </tbody>
                     </table>
                     <table class="table table-condensed">
@@ -773,6 +847,12 @@
                             </th>
                         </thead>
                         <tbody>
+                            <!-- /*
+                            * START Francis Nash Jasmin 2022/02/04
+                            * 
+                            * Displays numeric input as comma-separated in the deals form.
+                            * 
+                            */ -->
                             <tr>
                                 <td>
                                     <b>Resource (MM):</b>
@@ -843,6 +923,7 @@
                                     </div>
                                 </td>
                             </tr>
+                            <!-- /*  END Francis Nash Jasmin 2022/02/11 */ -->
                         </tbody>
                     </table>
                     <div class="row">
@@ -980,9 +1061,17 @@
                                     <label>Dependency</label>
                                     <span style="color:red" ng-if="getField('status', 'Dependency').required">*</span>
                                     <div class="form-group pull-right" ng-class="{'has-error': myForm['status Dependency'].$invalid}">
+                                        <!-- /*
+                                        * START Francis Nash Jasmin 2022/02/17
+                                        * 
+                                        * Added character limit of 50 in input text field.
+                                        * 
+                                        */ -->
                                         <textarea class="form-control input-sm" rows="3" name="status Dependency" ng-model="dealForm.status['Dependency']" ng-required="getField('status', 'Dependency').required"
-                                        uib-tooltip="{{getTooltipMessage(myForm['status Dependency'])}}" tooltip-enable="{{myForm['status Dependency'].$invalid}}">
+                                        uib-tooltip="{{getTooltipMessage(myForm['status Dependency'])}}" tooltip-enable="{{myForm['status Dependency'].$invalid}}"
+                                        maxlength="50">
                                         </textarea>
+                                        <!-- /* END Francis Nash Jasmin 2022/02/17 */ -->
                                     </div>
                                 </td>
                             </tr>
@@ -991,9 +1080,17 @@
                                     <label>Action</label>
                                     <span style="color:red" ng-if="getField('status', 'Action').required">*</span>
                                     <div class="form-group pull-right" ng-class="{'has-error': myForm['status Action'].$invalid}">
+                                        <!-- /*
+                                        * START Francis Nash Jasmin 2022/02/17
+                                        * 
+                                        * Added character limit of 50 in input text field.
+                                        * 
+                                        */ -->
                                         <textarea class="form-control input-sm" rows="3" name="status Action" ng-model="dealForm.status['Action']" ng-required="getField('status', 'Action').required"
-                                        uib-tooltip="{{getTooltipMessage(myForm['status Action'])}}" tooltip-enable="{{myForm['status Action'].$invalid}}">
+                                        uib-tooltip="{{getTooltipMessage(myForm['status Action'])}}" tooltip-enable="{{myForm['status Action'].$invalid}}"
+                                        maxlength="50">
                                         </textarea>
+                                        <!-- /* END Francis Nash Jasmin 2022/02/17 */ -->
                                     </div>
                                 </td>
                             </tr>
@@ -1045,9 +1142,17 @@
                                     <label>Status</label>
                                     <span style="color:red" ng-if="getField('status', 'Status').required">*</span>
                                     <div class="form-group pull-right" ng-class="{'has-error': myForm['status Status'].$invalid}">
+                                        <!-- /*
+                                        * START Francis Nash Jasmin 2022/02/17
+                                        * 
+                                        * Added character limit of 50 in input text field.
+                                        * 
+                                        */ -->
                                         <textarea class="form-control input-sm" rows="3" name="status Status" ng-model="dealForm.status['Status']" ng-required="getField('status', 'Status').required"
-                                        uib-tooltip="{{getTooltipMessage(myForm['status Status'])}}" tooltip-enable="{{myForm['status Status'].$invalid}}">
+                                        uib-tooltip="{{getTooltipMessage(myForm['status Status'])}}" tooltip-enable="{{myForm['status Status'].$invalid}}"
+                                        maxlength="50">
                                         </textarea>
+                                        <!-- /* END Francis Nash Jasmin 2022/02/17 */ -->
                                     </div>
                                 </td>
                             </tr>
@@ -1056,9 +1161,17 @@
                                     <label>Step to Close</label>
                                     <span style="color:red" ng-if="getField('status', 'Step to Close').required">*</span>
                                     <div class="form-group pull-right" ng-class="{'has-error': myForm['status Step to Close'].$invalid}">
+                                        <!-- /*
+                                        * START Francis Nash Jasmin 2022/02/17
+                                        * 
+                                        * Added character limit of 50 in input text field.
+                                        * 
+                                        */ -->
                                         <textarea class="form-control input-sm" rows="3" ng-model="dealForm.status['Step to Close']" name="status Step to Close" ng-required="getField('status', 'Step to Close').required"
-                                        uib-tooltip="{{getTooltipMessage(myForm['status Step to Close'])}}" tooltip-enable="{{myForm['status Step to Close'].$invalid}}">
-                                                </textarea>
+                                        uib-tooltip="{{getTooltipMessage(myForm['status Step to Close'])}}" tooltip-enable="{{myForm['status Step to Close'].$invalid}}"
+                                        maxlength="50">
+                                        </textarea>
+                                        <!-- /* END Francis Nash Jasmin 2022/02/17 */ -->
                                     </div>
                                 </td>
                             </tr>
