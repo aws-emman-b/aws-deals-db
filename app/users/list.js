@@ -5,6 +5,12 @@
         .module('app')
         .controller('UserListController', Controller)
 
+         /*
+        * START Dullao, Joshua 02/11/2022
+        * 
+        * Filter to convert the camel case to title case
+        * 
+        */
         .filter('titleCase', [function () {
             return function (input) {
           
@@ -18,6 +24,8 @@
           
             };
         }]);
+        /* END Dullao, Joshua 02/11/2022 */
+
     
     function Controller($scope, ModulesService, TableService, ngToast, $state) {
 
