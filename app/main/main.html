@@ -6,29 +6,36 @@
                 <img class="logo" src="logo.png"/>
             </svg>
             <br><br><br>
+            <!--/*
+            /*START Dullao, Joshua 2/18/2022
+            *
+            * Added active selector to highligh the active tab in side nav
+            *
+            */-->
             <div>
-                <a class="nav_home" ui-sref="home"><b>Home</b></a>
+                <a class="nav_home" ui-sref="home" ui-sref-active="active"><b>Home</b></a>
             </div>
             <hr>
             <label class='navCategory'>Main</label>
             <div>
-                <a class="nav_deals" ui-sref="dealList">Deals</a>
-                <a class="nav_clients" ui-sref="clientList">Clients</a>
+                <a class="nav_deals" ui-sref="dealList" ui-sref-active="active">Deals</a>
+                <a class="nav_clients" ui-sref="clientList" ui-sref-active="active">Clients</a>
             </div>
             <hr>
             <div ng-if="user.role === 'Admin'">
                 <label class='navCategory'>Admin</label>
-                <a ui-sref="fields">Fields</a>
-                <a ui-sref="BUList">Business Units</a>
-                <a ui-sref="UserList">Manage Users</a>
+                <a ui-sref="fields" ui-sref-active="active">Fields</a>
+                <a ui-sref="BUList" ui-sref-active="active">Business Units</a>
+                <a ui-sref="UserList" ui-sref-active="active">Manage Users</a>
                 <hr>
             </div>
             
             <label class='navCategory'>Settings</label>
             <div>
-                <a ui-sref="changePassword">Change Password</a>
-                <a href="#" ng-click="logout()">Logout</a>
+                <a ui-sref-active="active" ui-sref="changePassword">Change Password</a>
+                <a ui-sref-active="active" href="#" ng-click="logout()">Logout</a>
             </div>
+            <!--/END 02/18/2022-->
         </div>
         <div class="main">
             <div ui-view class="main-page"></div>
