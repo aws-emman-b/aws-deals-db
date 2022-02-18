@@ -20,6 +20,14 @@
             <div>
                 <a class="nav_deals" ui-sref="dealList" ui-sref-active="active">Deals</a>
                 <a class="nav_clients" ui-sref="clientList" ui-sref-active="active">Clients</a>
+                <!-- /*
+                * START Francis Nash Jasmin 2022/01/31
+                * 
+                * Added export directory to the deals app.
+                * 
+                */ -->
+                <a class="nav_exports" ui-sref="export" ui-sref-active="active">Export</a>
+                <!-- /*  END Francis Nash Jasmin 2022/01/31 */  -->
             </div>
             <hr>
             <div ng-if="user.role === 'Admin'">
@@ -27,6 +35,14 @@
                 <a ui-sref="fields" ui-sref-active="active">Fields</a>
                 <a ui-sref="BUList" ui-sref-active="active">Business Units</a>
                 <a ui-sref="UserList" ui-sref-active="active">Manage Users</a>
+                <!-- /*
+                * START Francis Nash Jasmin 2022/01/31
+                * 
+                * Added import directory to the deals app.
+                * 
+                */ -->
+                <a ui-sref="import" ui-sref-active="active">Import Deals</a>
+                <!-- /*  END Francis Nash Jasmin 2022/01/31 */  -->
                 <hr>
             </div>
             

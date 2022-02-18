@@ -13,8 +13,15 @@
 <div class="row">
     <div class="col-md-10 form-inline">
         <label for="pageSize">Page size: </label>
+        <!-- /*
+        * START Francis Nash Jasmin 2022/02/10
+        * 
+        * Restricted input of decimal point in input page size.
+        * 
+        */ -->
         <input id="pageSize" type="number" ng-model="pageSize" class="form-control" min="1" max={{deals.length}}
             onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+        <!-- /*  END Francis Nash Jasmin 2022/02/11 */ -->
         <label>Options: </label>
         <select class="form-control displayOptionsBox" ng-model="displayOption" ng-change="getDeals()">
             <option>Active</option>
@@ -26,6 +33,12 @@
             <option>ALL</option>
         </select>
         &nbsp;&nbsp;
+        <!-- /*
+        * START Francis Nash Jasmin 2022/02/10
+        * 
+        * Fixed bug where some fields display as blank under the dropdown component.
+        * 
+        */ -->
         <label>Search by Column: </label>
         <select ng-model="searchColumn" class="form-control">
             <option value="all,$"> -- ALL -- </option>
@@ -48,6 +61,7 @@
                 {{ columnNames['content'].includes(contentField.name) ? columnNames['content'][contentField.name] : contentField.name }}
             </option>
         </select>
+        <!-- /*  END Francis Nash Jasmin 2022/02/11 */ -->
         <input type="text" class="form-control" ng-model="searchText" ng-change="setSearch()" placeholder="Search">
     </div>
     <div class="col-md-2 pull-right">

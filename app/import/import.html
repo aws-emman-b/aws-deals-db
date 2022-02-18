@@ -1,0 +1,147 @@
+<!-- /*
+* START Francis Nash Jasmin 2022/02/02
+* 
+* Added an import feature for admin where an excel file is used to add deals to the database.
+* 
+*/ -->
+<form name="uploadForm">
+    <div class="col-md-4">
+        <div class="input-group">
+            <label>Upload File to Add Deals</label>
+            <input 
+                type="file" 
+                class="form-control input-sm" 
+                id="file" 
+                accept="application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, .xl*"
+                name="file"
+                ng-model="file"
+                required
+                file-upload
+            />
+            <br />
+            <br />
+            <button 
+                type="submit" 
+                class="btn btn-success pull-right"  
+                ng-click="importExcel()"
+                ng-disabled="uploadForm.$invalid"
+            >
+                Upload
+            </button>
+        </div>
+    </div>
+</form>
+<div class="row" ng-show="showTable || importedDeals.length !== 0">
+    <div class="col-md-12 table-responsive">
+        <table class="table table-hover compact dealTable normal-table">
+            <thead>
+                <tr>
+                    <th class="tContents">
+                        <div class="tHeaders inline">
+                            <p>DocNumber</p>
+                        </div>
+                    </th>
+                    <th class="tContents">
+                        <div class="tHeaders inline">
+                            <p>Customer</p>
+                        </div>
+                    </th>
+                    <th class="tContents">
+                        <div class="tHeaders inline">
+                            <p>Subject</p>
+                        </div>
+                    </th>
+                    <th class="tContents">
+                        <div class="tHeaders inline">
+                            <p>Level</p>
+                        </div>
+                    </th>
+                    <th class="tContents">
+                        <div class="tHeaders inline">
+                            <p>Step</p>
+                        </div>
+                    </th>
+                    <th class="tContents">
+                        <div class="tHeaders inline">
+                            <p>ServiceType</p>
+                        </div>
+                    </th>
+                    <th class="tContents">
+                        <div class="tHeaders inline">
+                            <p>RespSales</p>
+                        </div>
+                    </th>
+                    <th class="tContents">
+                        <div class="tHeaders inline">
+                            <p>RespDev</p>
+                        </div>
+                    </th>
+                    <th class="tContents">
+                        <div class="tHeaders inline">
+                            <p>StartDate</p>
+                        </div>
+                    </th>
+                    <th class="tContents">
+                        <div class="tHeaders inline">
+                            <p>EndDate</p>
+                        </div>
+                    </th>
+                    <th class="tContents">
+                        <div class="tHeaders inline">
+                            <p>DueDate</p>
+                        </div>
+                    </th>
+                    <th class="tContents">
+                        <div class="tHeaders inline">
+                            <p>BU Sales</p>
+                        </div>
+                    </th>
+                    <th class="tContents">
+                        <div class="tHeaders inline">
+                            <p>BU Dev</p>
+                        </div>
+                    </th>
+                    <th class="tContents">
+                        <div class="tHeaders inline">
+                            <p>Division</p>
+                        </div>
+                    </th>
+                    <th class="tContents">
+                        <div class="tHeaders inline">
+                            <p>SD</p>
+                        </div>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="deal in importedDeals">
+                    <td class="tContents"><p>{{ deal.DocNumber }}</p></td>
+                    <td class="tContents"><p>{{ deal.Customer }}</p></td>
+                    <td class="tContents"><p>{{ deal.Subject }}</p></td>
+                    <td class="tContents"><p>{{ deal.Level }}</p></td>
+                    <td class="tContents"><p>{{ getStep(deal.Step) }}</p></td>
+                    <td class="tContents"><p>{{ deal.ServiceType }}</p></td>
+                    <td class="tContents"><p>{{ deal.dspRespSales }}</p></td>
+                    <td class="tContents"><p>{{ deal.dspRespDev }}</p></td>
+                    <td class="tContents"><p>{{ formatDate(deal.StartDate) }}</p></td>
+                    <td class="tContents"><p>{{ formatDate(deal.EndDate) }}</p></td>
+                    <td class="tContents"><p>{{ formatDate(deal.DueDate) }}</p></td>
+                    <td class="tContents"><p>{{ deal.BU }}</p></td>
+                    <td class="tContents"><p>{{ deal.BUDev }}</p></td>
+                    <td class="tContents"><p>{{ deal.Division }}</p></td>
+                    <td class="tContents"><p>{{ deal.BUDev }}</p></td>
+                </tr>
+            </tbody>
+        </table>
+        <div>
+            <button 
+                type="submit" 
+                class="btn btn-success"  
+                ng-click="addDeals(importedDeals)"
+            >
+                Submit
+            </button>
+        </div>
+    </div>
+</div>
+<!-- /*  END Francis Nash Jasmin 2022/02 */ -->

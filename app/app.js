@@ -90,7 +90,26 @@
                 parent: 'main',
                 templateUrl: 'changePassword/changePassword.html',
                 controller: 'ChangePasswordController'
+            })
+            /*
+            * START Francis Nash Jasmin 2022/01/31
+            * 
+            * Added import and export directories to the deals app.
+            * 
+            */
+            .state('export', {
+                url: '/export',
+                parent: 'main',
+                templateUrl: 'export/export.html',
+                controller: 'ExportController'
+            })
+            .state('import', {
+                url: '/import',
+                parent: 'main',
+                templateUrl: 'import/import.html',
+                controller: 'ImportController'
             });
+            /*  END Francis Nash Jasmin 2022/01/31 */ 
 
 
         $httpProvider.interceptors.push(function($q, $window, $location){
