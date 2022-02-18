@@ -4,7 +4,12 @@
     angular
         .module('app')
         .controller('NewClientController', Controller)
-
+        /*
+        * START Dullao, Joshua 02/11/2022
+        * 
+        * Filter to convert the camel case to title case
+        * 
+        */
         .filter('titleCase', [function () {
             return function (input) {
           
@@ -18,6 +23,7 @@
           
             };
         }]);
+        /* END Dullao, Joshua 02/11/2022 */
 
     
     function Controller($scope, $state, ngToast, ModulesService, $stateParams) {    
@@ -97,7 +103,15 @@
                     ngToast.success('Client Added');
                     $state.transitionTo('clientList');
                 }).catch(function(err){
+                     /*
+                    * START Dullao, Joshua 02/10/2022
+                    * 
+                    * Error message for adding duplicate client
+                    * 
+                    */
                     ngToast.danger('The Client already exist');
+                    /* END Dullao, Joshua 02/10/2022 */
+
                 });
             } else {
                 ModulesService.updateModuleDoc(toSave).then(function() {
