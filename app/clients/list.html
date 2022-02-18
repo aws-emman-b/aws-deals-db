@@ -1,7 +1,14 @@
 <div class="row">
     <div class="col-md-8 form-inline">
         <label for="pageSize">Page size: </label>
+        <!--/*
+        *START Dullao, Joshua 02/11/2022
+        *
+        *Disabled decimal input in the page size
+        *
+        */-->
         <input id="pageSize" type="number" onkeypress="return event.charCode >= 48 && event.charCode <= 57" ng-model="pageSize" class="form-control" min="1" max={{clients.length}}>
+        <!--/ END Dullao, Joshua 02/11/2022-->
         <input type="text" class="form-control" ng-model="searchText" placeholder="Search">
     </div>
     <div class="col-md-2 pull-right">
@@ -9,29 +16,28 @@
     </div>
 </div>
 <br/>
-<div class="row">
+<div class="row div-padded">
     <div class="col-md-12 table-responsive">
         <div style="text-align:center" class="spinner" ng-show="loading">
             <img src="loader.gif" />
         </div>
         <table class="table table-hover clientTable normal-table">
             <thead>
-                <th ng-repeat="field in module.fields | filter:{ showInList: true }" >
+                <th class="tHeaders" ng-repeat="field in module.fields | filter:{ showInList: true }" >
                     <div class="inline">
                         {{field.name | titleCase}}
                         <div class="sorter" ng-click="sortColumn(field.name)" ng-class="sortClass(field.name)"/>
                     </div>
-             
                 </th>
-                <th class="tools"></th>
+                <th></th>
             </thead>
             <tbody>
                 <tr>
                     <tr ng-repeat="client in clients | orderBy : column : reverse | filter : searchText | filter: {status: true} | pagination: (currentPage - 1) * pageSize | limitTo: pageSize ">
-                        <td ng-repeat="field in module.fields | filter:{ showInList: true} ">
+                        <td class="tContents" ng-repeat="field in module.fields | filter:{ showInList: true} ">
                             {{client[field.name]}}
                         </td>
-                        <td>
+                        <td class="tools">
                             <a>
                                 <i class="fa fa-list-alt" aria-hidden="true" ui-sref="ClientForm({_id: client._id})" data-toggle="tooltip" title="Edit"></i>
                             </a>
@@ -44,9 +50,10 @@
                 </tr>
             </tbody>
         </table>
-        <div>
-            <ul class="pagination" uib-pagination total-items="clients.length" ng-model="currentPage" items-per-page="pageSize" boundary-links="true"
-                max-size="3" force-ellipses="true" first-text="<<" previous-text="<" next-text=">" last-text=">>"></ul>
-        </div>
     </div>
 </div>
+<div>
+    <ul class="pagination" uib-pagination total-items="clients.length" ng-model="currentPage" items-per-page="pageSize" boundary-links="true"
+        max-size="3" force-ellipses="true" first-text="<<" previous-text="<" next-text=">" last-text=">>"></ul>
+</div>
+    
