@@ -1,0 +1,88 @@
+{
+    "Steps": [
+        {
+            "Step": "1",
+            "Level": "1.1",
+            "JA": "契約済",
+            "EN": "Contracted"
+        },
+        {
+            "Step": "1",
+            "Level": "1.2",
+            "JA": "発注済",
+            "EN": "Order Approved"
+        },
+        {
+            "Step": "2",
+            "Level": "2.1",
+            "JA": "発注待ち",
+            "EN": "Waiting for Client Order"
+        },
+        {
+            "Step": "2",
+            "Level": "2.2",
+            "JA": "見積り提出済",
+            "EN": "Estimate Submitted"
+        },
+        {
+            "Step": "2",
+            "Level": "2.3",
+            "JA": "見積り中",
+            "EN": "Under Estimation"
+        },
+        {
+            "Step": "3",
+            "Level": "3.1",
+            "JA": "概算見積り提出済",
+            "EN": "Rough Estimate Submitted"
+        },
+        {
+            "Step": "3",
+            "Level": "3.2",
+            "JA": "概算見積り提出予定",
+            "EN": "Rough Estimate Submission Plan"
+        },
+        {
+            "Step": "3",
+            "Level": "3.3",
+            "JA": "提案済",
+            "EN": "Plan Proposed"
+        },
+        {
+            "Step": "3",
+            "Level": "3.4",
+            "JA": "提案予定",
+            "EN": "Plan Proposal"
+        },
+        {
+            "Step": "4",
+            "Level": "4.1",
+            "JA": "概要提案済",
+            "EN": "Planned Overview Proposed"
+        },
+        {
+            "Step": "4",
+            "Level": "4.2",
+            "JA": "概要提案予定",
+            "EN": "Planned Overview Proposal"
+        },
+        {
+            "Step": "5",
+            "Level": "5.1",
+            "JA": "訪問済",
+            "EN": "Client Visited"
+        },
+        {
+            "Step": "5",
+            "Level": "5.2",
+            "JA": "訪問予定",
+            "EN": "Client Visit Scheduled"
+        },
+        {
+            "Step": "9",
+            "Level": "9.1",
+            "JA": "失注",
+            "EN": "Lost Order"
+        }
+    ]
+}
