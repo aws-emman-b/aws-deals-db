@@ -48,6 +48,8 @@ body {
 .dashboard {
 	height: 100%;
   	min-height:400px;
+	display: block;
+	margin-top: 30px;
 }
 
 th {
@@ -283,7 +285,7 @@ p:hover {
 
 /* When you mouse over the navigation links, change their color */
 .sidenav a:hover, .offcanvas a:focus{
-    color: #edefef;
+    color: #4b4b4b;
     text-shadow: 2px 2px 5px black;
 }
 
@@ -344,54 +346,77 @@ select {
 }
 
 .table-responsive {
-	height: 600px;
+	height: 550px;
 	overflow-y: auto;
 	width: 100%;
 }
 
+/*
+*START Dullao, Joshua C 02/02/2022
+*
+* Added Styling for the different components
+*/
+
+/**Set the font size for the tables */
 .dealTable, .clientTable, .buTable, .userTable {
-	font-size: 10px;
+	font-size: 11px;
+	table-layout: auto;
 }
 
-table{
-	table-layout: fixed;
-	width: 100%;
-}
-
-th{
+/**Add a resize for the table columns */
+.tHeaders{
 	resize: horizontal;
+	overflow: auto;
+	white-space: nowrap;
 }
 
-.dealNo{
-	width: 60px;
+/**Keep the table headers contents inline */
+.inline{
+	display: flex;
 }
 
-.dealName{
-	width: 200px;
-}
-
-.client{
-	width: 100px;
-}
-
-td, th {
+/**handle overflow in table contents */
+.tContents{
 	  overflow: hidden;
 	  white-space: nowrap;
 	  -moz-text-overflow: ellipsis;
 	  -ms-text-overflow: ellipsis;
 	  -o-text-overflow: ellipsis;
 	  text-overflow: ellipsis;
+	  column-width: auto;
 }
 
+/**limit to the table columns by default */
+td{
+	max-width: 100px;
+}
+
+/**Centers the pagination */
 .pagination{
 	display: flex;
 	justify-content: center;
 }
 
+/**Centers the tools(edit and deactivate*/
 .tools{
-	width: 50px;
+	white-space: nowrap;
+	text-align: center;
+}
+.tools li a{
+	width: 100px;
+  	display: inline-block;
 }
 
-.inline{
-	display: flex;
+/**set the padding for the tables */
+.table>tbody>tr>td{
+	padding: 4px;
 }
+
+/**Highlight the active tab in side nav */
+.active{
+	background-color:#e9eaf3;
+	border-radius: 5px;
+	box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
+}
+
+/*END 02/18/2022*/
