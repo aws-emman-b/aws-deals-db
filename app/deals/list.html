@@ -71,9 +71,11 @@
             <thead>
                 <tr>
                     <!-- ID -->
-                    <th class="th_ID dealNo">
-                        {{columnNames['essential']['ID']}}
-                        <div ng-click="sortColumn('essential', 'ID')" ng-class="sortClass('essential', 'ID')"/>
+                    <th class="tContents">
+                        <div class="tHeaders inline">
+                            {{columnNames['essential']['ID']}}
+                            <div ng-click="sortColumn('essential', 'ID')" ng-class="sortClass('essential', 'ID')"/>
+                        </div>
                     </th>
                     <!--<th ng-click="sortColumn('profile', 'Client')" ng-class="sortClass('profile', 'Client')">{{columnNames['profile']['Client']}}</th>
                     <th ng-click="sortColumn('essential', 'Deal Name')" ng-class="sortClass('essential', 'Deal Name')">{{columnNames['essential']['Deal Name']}}</th>
@@ -95,22 +97,25 @@
                     <th ng-click="sortColumn('process', 'SOW Date')" ng-class="sortClass('process', 'SOW Date')">{{columnNames['process']['SOW Date']}}</th>
                     <th ng-click="sortColumn('essential', 'Due Date')" ng-class="sortClass('essential', 'Due Date')">{{columnNames['essential']['Due Date']}}</th>-->
                     <!-- deals essential -->
-                    <th class="th_ID" ng-class="{'dealName': essentialField.name === 'Deal Name'}" ng-repeat="essentialField in fields.essential" ng-if="essentialField.showInList && essentialField.name !== 'ID'">
-                        {{essentialField.name}}
-                        <div ng-click="sortColumn('essential', essentialField.name)"
-                        ng-class="sortClass('essential', essentialField.name)"/>
+                    <th class="tContents" ng-class="{'dealName': essentialField.name === 'Deal Name'}" ng-repeat="essentialField in fields.essential" ng-if="essentialField.showInList && essentialField.name !== 'ID'">
+                        <div class="tHeaders inline" >
+                            {{essentialField.name}}
+                            <div ng-click="sortColumn('essential', essentialField.name)" ng-class="sortClass('essential', essentialField.name)"/>
+                        </div>    
                     </th>
                     <!--deals profile -->
-                    <th class="th_ID" ng-class="{'client': profileField.name === 'Client'}" ng-repeat="profileField in fields.profile" ng-if="profileField.showInList">
-                        {{profileField.name}}
-                        <div  ng-click="sortColumn('profile', profileField.name)"
-                        ng-class="sortClass('profile', profileField.name)"/>
+                    <th class="tContents" ng-class="{'client': profileField.name === 'Client'}" ng-repeat="profileField in fields.profile" ng-if="profileField.showInList">
+                        <div class="tHeaders inline" >
+                            {{profileField.name}}
+                            <div  ng-click="sortColumn('profile', profileField.name)" ng-class="sortClass('profile', profileField.name)"/>
+                        </div>
                     </th>
                     <!-- deals process -->
-                    <th class="th_ID" ng-repeat="processField in fields.process" ng-if="processField.showInList" >
-                        {{processField.name}}
-                        <div ng-click="sortColumn('process', processField.name)"
-                        ng-class="sortClass('process', processField.name)"/>
+                    <th class="tContents" ng-repeat="processField in fields.process" ng-if="processField.showInList" >
+                        <div class="tHeaders inline">
+                            {{processField.name}}
+                            <div ng-click="sortColumn('process', processField.name)" ng-class="sortClass('process', processField.name)"/>
+                        </div>
                     </th>
                     <!--<th ng-repeat="distributionField in fields.distribution" ng-if="distributionField.showInList && !distributionField.default"
                         ng-click="sortColumn('distribution', distributionField.name)" ng-class="sortClass('distribution', distributionField.name)">
@@ -124,7 +129,7 @@
             </thead>
             <tbody>
                 <tr ng-repeat="deal in filteredDeals | orderBy: column : reverse | pagination: (currentPage - 1) * pageSize | limitTo: pageSize" class="">
-                    <td>
+                    <td class="tContents">
                         <a href="" ng-click="open(deal['ID'])">{{deal['ID']}}</a>
                     </td>
                     <!--<td>{{deal['profile']['Client']}}</td>
@@ -146,13 +151,19 @@
                     <td>{{deal['process']['SOW Scheme']}}</td>
                     <td>{{deal['process']['SOW Date']}}</td>
                     <td>{{deal['essential']['Due Date']}}</td>-->
-                    <td ng-repeat="essentialField in fields.essential" ng-if="essentialField.showInList && essentialField.name !== 'ID'">
+                    <td class="tContents" ng-repeat="essentialField in fields.essential" ng-if="essentialField.showInList && essentialField.name !== 'ID'">
                         {{deal.essential[essentialField.name]}}
                     </td>
-                    <td ng-repeat="profileField in fields.profile" ng-if="profileField.showInList">
+                    <!--/*
+                    * START Dullao, Joshua 02/02/2022
+                    *
+                    *Displays large digit numbers with comma
+                    *-->
+                    <td class="tContents" ng-repeat="profileField in fields.profile" ng-if="profileField.showInList">
                         {{deal.profile[profileField.name].toLocaleString('en', {useGrouping: true})}}<!--toLocaleString() to display big numbers in commas-->
                     </td>
-                    <td ng-repeat="processField in fields.process" ng-if="processField.showInList">
+                    <!--/END 02/02/2022-->
+                    <td class="tContents" ng-repeat="processField in fields.process" ng-if="processField.showInList">
                         {{deal.process[processField.name]}} 
                     </td>
                     <!--<td ng-repeat="distributionField in fields.distribution" ng-if="distributionField.showInList && !distributionField.default">
@@ -164,14 +175,14 @@
                 </tr>
             </tbody>
         </table>
-        <div >
-            <ul class="pagination" uib-pagination total-items="deals.length" ng-model="currentPage" items-per-page="pageSize" boundary-links="true"
-                max-size="3" force-ellipses="true" first-text="<<" previous-text="<" next-text=">" last-text=">>"></ul>
-        </div>
-        
         </div>
     </div>
 </div>
+<div >
+    <ul class="pagination" uib-pagination total-items="deals.length" ng-model="currentPage" items-per-page="pageSize" boundary-links="true"
+        max-size="3" force-ellipses="true" first-text="<<" previous-text="<" next-text=">" last-text=">>"></ul>
+</div>
+
 
 <!-- link is disabled after click -->
 <script> 

@@ -97,6 +97,19 @@
         var dealRevenueLevel5 = [];
         var dealRevenueLevel9 = [];
 
+        /*
+         *START Dullao, Joshua
+         *
+         * Declared variables and functions for the CM per level chart 
+         */
+        var dealCmLevel1 = [];
+        var dealCmLevel2 = [];
+        var dealCmLevel3 = [];
+        var dealCmLevel4 = [];
+
+        var dealCmLevel5 = [];
+        var dealCmLevel9 = [];
+
         //per deal
         var dealRevenue = [];
         var dealCM = [];
@@ -118,6 +131,13 @@
         var dealRevenueLevel5Q = [];
         var dealRevenueLevel9Q = [];
 
+        var dealCmLevel1Q = [];
+        var dealCmLevel2Q = [];
+        var dealCmLevel3Q = [];
+        var dealCmLevel4Q = [];
+        var dealCmLevel5Q = [];
+        var dealCmLevel9Q = [];
+
         //deals data for charts
         //line
         var dealRevenuePerDateLine = [];
@@ -130,6 +150,13 @@
         var dealRevenueLevel4Bar = [];
         var dealRevenueLevel5Bar = [];
         var dealRevenueLevel9Bar = [];
+
+        var dealCmLevel1Bar = [];
+        var dealCmLevel2Bar = [];
+        var dealCmLevel3Bar = [];
+        var dealCmLevel4Bar = [];
+        var dealCmLevel5Bar = [];
+        var dealCmLevel9Bar = [];
 
         var isInit = false;
 
@@ -183,9 +210,17 @@
           dealRevenueLevel3 = [];
           dealRevenueLevel4 = [];
 
+          dealCmLevel1 = [];
+          dealCmLevel2 = [];
+          dealCmLevel3 = [];
+          dealCmLevel4 = [];
+
           //deals revenue level 5 and 9
           dealRevenueLevel5 = [];
           dealRevenueLevel9 = [];
+
+          dealCmLevel5 = [];
+          dealCmLevel9 = [];
 
           dealRevenue = [];
           dealCM = [];
@@ -206,6 +241,13 @@
           dealRevenueLevel5Q = [];
           dealRevenueLevel9Q = [];
 
+          dealCmLevel1Q = [];
+          dealCmLevel2Q = [];
+          dealCmLevel3Q = [];
+          dealCmLevel4Q = [];
+          dealCmLevel5Q = [];
+          dealCmLevel9Q = [];
+
           //deals data for charts
           //line
           dealRevenuePerDateLine = [];
@@ -218,6 +260,13 @@
           dealRevenueLevel4Bar = [];
           dealRevenueLevel5Bar = [];
           dealRevenueLevel9Bar = [];
+
+          dealCmLevel1Bar = [];
+          dealCmLevel2Bar = [];
+          dealCmLevel3Bar = [];
+          dealCmLevel4Bar = [];
+          dealCmLevel5Bar = [];
+          dealCmLevel9Bar = [];
 
           init();
         }
@@ -260,7 +309,7 @@
               dealCMPerDate.push([dealPerUniqueDate[i], 0]);
             }
 
-            //initialize quarterlt time series deals
+            //initialize quarterly time series deals
             for(var q = 0; q < 4; q++){
               dealRevenuePerDateQ.push(['Q'+(q+1), 0]);
               dealCMPerDateQ.push(['Q'+(q+1), 0]);
@@ -278,6 +327,18 @@
               dealRevenueLevel9.push([dealPerUniqueMonth[i], 0]);
             }
 
+            //intialize stacked chart deals CM
+            for(var i = 0; i < dealPerUniqueMonth.length; i++){
+              dealCmLevel1.push([dealPerUniqueMonth[i], 0]);
+              dealCmLevel2.push([dealPerUniqueMonth[i], 0]);
+              dealCmLevel3.push([dealPerUniqueMonth[i], 0]);
+              dealCmLevel4.push([dealPerUniqueMonth[i], 0]);
+
+              dealCmLevel5.push([dealPerUniqueMonth[i], 0]);
+              dealCmLevel9.push([dealPerUniqueMonth[i], 0]);
+            }
+
+            //josh
             //initialize quarterly bar chart deals
             for(var q = 0; q < 4; q++){
               dealRevenueLevel1Q.push(['Q'+(q+1), 0]);
@@ -289,6 +350,19 @@
               dealRevenueLevel5Q.push(['Q'+(q+1), 0]);
               dealRevenueLevel9Q.push(['Q'+(q+1), 0]);
             }
+            
+            //josh
+            //initialize quarterly bar chart deals
+            for(var q = 0; q < 4; q++){
+              dealCmLevel1Q.push(['Q'+(q+1), 0]);
+              dealCmLevel2Q.push(['Q'+(q+1), 0]);
+              dealCmLevel3Q.push(['Q'+(q+1), 0]);
+              dealCmLevel4Q.push(['Q'+(q+1), 0]);
+     
+              dealCmLevel5Q.push(['Q'+(q+1), 0]);
+              dealCmLevel9Q.push(['Q'+(q+1), 0]);
+            }
+
 
             //console.log(dealRevenueLevel5);
             //console.log(dealRevenueLevel5Q);
@@ -329,6 +403,7 @@
                 }
               }
 
+              //for CM quarterly line chart
               for(var k = 0; k < dealCMPerDateQ.length; k++){
                 if(dealCMPerDateQ[k][0] == getQuarterly(monthly)){
                   if(isNaN(deals[j].profile.CM)){
@@ -369,6 +444,7 @@
                     }
                   }
                 }
+
 
                 //level 2
                 for(var k = 0; k < dealRevenueLevel2.length; k++){
@@ -426,6 +502,77 @@
                     }
                   }
                 }
+
+
+                //Added by Josh
+                //Load data in monthly hbar chart for CM
+                 //level 1
+                 for(var k = 0; k < dealCmLevel1.length; k++){
+                  if(dealCmLevel1[k][0] == getMonthOnly(monthly) && deals[j].profile['Level'] == 1){
+                    if(isNaN(deals[j].profile.CM)){
+                      dealCmLevel1[k][1] += 0;
+                    }else{
+                      dealCmLevel1[k][1] += deals[j].profile.CM;
+                    }
+                  }
+                }
+
+
+                //level 2
+                for(var k = 0; k < dealCmLevel2.length; k++){
+                  if(dealCmLevel2[k][0] == getMonthOnly(monthly) && deals[j].profile['Level'] == 2){
+                    if(isNaN(deals[j].profile.CM)){
+                      dealCmLevel2[k][1] += 0;
+                    }else{
+                      dealCmLevel2[k][1] += deals[j].profile.CM;
+                    }
+                  }
+                }
+
+                //level 3
+                for(var k = 0; k < dealCmLevel3.length; k++){
+                  if(dealCmLevel3[k][0] == getMonthOnly(monthly) && deals[j].profile['Level'] == 3){
+                    if(isNaN(deals[j].profile.CM)){
+                      dealCmLevel3[k][1] += 0;
+                    }else{
+                      dealCmLevel3[k][1] += deals[j].profile.CM;
+                    }
+                  }
+                }
+
+                //level 4
+                for(var k = 0; k < dealCmLevel4.length; k++){
+                  if(dealCmLevel4[k][0] == getMonthOnly(monthly) && deals[j].profile['Level'] == 4){
+                    if(isNaN(deals[j].profile.CM)){
+                      dealCmLevel4[k][1] += 0;
+                    }else{
+                      dealCmLevel4[k][1] += deals[j].profile.CM;
+                    }
+                  }
+                }
+
+                //level 5
+                for(var k = 0; k < dealCmLevel5.length; k++){
+                  if(dealCmLevel5[k][0] == getMonthOnly(monthly) && deals[j].profile['Level'] == 5){
+                    if(isNaN(deals[j].profile.CM)){
+                      dealCmLevel5[k][1] += 0;
+                    }else{
+                      dealCmLevel5[k][1] += deals[j].profile.CM;
+                    }
+                  }
+                }
+            
+                //level 9
+                for(var k = 0; k < dealCmLevel9.length; k++){
+                  if(dealCmLevel9[k][0] == getMonthOnly(monthly) && deals[j].profile['Level'] == 9){
+                    if(isNaN(deals[j].profile.CM)){
+                      dealCmLevel9[k][1] += 0;
+                    }else{
+                      dealCmLevel9[k][1] += deals[j].profile.CM;
+                    }
+                  }
+                }
+              
 
                 //Added by Glenn
                 //Load data in monthly hbar chart
@@ -494,6 +641,74 @@
                     }
                   }
                 }
+
+                //Added by Josh
+                //Load data in monthly hbar chart for CM
+                //level 1
+                for(var k = 0; k < dealCmLevel1Q.length; k++){
+                  if(dealCmLevel1Q[k][0] == getQuarterly(monthly) && deals[j].profile['Level'] == 1){
+                    if(isNaN(deals[j].profile.CM)){
+                      dealCmLevel1Q[k][1] += 0;
+                    }else{
+                      dealCmLevel1Q[k][1] += deals[j].profile.CM;
+                    }
+                  }
+                }
+
+                //level 2
+                for(var k = 0; k < dealCmLevel2Q.length; k++){
+                  if(dealCmLevel2Q[k][0] == getQuarterly(monthly) && deals[j].profile['Level'] == 2){
+                    if(isNaN(deals[j].profile.CM)){
+                      dealCmLevel2Q[k][1] += 0;
+                    }else{
+                      dealCmLevel2Q[k][1] += deals[j].profile.CM;
+                    }
+                  }
+                }
+
+                //level 3
+                for(var k = 0; k < dealCmLevel3Q.length; k++){
+                  if(dealCmLevel3Q[k][0] == getQuarterly(monthly) && deals[j].profile['Level'] == 3){
+                    if(isNaN(deals[j].profile.CM)){
+                      dealCmLevel3Q[k][1] += 0;
+                    }else{
+                      dealCmLevel3Q[k][1] += deals[j].profile.CM;
+                    }
+                  }
+                }
+
+                //level 4
+                for(var k = 0; k < dealCmLevel4Q.length; k++){
+                  if(dealCmLevel4Q[k][0] == getQuarterly(monthly) && deals[j].profile['Level'] == 4){
+                    if(isNaN(deals[j].profile.CM)){
+                      dealCmLevel4Q[k][1] += 0;
+                    }else{
+                      dealCmLevel4Q[k][1] += deals[j].profile.CM;
+                    }
+                  }
+                }
+
+                //level 5
+                for(var k = 0; k < dealCmLevel5Q.length; k++){
+                  if(dealCmLevel5Q[k][0] == getQuarterly(monthly) && deals[j].profile['Level'] == 5){
+                    if(isNaN(deals[j].profile.CM)){
+                      dealRevenueLevel5Q[k][1] += 0;
+                    }else{
+                      dealCmLevel5Q[k][1] += deals[j].profile.CM;
+                    }
+                  }
+                }
+
+                //level 9
+                for(var k = 0; k < dealCmLevel9Q.length; k++){
+                  if(dealCmLevel9Q[k][0] == getQuarterly(monthly) && deals[j].profile['Level'] == 9){
+                    if(isNaN(deals[j].profile.CM)){
+                      dealCmLevel9Q[k][1] += 0;
+                    }else{
+                      dealCmLevel9Q[k][1] += deals[j].profile.CM;
+                    }
+                  }
+                }
             }
 
             //dealRevenueLevel1.sort(function(a, b) { return monthNames[a[0].split(' ')[0]] - monthNames[b[0].split(' ')[0]];});
@@ -512,11 +727,35 @@
               return monthNames[a[0].split(' ')[0]] - monthNames[b[0].split(' ')[0]];
             });
 
+            
             //deal revenues for level 5 and 9
             dealRevenueLevel5.sort(function(a, b) {
               return monthNames[a[0].split(' ')[0]] - monthNames[b[0].split(' ')[0]];
             });
             dealRevenueLevel9.sort(function(a, b) {
+              return monthNames[a[0].split(' ')[0]] - monthNames[b[0].split(' ')[0]];
+            });
+
+            //added by Josh
+            //sort deals CM level  by month
+            dealCmLevel1.sort(function(a, b) {
+              return monthNames[a[0].split(' ')[0]] - monthNames[b[0].split(' ')[0]];
+             });
+             dealCmLevel2.sort(function(a, b) {
+               return monthNames[a[0].split(' ')[0]] - monthNames[b[0].split(' ')[0]];
+             });
+             dealCmLevel3.sort(function(a, b) {
+               return monthNames[a[0].split(' ')[0]] - monthNames[b[0].split(' ')[0]];
+             });
+             dealCmLevel4.sort(function(a, b) {
+               return monthNames[a[0].split(' ')[0]] - monthNames[b[0].split(' ')[0]];
+             });
+
+             //deal cm for level 5 and 9
+            dealCmLevel5.sort(function(a, b) {
+              return monthNames[a[0].split(' ')[0]] - monthNames[b[0].split(' ')[0]];
+            });
+            dealCmLevel9.sort(function(a, b) {
               return monthNames[a[0].split(' ')[0]] - monthNames[b[0].split(' ')[0]];
             });
             
@@ -534,6 +773,16 @@
               dealRevenueLevel3Bar = dealRevenueLevel3;
               dealRevenueLevel2Bar = dealRevenueLevel2;
               dealRevenueLevel1Bar = dealRevenueLevel1;
+
+              //bar chart for CM
+              dealCmLevel9Bar = dealCmLevel9;
+              dealCmLevel5Bar = dealCmLevel5;
+              dealCmLevel4Bar = dealCmLevel4;
+              dealCmLevel3Bar = dealCmLevel3;
+              dealCmLevel2Bar = dealCmLevel2;
+              dealCmLevel1Bar = dealCmLevel1;
+
+
             } else if($scope.selectedTimeline == 'quarterly') {
               //line chart
               dealRevenuePerDateLine = dealRevenuePerDateQ;
@@ -546,6 +795,14 @@
               dealRevenueLevel3Bar = dealRevenueLevel3Q;
               dealRevenueLevel2Bar = dealRevenueLevel2Q;
               dealRevenueLevel1Bar = dealRevenueLevel1Q;
+
+              //bar chart for CM 
+              dealCmLevel9Bar = dealCmLevel9Q;
+              dealCmLevel5Bar = dealCmLevel5Q;
+              dealCmLevel4Bar = dealCmLevel4Q;
+              dealCmLevel3Bar = dealCmLevel3Q;
+              dealCmLevel2Bar = dealCmLevel2Q;
+              dealCmLevel1Bar = dealCmLevel1Q;
             }
 
             //console.log(dealRevenueLevel5Bar);
@@ -599,7 +856,7 @@
             var dealsData = {
                 "type": "line",  // Specify your chart type here.
                 "title": {
-                  "text": "Deals Revenue Per Date",
+                  "text": "Deals Revenue and CM Per Date",
                   "adjustLayout": true,
                   "marginTop": 5
                 },
@@ -650,7 +907,7 @@
             });
 
             //multi bar chart per level
-            var mutliBarChart = {
+            var multiBarChart = {
               "graphset": [{
                 "type": "bar",
                 "background-color": "white",
@@ -765,11 +1022,134 @@
             };
             zingchart.render({
               id: 'multiBarChart',
-              data: mutliBarChart,
+              data: multiBarChart,
               height: '100%',
               width: '100%'
             });
-            //end
+            
+
+            // Added by Josh
+            // CM multi bar chart per level
+             var cmMultiBarChart = {
+              "graphset": [{
+                "type": "bar",
+                "background-color": "white",
+                "title": {
+                  "text": "CM Per Level",
+                  "backgroundColor": "none",
+                  "font-size": "22px",
+                  "alpha": 1,
+                  "adjust-layout": true,
+                },
+                "plotarea": {
+                  "margin": "dynamic"
+                },
+                "legend": {
+                  "alpha": 0.05,
+                  "shadow": false,
+                  "align": "center",
+                  "adjust-layout": true,
+                  "marker": {
+                    "type": "circle",
+                    "border-color": "none",
+                    "size": "10px"
+                  },
+                  "border-width": 0,
+                  "maxItems": 3,
+                  "toggle-action": "hide",
+                  "pageOn": {
+                    "backgroundColor": "#000",
+                    "size": "10px",
+                    "alpha": 0.65
+                  },
+                  "pageOff": {
+                    "backgroundColor": "#7E7E7E",
+                    "size": "10px",
+                    "alpha": 0.65
+                  },
+                  "pageStatus": {
+                    "color": "black"
+                  }
+                },
+                "plot": {
+                  "bars-space-left": 0.15,
+                  "bars-space-right": 0.15,
+                  "valueBox":{
+                    "placement":"top-out",
+                    "short":true
+                  }
+                },
+                "preview":{
+                  "adjustLayout": true,
+                  "borderColor":"#E3E3E5",
+                  "mask":{
+                    "backgroundColor":"#E3E3E5"
+                  }
+                },
+                "scale-x": {
+                  "zooming": true,
+                  "zoomTo":[0,15],
+                },
+                "scale-y": {
+                  "short":true,
+                  "shortUnit":"K"
+                },
+                "tooltip": {
+                  "visible": false
+                },
+                "crosshair-x": {
+                  "line-width": "100%",
+                  "alpha": 0.18,
+                  "plot-label": {
+                    "header-text": "%kv Sales"
+                  }
+                },
+                "series": [{
+                    "values": dealCmLevel9Bar,
+                    "alpha": 0.95,
+                    "borderRadiusTopLeft": 7,
+                    "text": "Level 9",
+                  },
+                  {
+                    "values": dealCmLevel5Bar,
+                    "borderRadiusTopLeft": 7,
+                    "alpha": 0.95,
+                    "text": "Level 5"
+                  },
+                  {
+                    "values": dealCmLevel4Bar,
+                    "alpha": 0.95,
+                    "borderRadiusTopLeft": 7,
+                    "text": "Level 4"
+                  },
+                  {
+                    "values": dealCmLevel3Bar,
+                    "borderRadiusTopLeft": 7,
+                    "alpha": 0.95,
+                    "text": "Level 3"
+                  },
+                  {
+                    "values": dealCmLevel2Bar,
+                    "borderRadiusTopLeft": 7,
+                    "alpha": 0.95,
+                    "text": "Level 2"
+                  },
+                  {
+                    "values": dealCmLevel1Bar,
+                    "borderRadiusTopLeft": 7,
+                    "alpha": 0.95,
+                    "text": "Level 1"
+                  }
+                ]
+              }]
+            };
+            zingchart.render({
+              id: 'cmMultiBarChart',
+              data: cmMultiBarChart,
+              height: '100%',
+              width: '100%'
+            });
+            /*END 02/15/2022*/
         }
     }
 })();

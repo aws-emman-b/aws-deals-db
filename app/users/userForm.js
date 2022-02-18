@@ -4,7 +4,12 @@
     angular
         .module('app')
         .controller('UserFormController', Controller)
-
+         /*
+        * START Dullao, Joshua 02/11/2022
+        * 
+        * Filter to convert the camel case to title case
+        * 
+        */
         .filter('titleCase', [function () {
             return function (input) {
           
@@ -18,6 +23,7 @@
           
             };
         }]);
+        /* END Dullao, Joshua 02/11/2022 */
 
     
     function Controller($scope, $rootScope, $location, $state, ModulesService, UserService, ngToast, $stateParams) {
@@ -76,7 +82,12 @@
                     $state.transitionTo('UserList');
 
                 }).catch(function(err){
-                    // ngToast.danger('The user already exist');
+                    /*
+                    * START Dullao, Joshua 02/10/2022
+                    * 
+                    * Error message for duplicate user or email
+                    * 
+                    */
                     if(err.exists){
                         ngToast.danger('Email is already taken');
                     }
@@ -87,6 +98,8 @@
                         ngToast.danger('Cannot Add User');
                     }
                 });
+                    /* END Dullao, Joshua 02/11/2022 */
+
 
             } else {
                 UserService.Update($scope.userForm).then(function() {
