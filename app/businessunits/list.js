@@ -32,7 +32,7 @@
 
         function getAllBUs() {
             ModulesService.getAllModuleDocs('businessunits').then(function(businessUnits) {                
-                $scope.businessUnits = businessUnits;
+                $scope.businessUnits = businessUnits.filter(unit => unit.status === true);
             }).catch(function(err) {
 
             }).finally(function() {
@@ -97,6 +97,38 @@
                 }
             });
         }
+        /*
+        Reynaldo Pena Jr. 
+        
+        START February 11, 2022 Error message for duplicate Business Unit-->
+        */
+        $scope.submit = function () {
+            var toSave = {
+                moduleName: $scope.module.name,
+                moduleDoc: $scope.businessUnitForm
+            };
+
+            if($scope.businessUnitForm._id === undefined) {
+                //add status with default true
+                toSave.moduleDoc.status = true;
+                
+                ModulesService.addModuleDoc(toSave).then(function() {
+                    ngToast.success('Business Unit added');
+                    $state.transitionTo('BUList');
+                }).catch(function(err){
+                    ngToast.danger('The Business Unit already exist');
+                });
+            } else {
+                ModulesService.updateModuleDoc(toSave).then(function() {
+                    ngToast.success('Business Unit updated');
+                    $state.transitionTo('BUList');
+                }).catch(function(err){
+                    ngToast.danger(err);
+                });
+            }
+        }
+
+        //END February 12, 2022
     }
 
 })();

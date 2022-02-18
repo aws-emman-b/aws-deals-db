@@ -27,8 +27,8 @@
                 </select>
             </div> -->
             <label>Name</label>
-            <input type="text" class="form-control" ng-model="fieldForm.name" placeholder="do not include . or $" required ng-readonly="fieldForm.default"
-                pattern="[^.$]+" />
+            <input type="text" class="form-control" ng-model="fieldForm.name" maxlength="50" placeholder="do not include . or $" required ng-readonly="fieldForm.default"
+                pattern="[^.$]+" /> <!--Reynaldo Pena Jr. START February 17, 2022 Limiting the characters to 50 END February 17, 2022-->
             <br/>
             <input type="checkbox" ng-model="fieldForm.unique" ng-disabled="fieldForm.default" />
             <b>Unique</b>

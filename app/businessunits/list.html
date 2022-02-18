@@ -14,24 +14,27 @@
         <div style="text-align:center" class="spinner" ng-show="loading">
             <img src="loader.gif" />
         </div>
-        <table class="table table-hover buTable normal-table" style="font-size: 10px;">
+
+    <!--Reynaldo Pena Jr. START February 18, 2022 
+    Added CSS selectors    -->
+        <table class="table table-hover buTable normal-table">
             <thead>
-                <th ng-repeat="field in module.fields | filter:{
- showInList: true }" >
+                <th class="tHeaders" ng-repeat="field in module.fields | filter:{showInList: true }" >
                     <div class="inline">
                         {{field.name}}
                         <div ng-click="sortColumn(field.name)" ng-class="sortClass(field.name)"/>
                     </div>
                 </th>
-                <th class="tools"></th>
+                <th></th>
             </thead>
             <tbody>
                 <tr ng-repeat="businessUnit in businessUnits | orderBy : column : reverse | filter : searchText | filter: {status: true} | pagination: (currentPage - 1) * pageSize | limitTo: pageSize ">
-                    <td ng-repeat="field in module.fields | filter:{
+                    <td class="tContents" ng-repeat="field in module.fields | filter:{
+
  showInList: true }">
                         {{businessUnit[field.name]}}
                     </td>
-                    <td>
+                    <td class="tools">
                         <a>
                             <i class="fa fa-list-alt" aria-hidden="true" ui-sref="BUForm({_id: businessUnit._id})" data-toggle="tooltip" title="Edit"></i>
                         </a>
@@ -43,9 +46,11 @@
                 </tr>
             </tbody>
         </table>
-        <div>
-            <ul class="pagination" uib-pagination total-items="businessUnits.length" ng-model="currentPage" items-per-page="pageSize"
-                boundary-links="true" max-size="3" force-ellipses="true" first-text="<<" previous-text="<" next-text=">" last-text=">>"></ul>
-        </div>
     </div>
+</div>
+
+<!--Reynaldo Pena Jr. END February 18, 2022-->
+<div>
+    <ul class="pagination" uib-pagination total-items="businessUnits.length" ng-model="currentPage" items-per-page="pageSize"
+        boundary-links="true" max-size="3" force-ellipses="true" first-text="<<" previous-text="<" next-text=">" last-text=">>"></ul>
 </div>
