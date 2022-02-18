@@ -47,28 +47,47 @@ function addDeal(deal, user) {
     var IDnumber;
     var previousID;
 
-
     db.deals.find({}).toArray(function (err, deals) {
         if (err) deferred.reject(err);
 
+        /*
+        * START Francis Nash Jasmin 2022/02/07
+        * 
+        * Added checking of duplicate IDs when importing an excel file.
+        * 
+        */
         //use .length to get number of documents
-        if (deals.length > 0 && deals['ID'] === undefined) {
-            previousID = deals[deals.length - 1].ID;
-            IDnumber = previousID.slice(3, 7);
-            IDnumber++;
-            if (IDnumber <= 9) {
-                ID = previousID.slice(0, 6) + IDnumber;
-            } else if (IDnumber > 9 || IDnumber <= 99) {
-                ID = previousID.slice(0, 5) + IDnumber;
-            } else if (IDnumber > 99 || IDnumber <= 999) {
-                ID = previousID.slice(0, 4) + IDnumber;
+        if ((deals.length > 0 && deals['ID'] === undefined)) {
+            if(checkForDuplicateID(deals, deal.ID)) {
+                deferred.reject();
             } else {
-                ID = previousID.slice(0, 3) + IDnumber;
+                if(deal.ID !== undefined) {
+                    ID = deal.ID;
+                } else {
+                    previousID = deals[deals.length - 1].ID;
+                    IDnumber = previousID.slice(3, 7);
+                    IDnumber++;
+                    if (IDnumber <= 9) {
+                        // 0-9
+                        ID = previousID.slice(0, 6) + IDnumber;
+                    } else if (IDnumber > 9 && IDnumber <= 99) {
+                        // 10-99
+                        ID = previousID.slice(0, 5) + IDnumber;
+                    } else if (IDnumber > 99 && IDnumber <= 999) {
+                        // 100-999
+                        ID = previousID.slice(0, 4) + IDnumber;
+                    } else {
+                        // 1000 above
+                        ID = previousID.slice(0, 3) + IDnumber;
+                    }
+                }
+                saveToDB();
             }
-            saveToDB();
+
         } else {
             saveToDB();
         }
+        /*  END Francis Nash Jasmin 2022/02/09 */ 
     });
 
     function saveToDB() {
@@ -98,6 +117,19 @@ function addDeal(deal, user) {
             });
 
     }
+
+    /*
+    * START Francis Nash Jasmin 2022/02/07
+    * 
+    * Added function used for checking of duplicate IDs when importing an excel file.
+    * 
+    */
+    function checkForDuplicateID(deals, id) {
+        return deals.some(function (deal) {
+            return deal.ID === id;
+        });
+    }
+    /*  END Francis Nash Jasmin 2022/02/09 */ 
 
     return deferred.promise;
 }
