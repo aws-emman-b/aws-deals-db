@@ -623,6 +623,12 @@
         }
     }
 
+    /*
+    * START Francis Nash Jasmin 2022/02/04
+    * 
+    * Displays numeric input as comma-separated in the deals form.
+    * 
+    */
     function Directive($filter) {
         return {
           require: 'ngModel',
@@ -707,4 +713,6 @@
           }
         };
     }
+
+    /*  END Francis Nash Jasmin 2022/02/08 */ 
 })();
