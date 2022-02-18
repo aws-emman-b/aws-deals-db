@@ -6,7 +6,7 @@
                 <span style="color:red" ng-if="field.required">*</span>
 
                 <input type="{{field.type}}" class="form-control" ng-if="field.type !== 'dropdown' && field.type !== 'textarea'" ng-model="businessUnitForm[field.name]"
-                    ng-required="field.required" maxlength="50" /> <!--Reynaldo Pena Jr. February 17, 2022 Limiting the characters to 50-->
+                    ng-required="field.required" maxlength="50" /> <!--Reynaldo Pena Jr. START February 17, 2022 Limiting the characters to 50 END February 17, 2022-->
 
                 <select class="form-control" ng-model="businessUnitForm[field.name]" ng-if="field.type === 'dropdown'" ng-required="field.required">
                     <option value=""></option>
@@ -19,11 +19,12 @@
             </div>
             <br/>
 
-            <!--Reynaldo Pena Jr. February 18, 2022 Created Cancel button-->
+            <!--Reynaldo Pena Jr. START February 18, 2022 Created Cancel button-->
             <div class="text-right">
                 <button onclick="history.back()" class="btn btn-default">Cancel</button>
                 <button type="submit" class="btn btn-primary">Submit</button>
         </div>
+                    <!--Reynaldo Pena Jr. END February 18, 2022-->
         </form>
     </div>
     <div class="col-md-6"></div>
