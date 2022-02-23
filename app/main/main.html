@@ -48,8 +48,16 @@
             <div ng-if="user.role === 'Admin'">
                 <label class='navCategory'>Admin</label>
                 <a ui-sref="fields" ui-sref-active="active">Fields</a>
-                <a ui-sref="BUList" ui-sref-active="active">Business Units</a>
-                <a ui-sref="UserList" ui-sref-active="active">Manage Users</a>
+                <div>
+                    <div class="row navTabs" ui-sref-active="active">
+                        <a class="nav_BU col-md-9" ui-sref="BUList">Business Units</a> 
+                        <i class="fa fa-plus-square col-md-2" ui-sref="BUForm" ></i>
+                    </div>
+                    <div class="row navTabs" ui-sref-active="active">
+                        <a class="nav_users col-md-9" ui-sref="UserList">Manage Users</a>
+                        <i class="fa fa-plus-square col-md-2 " ui-sref="UserForm"></i>
+                    </div>
+                </div>
                 <!-- /*
                 * START Francis Nash Jasmin 2022/01/31
                 * 
