@@ -355,8 +355,15 @@
                                             <select class="form-control input-sm" ng-model="dealForm.profile['Step']" name="profile Step" ng-required="getField('profile', 'Step').required"
                                             uib-tooltip="{{getTooltipMessage(myForm['profile Step'])}}" tooltip-enable="{{myForm['profile Step'].$invalid}}">
                                                 <option value="">- select -</option>
+                                                <!-- /*
+                                                * START Francis Nash Jasmin 2022/02/21
+                                                * 
+                                                * Display the Japanese equivalent of the step code.
+                                                * 
+                                                */ -->
                                                 <option ng-repeat="option in getField('profile', 'Step').options | 
-                                                        filter: (dealForm.profile['Level'] + '.')" value="{{option}}">{{option}}</option>
+                                                        filter: (dealForm.profile['Level'] + '.')" value="{{option}}">{{option}}:{{getStepJA(option)}}</option>
+                                                <!-- /* END Francis Nash Jasmin 2022/02/21 */ -->
                                             </select>
                                         </div>
                                     </div>
@@ -774,6 +781,12 @@
                                     <br/>
                                     <b style="color: navy">GD</b>
                                 </td>
+                                <!-- /*
+                                * START Francis Nash Jasmin 2022/02/21
+                                * 
+                                * Set the alignment of numeric input to the right.
+                                * 
+                                */ -->
                                 <td ng-repeat="monthYear in currentMonths.slice(0, 6)">
                                     <div class="form-group" ng-class="{'has-error': myForm['distribution ' + contract + ' res jp ' + monthYear].$invalid}">
                                         <input type="text" min="0" max="9999" step="1" class="form-control input-sm pull-right" name="{{'distribution ' + contract + ' res jp ' + monthYear}}"
@@ -781,6 +794,7 @@
                                             uib-tooltip="{{getTooltipMessage(myForm['distribution ' + contract + ' res jp ' + monthYear])}}" tooltip-enable="{{myForm['distribution ' + contract + ' res jp ' + monthYear].$invalid}}"
                                             number-input
                                             ng-maxlength="9"
+                                            style="text-align: right;"
                                             />
                                     </div>
                                     <div class="form-group" ng-class="{'has-error': myForm['distribution ' + contract + ' res gd ' + monthYear].$invalid}">
@@ -789,9 +803,11 @@
                                             uib-tooltip="{{getTooltipMessage(myForm['distribution ' + contract + ' res gd ' + monthYear])}}" tooltip-enable="{{myForm['distribution ' + contract + ' res gd ' + monthYear].$invalid}}"
                                             number-input
                                             ng-maxlength="9"
+                                            style="text-align: right;"
                                             />
                                     </div>
                                 </td>
+                                <!-- /*  END Francis Nash Jasmin 2022/02/21 */ -->
                             </tr>
                             <tr>
                                 <td>
@@ -803,20 +819,31 @@
                                     <br/>
                                     <b style="color: navy">GD</b>
                                 </td>
+                                <!-- /*
+                                * START Francis Nash Jasmin 2022/02/21
+                                * 
+                                * Set the alignment of numeric input to the right.
+                                * 
+                                */ -->
                                 <td ng-repeat="monthYear in currentMonths.slice(0, 6)">
                                     <div class="form-group" ng-class="{'has-error': myForm['distribution ' + contract + ' rev jp ' + monthYear].$invalid}">
                                         <input type="text" min="0" step="1" class="form-control input-sm pull-right" name="{{'distribution ' + contract + ' rev jp ' + monthYear}}"
                                             ng-model="dealForm.distribution[contract].rev.jp[monthYear]" 
                                             uib-tooltip="{{getTooltipMessage(myForm['distribution ' + contract + ' rev jp ' + monthYear])}}" tooltip-enable="{{myForm['distribution ' + contract + ' rev jp ' + monthYear].$invalid}}"
-                                            number-input/>
+                                            number-input
+                                            style="text-align: right;"
+                                            />
                                     </div>
                                     <div class="form-group" ng-class="{'has-error': myForm['distribution ' + contract + ' rev gd ' + monthYear].$invalid}">
                                         <input type="text" min="0" step="1" class="form-control input-sm pull-right" name="{{'distribution ' + contract + ' rev gd ' + monthYear}}"
                                             ng-model="dealForm.distribution[contract].rev.gd[monthYear]" 
                                             uib-tooltip="{{getTooltipMessage(myForm['distribution ' + contract + ' rev gd ' + monthYear])}}" tooltip-enable="{{myForm['distribution ' + contract + ' rev gd ' + monthYear].$invalid}}"
-                                            number-input/>
+                                            number-input
+                                            style="text-align: right;"
+                                            />
                                     </div>
                                 </td>
+                                <!-- /*  END Francis Nash Jasmin 2022/02/21 */ -->
                             </tr>
                             <tr>
                                 <td>
@@ -825,14 +852,23 @@
                                 <td>
                                     <b style="color: navy">ALL</b>
                                 </td>
+                                <!-- /*
+                                * START Francis Nash Jasmin 2022/02/21
+                                * 
+                                * Set the alignment of numeric input to the right.
+                                * 
+                                */ -->
                                 <td ng-repeat="monthYear in currentMonths.slice(0, 6)">
                                     <div class="form-group" ng-class="{'has-error': myForm['distribution ' + contract + ' cm ' + monthYear].$invalid}">
                                         <input type="text" min="0" step="1" class="form-control input-sm pull-right" name="{{'distribution ' + contract + ' cm ' + monthYear}}"
                                             ng-model="dealForm.distribution[contract].cm[monthYear]" 
                                             uib-tooltip="{{getTooltipMessage(myForm['distribution ' + contract + ' cm ' + monthYear])}}" tooltip-enable="{{myForm['distribution ' + contract + ' cm ' + monthYear].$invalid}}"
-                                            number-input/>
+                                            number-input
+                                            style="text-align: right;"
+                                            />
                                     </div>
                                 </td>
+                                <!-- /*  END Francis Nash Jasmin 2022/02/21 */ -->
                             </tr>
                             <!-- /*  END Francis Nash Jasmin 2022/02/11 */ -->
                         </tbody>
@@ -863,6 +899,12 @@
                                     <br/>
                                     <b style="color: navy">GD</b>
                                 </td>
+                                <!-- /*
+                                * START Francis Nash Jasmin 2022/02/21
+                                * 
+                                * Set the alignment of numeric input to the right.
+                                * 
+                                */ -->
                                 <td ng-repeat="monthYear in currentMonths.slice(6, 12)">
                                     <div class="form-group" ng-class="{'has-error': myForm['distribution ' + contract + ' res jp ' + monthYear].$invalid}">
                                         <input type="text" min="0" max="9999" step="1" class="form-control input-sm pull-right" name="{{'distribution ' + contract + ' res jp ' + monthYear}}"
@@ -870,6 +912,7 @@
                                             uib-tooltip="{{getTooltipMessage(myForm['distribution ' + contract + ' res jp ' + monthYear])}}" tooltip-enable="{{myForm['distribution ' + contract + ' res jp ' + monthYear].$invalid}}"
                                             number-input
                                             ng-maxlength="9"
+                                            style="text-align: right;"
                                             />
                                     </div>
                                     <div class="form-group" ng-class="{'has-error': myForm['distribution ' + contract + ' res gd ' + monthYear].$invalid}">
@@ -878,9 +921,11 @@
                                             uib-tooltip="{{getTooltipMessage(myForm['distribution ' + contract + ' res gd ' + monthYear])}}" tooltip-enable="{{myForm['distribution ' + contract + ' res gd ' + monthYear].$invalid}}"
                                             number-input
                                             ng-maxlength="9"
+                                            style="text-align: right;"
                                             />
                                     </div>
                                 </td>
+                                <!-- /*  END Francis Nash Jasmin 2022/02/21 */ -->
                             </tr>
                             <tr>
                                 <td>
@@ -892,20 +937,31 @@
                                     <br/>
                                     <b style="color: navy">GD</b>
                                 </td>
+                                <!-- /*
+                                * START Francis Nash Jasmin 2022/02/21
+                                * 
+                                * Set the alignment of numeric input to the right.
+                                * 
+                                */ -->
                                 <td ng-repeat="monthYear in currentMonths.slice(6, 12)">
                                     <div class="form-group" ng-class="{'has-error': myForm['distribution ' + contract + ' rev jp ' + monthYear].$invalid}">
                                         <input type="text" min="0" step="1" class="form-control input-sm pull-right" name="{{'distribution ' + contract + ' rev jp ' + monthYear}}"
                                             ng-model="dealForm.distribution[contract].rev.jp[monthYear]" 
                                             uib-tooltip="{{getTooltipMessage(myForm['distribution ' + contract + ' rev jp ' + monthYear])}}" tooltip-enable="{{myForm['distribution ' + contract + ' rev jp ' + monthYear].$invalid}}"
-                                            number-input/>
+                                            number-input
+                                            style="text-align: right;"
+                                            />
                                     </div>
                                     <div class="form-group" ng-class="{'has-error': myForm['distribution ' + contract + ' rev gd ' + monthYear].$invalid}">
                                         <input type="text" min="0" step="1" class="form-control input-sm pull-right" name="{{'distribution ' + contract + ' rev gd ' + monthYear}}"
                                             ng-model="dealForm.distribution[contract].rev.gd[monthYear]" 
                                             uib-tooltip="{{getTooltipMessage(myForm['distribution ' + contract + ' rev gd ' + monthYear])}}" tooltip-enable="{{myForm['distribution ' + contract + ' rev gd ' + monthYear].$invalid}}"
-                                            number-input/>
+                                            number-input
+                                            style="text-align: right;"
+                                            />
                                     </div>
                                 </td>
+                                <!-- /*  END Francis Nash Jasmin 2022/02/21 */ -->
                             </tr>
                             <tr>
                                 <td>
@@ -914,14 +970,23 @@
                                 <td>
                                     <b style="color: navy">ALL</b>
                                 </td>
+                                <!-- /*
+                                * START Francis Nash Jasmin 2022/02/21
+                                * 
+                                * Set the alignment of numeric input to the right.
+                                * 
+                                */ -->
                                 <td ng-repeat="monthYear in currentMonths.slice(6, 12)">
                                     <div class="form-group" ng-class="{'has-error': myForm['distribution ' + contract + ' cm ' + monthYear].$invalid && myForm['distribution ' + contract + ' cm ' + monthYear].$touched}">
                                         <input type="text" min="0" step="1" class="form-control input-sm pull-right" name="{{'distribution ' + contract + ' cm ' + monthYear}}"
                                             ng-model="dealForm.distribution[contract].cm[monthYear]" 
                                             uib-tooltip="{{getTooltipMessage(myForm['distribution ' + contract + ' cm ' + monthYear])}}" tooltip-enable="{{myForm['distribution ' + contract + ' cm ' + monthYear].$invalid}}"
-                                            number-input/>
+                                            number-input
+                                            style="text-align: right;"
+                                            />
                                     </div>
                                 </td>
+                                <!-- /*  END Francis Nash Jasmin 2022/02/21 */ -->
                             </tr>
                             <!-- /*  END Francis Nash Jasmin 2022/02/11 */ -->
                         </tbody>
