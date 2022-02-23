@@ -16,11 +16,20 @@
         $scope.loading = true;
         $scope.selectedView = 'default';
         
-        // Sets whether direct to client or intra-company should be displayed on the table in alternative view.
+        /*
+        * START Francis Nash Jasmin 2022/02/21
+        * 
+        * Added additional filters for displaying columns (JP and GD values in distribution fields).
+        * 
+        */
+        // Sets whether direct to client (jp or gd) or intra-company (jp or gd) should be displayed on the table in alternative view.
         $scope.distValues = {
-            direct: true,
-            intra: true
+            directJP: true,
+            intraJP: false,
+            directGD: false,
+            intraGD: false
         };
+        /* END Francis Nash Jasmin 2022/02/22 */
 
         $scope.DATE_FORMAT = 'yyyy/MM/dd';
         // Set default dates
@@ -29,22 +38,35 @@
             currentYear: ($scope.startingMonthYear.getFullYear() - 1) + '-04-01'
         };
 
-        $scope.startDate = $scope.currentFiscalYear.currentYear;
-        $scope.endDate = moment($scope.startDate).add(11, 'month');
-        $scope.showDates = false;
+        /*
+        * START Francis Nash Jasmin 2022/02/21
+        * 
+        * Fixed display of date columns.
+        * 
+        */
+        $scope.enteredStartDate = '';
+        $scope.enteredEndDate = '';
+        $scope.startDate = moment($scope.currentFiscalYear.currentYear);
+        $scope.endDate = moment($scope.currentFiscalYear.currentYear).add(11, 'month');
+        $scope.showDates = true;
 
         $scope.months = [];
 
         // Checks the date input and displays the generated array of dates in the table.
-        $scope.setDates = function(startDate, endDate) {
-            if ($scope.startDate > $scope.endDate) {
-                ngToast.danger('Start Date must be before the End Date');
+        $scope.setDates = function(enteredStartDate, enteredEndDate) {
+            if(enteredEndDate !== '') {
+                if (enteredStartDate > enteredEndDate) {
+                    ngToast.danger('Start Date must be before the End Date');
+                } else {
+                    $scope.startDate = enteredStartDate;
+                    $scope.endDate = enteredEndDate;
+                } 
             } else {
-                $scope.startDate = startDate;
-                $scope.endDate = endDate;
-                $scope.showDates = !$scope.showDates;
+                $scope.startDate = enteredStartDate;
+                $scope.endDate = moment(enteredStartDate).add(11, 'month');
             }
         }
+        /* END Francis Nash Jasmin 2022/02/22 */
 
         // Generates an array of dates based on input.
         $scope.generateMonths = function(startDate, endDate) {
@@ -71,6 +93,31 @@
             status: []
         };
 
+        /*
+        * START Francis Nash Jasmin 2022/02/21
+        * 
+        * Gets the Japanese equivalent of the step code.
+        * 
+        */
+        // Used to fetch the json file step_levels
+        $scope.steps_levels = {}
+        fetch('./import/steps_levels.json')
+            .then(res => res.json())
+            .then(data => {
+                $scope.steps_levels = data; 
+            })
+            .catch(err => console.log(err))
+
+        // Get the equivalent Japanese translation for the step.
+        $scope.getStepJA = (stepCode) => {
+            if(stepCode !== undefined) {
+                let steps = $scope.steps_levels.Steps;
+                let stepJA = steps ? steps.find(step => { return step.Level === stepCode }).JA : '';
+                return stepJA;
+            }
+        }
+        /* END Francis Nash Jasmin 2022/02/21 */
+
         // Fields names for the table in alternative view.
         $scope.renamedFields = {
             essential: {
@@ -91,9 +138,9 @@
                 'CM': 'CM Total',
                 'Duration (Start)': 'StartDate',
                 'Duration (End)': 'EndDate',
-                'Division': 'Division',
                 'AWS Resp (Sales) BU': 'BU Sales',
                 'AWS Resp (Dev) BU': 'BU Dev',
+                'Division': 'Division',
                 'SD': 'SD'
             }
         };
