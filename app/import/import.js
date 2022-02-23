@@ -18,6 +18,8 @@
 
         $scope.processedDeals = [];
 
+        $scope.months = [];
+
         // Used to fetch the json file step_levels
         $scope.steps_levels = {}
         fetch('./import/steps_levels.json')
@@ -74,6 +76,7 @@
                 deal.profile['Client Resp'] = dealObj.Customer;
                 deal.profile['Level'] = dealObj.Level;
                 deal.profile['Step'] = $scope.getStep(dealObj.Step);
+                deal.profile['Step Description'] = dealObj.Step;
                 deal.profile['Type'] = dealObj.ServiceType === 'AG' ? dealObj.ServiceType : capitalize(dealObj.ServiceType);
                 deal.profile['Duration (Start)'] = convertDateToString(dealObj.StartDate);
                 deal.profile['Duration (End)'] = convertDateToString(dealObj.EndDate);
@@ -163,26 +166,61 @@
             return keys;
         }
         
+        /*
+        * START Francis Nash Jasmin 2022/02/21
+        * 
+        * Fix notification on adding deals through import.
+        * Added generation of logs in using the import feature.
+        * 
+        */
+        $scope.duplicateQty = 0;
+        $scope.duplicateIDs = [];
+
         // Adds each deal in the file to the database.
         $scope.addDeals = (dealArray) => {
             var tempDeals = dealArray;
+            $scope.duplicateQty = 0;
+            $scope.duplicateIDs.length = 0;
+
             try {
                 tempDeals = preprocessDeals(tempDeals);
-                tempDeals.forEach(deal => {
+                tempDeals.forEach((deal, index) => {
                     DealsService.addDeal(deal)
                         .then(function () {
-                            // TODO: Generalize notification
-                            ngToast.success('Deal added');
-                            $state.transitionTo('dealList');
                         })
                         .catch(function (err) {
-                            ngToast.danger(`Deal ID ${deal.ID} already exists.`);
+                            $scope.duplicateQty += 1;
+                            $scope.duplicateIDs.push(deal.ID);
+                            if(index === (tempDeals.length - 1)) {
+                                let duplicateIDs = [...new Set($scope.duplicateIDs)];
+                                ngToast.danger(`The following deal IDs already exist: ${duplicateIDs.join(', ')}.`);
+                            }
+                        })
+                        .finally(function () {
+                            if(index === (tempDeals.length - 1)) {
+                                let duplicateIDs = [...new Set($scope.duplicateIDs)];
+                                ngToast.success(`${tempDeals.length - $scope.duplicateQty} deals added, ${duplicateIDs.length} duplicates found.`);
+                                if((tempDeals.length - $scope.duplicateQty) !== 0) {
+                                    $state.transitionTo('dealList');
+                                }
+
+                                let importedIDs = tempDeals.filter(deal => !$scope.duplicateIDs.includes(deal.ID)).map(deal => { return deal.ID });
+                                let dealIDs = { importedDeals: importedIDs, duplicateDeals: $scope.duplicateIDs }
+                                DealsService.generateLogs(dealIDs)
+                                    .then(function() {
+                                        console.log('Logs generated.');
+                                    })
+                                    .catch(function(err) {
+                                        console.log('Failed to generate logs.')
+                                    });
+                            }
                         });
                 });
             } catch (e) {
                 ngToast.danger(e.message);
             }
         };
+        /* END Francis Nash Jasmin 2022/02/23 */
     }
     
     // Reads the contents of the excel file.
@@ -207,6 +245,7 @@
 
                         $scope.importedDeals = rowObj.filter(d => Object.keys(d).includes('DocNumber'));
                         console.log(rowObj)
+                        $scope.months = Object.keys(rowObj[0]).filter(key => key.startsWith('Month'));
                     };
                     reader.readAsBinaryString($scope.file);
                 })

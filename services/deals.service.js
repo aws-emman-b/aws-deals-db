@@ -36,9 +36,47 @@ service.editDeal = editDeal;
 service.getDealById = getDealById;
 service.deleteDeal = deleteDeal;
 service.uploadFile = uploadFile;
+service.generateLogs = generateLogs;
 
 
 module.exports = service;
+
+/*
+* START Francis Nash Jasmin 2022/02/23
+* 
+* Added generation of logs in the backend (for the use of import only).
+* 
+*/
+var { Console } = require('console');
+var moment = require('moment');
+
+function generateLogs(dealIDs) {
+    var deferred = Q.defer();
+    var date = moment(new Date()).format('YYYY-MM-DD_HH-mm-ss');
+    var dir = './logs';
+    if(!fs.existsSync(dir)){
+        fs.mkdirSync(dir);
+    }
+    const logger = new Console({
+        stdout: fs.createWriteStream(`${dir}/Log_Import_${date}.txt`)
+    });
+    if(dealIDs.importedDeals.length !== 0) {
+        let importedIDs = [...new Set(dealIDs.importedDeals)];
+        importedIDs.forEach(dealID => {
+            logger.log(`Deal ID ${dealID} has been added.`);
+        })
+    }
+    if(dealIDs.duplicateDeals.length !== 0) {
+        let duplicateIDs = [...new Set(dealIDs.duplicateDeals)];
+        duplicateIDs.forEach(dealID => {
+            logger.log(`Deal ID ${dealID} already exists.`);
+        })
+    }
+
+    deferred.resolve();
+    return deferred.promise;
+}
+/* END Francis Nash Jasmin 2022/02/23 */
 
 function addDeal(deal, user) {
     var deferred = Q.defer();

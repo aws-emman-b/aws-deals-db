@@ -5,131 +5,194 @@
 * 
 */ -->
 <form name="uploadForm">
-    <div class="col-md-4">
-        <div class="input-group">
-            <label>Upload File to Add Deals</label>
-            <input 
-                type="file" 
-                class="form-control input-sm" 
-                id="file" 
-                accept="application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, .xl*"
-                name="file"
-                ng-model="file"
-                required
-                file-upload
-            />
-            <br />
-            <br />
-            <button 
-                type="submit" 
-                class="btn btn-success pull-right"  
-                ng-click="importExcel()"
-                ng-disabled="uploadForm.$invalid"
-            >
-                Upload
-            </button>
-        </div>
+    <!-- /*
+    * START Francis Nash Jasmin 2022/02/21
+    * 
+    * Fixed layout of components and changed button name to Preview.
+    * 
+    */ -->
+    <div class="col-md-12 form-inline">
+        <label>Upload File to Add Deals</label>
+        <input 
+            type="file" 
+            class="form-control input-sm" 
+            id="file" 
+            accept="application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, .xl*"
+            name="file"
+            ng-model="file"
+            required
+            file-upload
+        />
+        &nbsp;
+        &nbsp;
+        <button 
+            type="submit" 
+            class="btn btn-success"  
+            ng-click="importExcel()"
+            ng-disabled="uploadForm.$invalid"
+        >
+            Preview
+        </button>
+        <br />
+        <br />
     </div>
+    <!-- /*  END Francis Nash Jasmin 2022/02/21 */ -->
 </form>
 <div class="row" ng-show="showTable || importedDeals.length !== 0">
+    <!-- /*
+    * START Francis Nash Jasmin 2022/02/21
+    * 
+    * Added additional columns to the table preview.
+    * 
+    */ -->
     <div class="col-md-12 table-responsive">
         <table class="table table-hover compact dealTable normal-table">
             <thead>
                 <tr>
                     <th class="tContents">
                         <div class="tHeaders inline">
-                            <p>DocNumber</p>
+                            DocNumber
                         </div>
                     </th>
                     <th class="tContents">
                         <div class="tHeaders inline">
-                            <p>Customer</p>
+                            Customer
                         </div>
                     </th>
                     <th class="tContents">
                         <div class="tHeaders inline">
-                            <p>Subject</p>
+                            Subject
                         </div>
                     </th>
                     <th class="tContents">
                         <div class="tHeaders inline">
-                            <p>Level</p>
+                            Level
                         </div>
                     </th>
                     <th class="tContents">
                         <div class="tHeaders inline">
-                            <p>Step</p>
+                            Step
                         </div>
                     </th>
                     <th class="tContents">
                         <div class="tHeaders inline">
-                            <p>ServiceType</p>
+                            ServiceType
                         </div>
                     </th>
                     <th class="tContents">
                         <div class="tHeaders inline">
-                            <p>RespSales</p>
+                            dspRespSales
                         </div>
                     </th>
                     <th class="tContents">
                         <div class="tHeaders inline">
-                            <p>RespDev</p>
+                            dspRespDev
                         </div>
                     </th>
                     <th class="tContents">
                         <div class="tHeaders inline">
-                            <p>StartDate</p>
+                            StartDate
                         </div>
                     </th>
                     <th class="tContents">
                         <div class="tHeaders inline">
-                            <p>EndDate</p>
+                            EndDate
                         </div>
                     </th>
                     <th class="tContents">
                         <div class="tHeaders inline">
-                            <p>DueDate</p>
+                            DueDate
+                        </div>
+                    </th>
+                    <th ng-repeat="month in months" class="tContents">
+                        <div class="tHeaders inline">
+                            {{ month }}
+                        </div>
+                    </th>
+                    <th ng-repeat="month in months" class="tContents">
+                        <div class="tHeaders inline">
+                            MM_{{ $index + 1 }}
+                        </div>
+                    </th>
+                    <th ng-repeat="month in months" class="tContents">
+                        <div class="tHeaders inline">
+                            Yen_{{ $index + 1 }}
+                        </div>
+                    </th>
+                    <th ng-repeat="month in months" class="tContents">
+                        <div class="tHeaders inline">
+                            MM_{{ $index + 1 }}J
+                        </div>
+                    </th>
+                    <th ng-repeat="month in months" class="tContents">
+                        <div class="tHeaders inline">
+                            Yen_{{ $index + 1 }}J
+                        </div>
+                    </th>
+                    <th ng-repeat="month in months" class="tContents">
+                        <div class="tHeaders inline">
+                            CM_{{ $index + 1 }}
                         </div>
                     </th>
                     <th class="tContents">
                         <div class="tHeaders inline">
-                            <p>BU Sales</p>
+                            BU Sales
                         </div>
                     </th>
                     <th class="tContents">
                         <div class="tHeaders inline">
-                            <p>BU Dev</p>
+                            BU Dev
                         </div>
                     </th>
                     <th class="tContents">
                         <div class="tHeaders inline">
-                            <p>Division</p>
+                            Division
                         </div>
                     </th>
                     <th class="tContents">
                         <div class="tHeaders inline">
-                            <p>SD</p>
+                            SD
                         </div>
                     </th>
                 </tr>
             </thead>
             <tbody>
                 <tr ng-repeat="deal in importedDeals">
-                    <td class="tContents"><p>{{ deal.DocNumber }}</p></td>
-                    <td class="tContents"><p>{{ deal.Customer }}</p></td>
-                    <td class="tContents"><p>{{ deal.Subject }}</p></td>
-                    <td class="tContents"><p>{{ deal.Level }}</p></td>
-                    <td class="tContents"><p>{{ getStep(deal.Step) }}</p></td>
-                    <td class="tContents"><p>{{ deal.ServiceType }}</p></td>
-                    <td class="tContents"><p>{{ deal.dspRespSales }}</p></td>
-                    <td class="tContents"><p>{{ deal.dspRespDev }}</p></td>
-                    <td class="tContents"><p>{{ formatDate(deal.StartDate) }}</p></td>
-                    <td class="tContents"><p>{{ formatDate(deal.EndDate) }}</p></td>
-                    <td class="tContents"><p>{{ formatDate(deal.DueDate) }}</p></td>
-                    <td class="tContents"><p>{{ deal.BU }}</p></td>
-                    <td class="tContents"><p>{{ deal.BUDev }}</p></td>
-                    <td class="tContents"><p>{{ deal.Division }}</p></td>
-                    <td class="tContents"><p>{{ deal.BUDev }}</p></td>
+                    <td class="tContents">{{ deal.DocNumber }}</td>
+                    <td class="tContents">{{ deal.Customer }}</td>
+                    <td class="tContents">{{ deal.Subject }}</td>
+                    <td class="tContents">{{ deal.Level }}</td>
+                    <td class="tContents">{{ getStep(deal.Step) }}</td>
+                    <td class="tContents">{{ deal.ServiceType }}</td>
+                    <td class="tContents">{{ deal.dspRespSales }}</td>
+                    <td class="tContents">{{ deal.dspRespDev }}</td>
+                    <td class="tContents">{{ formatDate(deal.StartDate) }}</td>
+                    <td class="tContents">{{ formatDate(deal.EndDate) }}</td>
+                    <td class="tContents">{{ formatDate(deal.DueDate) }}</td>
+
+                    <td class="tContents" ng-repeat="month in months" style="text-align:right">
+                        {{ formatDate(deal[month]) }}
+                    </td>
+                    <td class="tContents" ng-repeat="month in months" style="text-align:right">
+                        {{ deal['MM_' + ($index+1)] }}
+                    </td>
+                    <td class="tContents" ng-repeat="month in months" style="text-align:right">
+                        {{ deal['Yen_' + ($index+1)] }}
+                    </td>
+                    <td class="tContents" ng-repeat="month in months" style="text-align:right">
+                        {{ deal['MM_' + ($index+1) + J] }}
+                    </td>
+                    <td class="tContents" ng-repeat="month in months" style="text-align:right">
+                        {{ deal['Yen_' + ($index+1) + J] }}
+                    </td>
+                    <td class="tContents" ng-repeat="month in months" style="text-align:right">
+                        {{ deal['CM_' + ($index+1)] }}
+                    </td>
+
+                    <td class="tContents">{{ deal.BU }}</td>
+                    <td class="tContents">{{ deal.BUDev }}</td>
+                    <td class="tContents">{{ deal.Division }}</td>
+                    <td class="tContents">{{ deal.BUDev }}</td>
                 </tr>
             </tbody>
         </table>
@@ -143,5 +206,6 @@
             </button>
         </div>
     </div>
+    <!-- /*  END Francis Nash Jasmin 2022/02/21 */ -->
 </div>
 <!-- /*  END Francis Nash Jasmin 2022/02 */ -->
