@@ -68,8 +68,15 @@
 
         //enable load if data for table is not yet fetched
         $scope.loading = true;
+        /*
+        * START Dullao, Joshua 02/21/2022
+        * 
+        * Set the page size to 20
+        * 
+        */
+        $scope.pageSize = 20;
+        /* END Dullao, Joshua 02/21/2022 */
 
-        $scope.pageSize = 15;
         $scope.currentPage = 1;
 
         $scope.reverse = false;
