@@ -18,8 +18,23 @@
             <hr>
             <label class='navCategory'>Main</label>
             <div>
-                <a class="nav_deals" ui-sref="dealList" ui-sref-active="active">Deals</a>
-                <a class="nav_clients" ui-sref="clientList" ui-sref-active="active">Clients</a>
+                <!-- /*
+                * START Dullao, Joshua 02/21/2022
+                * 
+                * Added add icon on the Deals and Client nav items
+                * 
+                */ -->
+                <div class="row navTabs" ui-sref-active="active">
+                    <a class="nav_deals col-md-9" ui-sref="dealList">Deals</a> 
+                    <i class="fa fa-plus-square col-md-2" ui-sref="dealForm" ></i>
+                </div>
+                <div class="row navTabs" ui-sref-active="active">
+                    <a class="nav_clients col-md-9" ui-sref="clientList">Clients</a>
+                    <i class="fa fa-plus-square col-md-2 " ui-sref="ClientForm"></i>
+                </div>
+                <!-- /*  END Dullao, Joshua 02/23/2022 */  -->
+                
+
                 <!-- /*
                 * START Francis Nash Jasmin 2022/01/31
                 * 
@@ -51,7 +66,7 @@
                 <a ui-sref-active="active" ui-sref="changePassword">Change Password</a>
                 <a ui-sref-active="active" href="#" ng-click="logout()">Logout</a>
             </div>
-            <!--/END 02/18/2022-->
+            <!--/END Dullao, Joshua 02/18/2022-->
         </div>
         <div class="main">
             <div ui-view class="main-page"></div>

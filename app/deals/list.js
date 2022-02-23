@@ -44,7 +44,15 @@
         };
 
         $scope.currentPage = 1;
-        $scope.pageSize = 15;
+        
+        /**
+         * 
+         * START Dullao, Joshua 02/21/2022
+         * 
+         * Set the default page size to 20
+         */
+        $scope.pageSize = 20;
+        /**END Dullao, Joshua 02/21/2022 */
 
         $scope.reverse = false;
 
