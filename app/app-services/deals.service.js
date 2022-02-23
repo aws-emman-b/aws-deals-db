@@ -29,6 +29,7 @@
         service.getDealById = getDealById;
         service.deleteDeal = deleteDeal;
         service.newDealFile = newDealFile;
+        service.generateLogs = generateLogs;
  
         return service;  
         
@@ -36,6 +37,17 @@
             //console.log(clientForm)
             return $http.post('/api/deals/addDeal', dealsForm).then(handleSuccess, handleError);
         }
+
+        /*
+        * START Francis Nash Jasmin 2022/02/23
+        * 
+        * Added post request for generation of logs in the backend.
+        * 
+        */
+        function generateLogs(dealIDs) {
+            return $http.post('/api/deals/generateLogs', dealIDs).then(handleSuccess, handleError);
+        }
+        /* END Francis Nash Jasmin 2022/02/23 */
 
         function updateDeal(dealsForm) {
             //console.log(dealsForm)

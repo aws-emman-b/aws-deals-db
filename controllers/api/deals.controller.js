@@ -10,7 +10,22 @@ var express = require('express');
 var router = express.Router();
 var dealsService = require('services/deals.service');
 
-
+/*
+* START Francis Nash Jasmin 2022/02/23
+* 
+* Added post request for generation of logs in the backend.
+* 
+*/
+router.post('/generateLogs', function(req, res, next) {
+    dealsService.generateLogs(req.body)
+    .then(function() {
+        res.status(200).send();
+    })
+    .catch(function(err) {
+        res.status(400).send();
+    });
+});
+/* END Francis Nash Jasmin 2022/02/23 */
 
 router.post('/addDeal', function(req, res, next) {
     
