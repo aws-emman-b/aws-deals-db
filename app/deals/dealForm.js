@@ -7,6 +7,30 @@
         .directive('numberInput', Directive);
 
     function Controller($scope, $rootScope, $state, $stateParams, $filter, ModulesService, DealsService, ClientService, ngToast) {
+        /*
+        * START Francis Nash Jasmin 2022/02/21
+        * 
+        * Gets the Japanese equivalent of the step code.
+        * 
+        */
+        // Used to fetch the json file step_levels
+        $scope.steps_levels = {}
+        fetch('./import/steps_levels.json')
+            .then(res => res.json())
+            .then(data => {
+                $scope.steps_levels = data; 
+            })
+            .catch(err => console.log(err))
+
+        // Get the equivalent Japanese translation for the step.
+        $scope.getStepJA = (stepCode) => {
+            if(stepCode !== undefined) {
+                let steps = $scope.steps_levels.Steps;
+                let stepJA = steps ? steps.find(step => { return step.Level === stepCode }).JA : '';
+                return stepJA;
+            }
+        }
+        /* END Francis Nash Jasmin 2022/02/21 */
 
         //ng-model for a deal
         $scope.dealForm = {
@@ -157,6 +181,14 @@
             DealsService.getDealById($stateParams.ID).then(function (aDeal) {
                 //use true to convert datestrings to date objects
                 $scope.dealForm = preProcess(aDeal, true);
+                /*
+                * START Francis Nash Jasmin 2022/02/21
+                * 
+                * Sets the starting month of the distribution table to the duration start of the deal.
+                * 
+                */
+                $scope.startingMonthYear = $scope.dealForm.profile['Duration (Start)'];
+                /* END Francis Nash Jasmin 2022/02/21 */
                 $scope.showUpload = false;
                 //console.log($scope.dealForm);
             }).catch(function () {
@@ -253,6 +285,15 @@
                 if (tempObject.process['SOW Scheme'] === null || tempObject.process['SOW Scheme'] === undefined) {
                     tempObject.process['SOW Scheme'] = 'Direct to Customer';
                 }
+
+                /*
+                * START Francis Nash Jasmin 2022/02/21
+                * 
+                * Added storing of step description in Japanese for a deal.
+                * 
+                */
+                tempObject.profile['Step Description'] = $scope.getStepJA(tempObject.profile['Step']);
+                /* END Francis Nash Jasmin 2022/02/22 */
 
                 //throw error if start date > end date
                 if (tempObject.profile['Duration (Start)'] > tempObject.profile['Duration (End)']) {
