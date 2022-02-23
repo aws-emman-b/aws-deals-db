@@ -285,8 +285,8 @@ p:hover {
 
 /* When you mouse over the navigation links, change their color */
 .sidenav a:hover, .offcanvas a:focus{
-    color: #4b4b4b;
-    text-shadow: 2px 2px 5px black;
+    color: #2d2d2e;
+    text-shadow: 2px 2px 3px black;
 }
 
 /* Style page content */
@@ -323,7 +323,7 @@ p:hover {
 }
 
 .navCategory{
-	color: #48636b;
+	color: #48546b;
 	font-weight: bold;
     padding-left: 9px;
 }
@@ -343,12 +343,6 @@ textarea {
 
 select {
 	max-width: 150px;
-}
-
-.table-responsive {
-	height: 550px;
-	overflow-y: auto;
-	width: 100%;
 }
 
 /*
@@ -419,4 +413,77 @@ td{
 	box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
 }
 
-/*END 02/18/2022*/
+/*END Dullao, Joshua 02/18/2022*/
+
+/*
+*START Dullao, Joshua C 02/02/2022
+*
+* Added media queries for different screen sizes
+*/
+
+/* Small devices (portrait tablets and large phones, 600px and up) */
+@media only screen and (min-width: 600px) {
+	.table-responsive {
+		height: 300px;
+		overflow-y: auto;
+		width: 100%;
+	}
+}
+
+/* Medium devices (landscape tablets, 768px and up) */
+@media only screen and (min-width: 768px) {
+	.table-responsive {
+		height: 400px;
+		overflow-y: auto;
+		width: 100%;
+	}
+}
+/* Large devices (laptops/desktops, 992px and up) */
+@media only screen and (min-width: 992px) {
+	.table-responsive {
+		height: 450px;
+		overflow-y: auto;
+		width: 100%;
+	}
+}
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media only screen and (min-width: 1200px) {
+	.table-responsive {
+		height: 550px;
+		overflow-y: auto;
+		width: 100%;
+	}
+}
+/*END Dullao, Joshua 02/23/2022*/
+
+/*
+*START Dullao, Joshua C 02/21/2022
+*
+* Added Styling for the different components
+*/
+
+/**aligns the numbers on the deals table to the right */
+.numbers{
+	text-align: right;
+}
+
+/**fixed the padding of nav items */
+.navTabs{
+    padding-left: 15px;
+}
+
+/**fixed the padding of nav items */
+.sidenav i{
+    padding: 10px 5px 5px 20px;
+}
+
+/**added a shadow to the icon when hovered */
+.sidenav i:hover{
+    text-shadow: 2px 2px 3px rgb(44, 44, 44);
+}
+
+/**icon color */
+.fa-plus-square{
+	color: #0275d8;
+}
+/*END Dullao, Joshua 02/23/2022*/
