@@ -98,7 +98,7 @@
         var dealRevenueLevel9 = [];
 
         /*
-         *START Dullao, Joshua
+         *START Dullao, Joshua 02/15/2022
          *
          * Declared variables and functions for the CM per level chart 
          */
@@ -819,10 +819,16 @@
             if($scope.selectedTimeline == 'monthly'){
 
               scaleXData = {
-                minValue: getTimeStamp([new Date().getFullYear(), '04', '01']),
-                maxValue: getTimeStamp([new Date().getFullYear() + 1, '03', '31']),
+                 /*
+                *START Dullao, Joshua 02/24/2022
+                *
+                * Fixed the Revenue and CM Line chart
+                */
+                minValue: getTimeStamp([new Date().getFullYear() - 1, '04', '01']),
+                maxValue: getTimeStamp([new Date().getFullYear(), '03', '31']),
                 zooming: true,
-                zoomTo:[0,15],
+                // zoomTo:[0,15],
+                /**END Dullao, Joshua 02/24/2022 */
                 step: 'day',
                 transform:{
                   type: 'date',
@@ -1149,7 +1155,7 @@
               height: '100%',
               width: '100%'
             });
-            /*END 02/15/2022*/
+            /*END Dullao, Joshua 02/16/2022*/
         }
     }
 })();
