@@ -429,45 +429,59 @@ td{
 /*END Dullao, Joshua 02/18/2022*/
 
 /*
-*START Dullao, Joshua C 02/02/2022
+*START Dullao, Joshua C 02/22/2022
 *
 * Added media queries for different screen sizes
 */
 
-/* Small devices (portrait tablets and large phones, 600px and up) */
-@media only screen and (min-width: 600px) {
+.table-responsive{
+	overflow-y: auto;
+	width: 100%;
+}
+
+@media only screen and (max-width: 600px) {
 	.table-responsive {
-		height: 300px;
-		overflow-y: auto;
-		width: 100%;
+		height: 100px;
 	}
 }
 
-/* Medium devices (landscape tablets, 768px and up) */
-@media only screen and (min-width: 768px) {
+@media only screen and (min-width: 600px) {
 	.table-responsive {
-		height: 400px;
-		overflow-y: auto;
-		width: 100%;
+		height: 140px;
 	}
 }
-/* Large devices (laptops/desktops, 992px and up) */
-@media only screen and (min-width: 992px) {
+
+@media only screen and (min-width: 900px){
 	.table-responsive {
-		height: 450px;
-		overflow-y: auto;
-		width: 100%;
+		height: 270px;
 	}
 }
-/* Extra large devices (large laptops and desktops, 1200px and up) */
-@media only screen and (min-width: 1200px) {
+
+@media only screen and (min-width: 1100px){
 	.table-responsive {
-		height: 550px;
-		overflow-y: auto;
-		width: 100%;
+		height: 370px;
 	}
 }
-/*END Dullao, Joshua 02/23/2022*/
+
+@media only screen and (min-width: 1300px) {
+	.table-responsive {
+		height: 470px;
+	}
+}
+
+@media only screen and (min-width: 1600px) {
+	.table-responsive {
+		height: 570px;
+	}
+}
+
+@media only screen and (min-width: 1850px) {
+	.table-responsive {
+		height: 670px;
+	}
+}
+
+/*END Dullao, Joshua 02/24/2022*/
 
 /*
 *START Dullao, Joshua C 02/21/2022
