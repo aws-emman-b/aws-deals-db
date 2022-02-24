@@ -52,10 +52,23 @@ body {
 	margin-top: 30px;
 }
 
-th {
-	background-color: rgba(199, 219, 252, 0.65);
-}
+/*
+START Reynaldo Pena Jr. February 24, 2022
 
+Header is fixed when scrolling through the table
+*/
+#header-fixed{
+	background: rgb(199, 219, 252);
+	position: -webkit-sticky;
+	position: sticky;
+	top: 0;
+	z-index: 1; 
+}
+/* END Reynadlo Pena Jr. February 24, 2022*/
+
+th {
+	background: rgba(199, 219, 252, 0.65);
+}
 td {
 	background-color: rgba(232, 239, 252, 0.65);
 }
