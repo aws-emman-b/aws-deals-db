@@ -71,7 +71,13 @@ app.get('/', function (req, res) {
 var server = http.listen(5000, function () {
     console.log(5000);
     //[sec] (optional) [min] [hour] [day of month] [month] [day of week]
-
+/*
+ * START Dullao, Joshua C. 03/04/2022
+ * 
+ * Temporarily disabled chron job
+ * 
+ */
+/** 
     //send @ 05:00 AM
     scheduler.scheduleJob('0 5 * * *', function () {
         console.log(new Date().toLocaleTimeString());
@@ -110,4 +116,6 @@ var server = http.listen(5000, function () {
             }
         });
     });
+*/
+/**END Dullao, Joshua C. 03/04/2022 */
 });
