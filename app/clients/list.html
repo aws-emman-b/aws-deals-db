@@ -21,7 +21,7 @@
         <div style="text-align:center" class="spinner" ng-show="loading">
             <img src="loader.gif" />
         </div>
-        <table class="table table-hover clientTable normal-table">
+        <table class="table table-hover clientTable normal-table table-striped" >
             <thead id="header-fixed">
                 <th class="tHeaders" ng-repeat="field in module.fields | filter:{ showInList: true }" >
                     <div class="inline">
