@@ -373,7 +373,7 @@ select {
 /**Add a resize for the table columns */
 .tHeaders{
 	resize: horizontal;
-	overflow: auto;
+	overflow: hidden;
 	white-space: nowrap;
 }
 
@@ -439,45 +439,75 @@ td{
 	width: 100%;
 }
 
-@media only screen and (max-width: 600px) {
+@media only screen and (max-height: 600px) {
 	.table-responsive {
+		height: 300px;
+	}
+	.alternateView{
 		height: 100px;
 	}
 }
 
-@media only screen and (min-width: 600px) {
+@media only screen and (min-height: 600px) {
 	.table-responsive {
-		height: 140px;
+		height: 400px;
+	}
+	.alternateView{
+		height: 350px;
 	}
 }
 
-@media only screen and (min-width: 900px){
+@media only screen and (min-height: 700px) {
 	.table-responsive {
-		height: 270px;
+		height: 530px;
+	}
+	.alternateView{
+		height: 480px;
 	}
 }
 
-@media only screen and (min-width: 1100px){
-	.table-responsive {
-		height: 370px;
-	}
-}
-
-@media only screen and (min-width: 1300px) {
-	.table-responsive {
-		height: 470px;
-	}
-}
-
-@media only screen and (min-width: 1600px) {
-	.table-responsive {
-		height: 570px;
-	}
-}
-
-@media only screen and (min-width: 1850px) {
+@media only screen and (min-height: 800px) {
 	.table-responsive {
 		height: 670px;
+	}
+	.alternateView{
+		height: 580px;
+	}
+}
+
+@media only screen and (min-height: 1080px) {
+	.table-responsive {
+		height: 880px;
+	}
+	.alternateView{
+		height: 780px;
+	}
+}
+
+@media only screen and (min-height: 1200px) {
+	.table-responsive {
+		height: 1080px;
+	}
+	.alternateView{
+		height: 980px;
+	}
+}
+
+@media only screen and (min-height: 1500px) {
+	.table-responsive {
+		height: 1300px;
+	}
+	.alternateView{
+		height: 1200px;
+	}
+}
+
+@media only screen and (min-height: 2100px) {
+	.table-responsive {
+		height: 1980px;
+	}
+	.alternateView{
+		height: 1880px;
 	}
 }
 
@@ -514,3 +544,4 @@ td{
 	color: #0275d8;
 }
 /*END Dullao, Joshua 02/23/2022*/
+
