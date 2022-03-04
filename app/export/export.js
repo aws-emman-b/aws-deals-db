@@ -216,9 +216,19 @@
             let fileName = 'Deals List - ' + fileUserName + ' ' + currentDateAndTime + '.xlsx';
 
             var excelData = $scope.selectedView === 'default' ? document.querySelector("#defaultView") : document.querySelector("#altView");
+            /*
+            * START Francis Nash Jasmin 2022/03/01
+            * 
+            * Changed sheet name of excel file to Data.
+            * 
+            */
             TableToExcel.convert(excelData, {
-                name: fileName
+                name: fileName,
+                sheet: {
+                    name: "Data"
+                }
             });
+            /* END Francis Nash Jasmin 2022/03/01 */
         }
 
         $scope.open = function (dealID) {
@@ -282,6 +292,17 @@
             });
             return total !== 0 ? total : '';
         }
+
+        /*
+        * START Francis Nash Jasmin 2022/02/28
+        * 
+        * Added code for formatting dates (MM/YY).
+        * 
+        */
+        $scope.formatMonthHeader = function(month) {
+            return moment(month).format('MM/YY');
+        }
+        /* END Francis Nash Jasmin 2022/02/21 */
     }
 }());
 
