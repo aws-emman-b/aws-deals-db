@@ -266,6 +266,15 @@
                 i = (i % 12 === 0) ? 1 : (i + 1);
             //exit loop initial month repeats
             } while (i != setMonth);
+            
+            /*
+            * START Francis Nash Jasmin 2022/03/02
+            * 
+            * Calls the computeDistribution function when starting month is changed.
+            * 
+            */
+            computeDistribution();
+            /* END Francis Nash Jasmin 2022/03/03 */
         });
 
         //$scope.getCurrentDisplay();
@@ -377,6 +386,9 @@
             */
             //use variables like sumRes as temporary sum
             var i, resJP, resGD, revJP, revGD, cm, resSum, revSum, cmSum, forCompute, editedProp;
+            // TODO: Adjust automatically based on duration start
+            var start = moment($scope.startingMonthYear).subtract(1, 'months').format('YYYY-MM-DD');
+            var end = moment($scope.startingMonthYear).add(12, 'month').format('YYYY-MM-DD');
             //for direct or indirect
             for (i = 0; i < $scope.contracts.length; i++) {
                 //console.log($scope.dealForm.distribution[$scope.contracts[i]].res);
@@ -390,7 +402,14 @@
                      * for res & rev, need to check both jp & gd if not undefined to avoid errors
                      * */
                     //use object.values since they are all integers
-
+                    
+                    /*
+                    * START Francis Nash Jasmin 2022/03/02
+                    * 
+                    * Adjusted months included in computing for total values in distribution.
+                    * 
+                    */
+                    
                     //Resource (MM)
                     if ($scope.dealForm.distribution[$scope.contracts[i]].res !== undefined) {
                         //for JP
@@ -404,8 +423,7 @@
                                 //console.log($scope.currentFiscalYear.currentYear);
                                 //this condition is to check if yyyy/MM is within current fiscal year
                                 if (!moment(editedProp)
-                                    .isBetween($scope.currentFiscalYear.currentYearMonthBefore,
-                                    $scope.currentFiscalYear.nextYear) || forCompute[prop] === null) {
+                                    .isBetween(start, end) || forCompute[prop] === null) {
                                         //console.log('not included '+forCompute[prop]);
                                     delete forCompute[prop];
                                 }
@@ -421,8 +439,7 @@
                             for (var prop in forCompute) {
                                 editedProp = prop.replace(/\//, '-') + '-01';
                                 if (!moment(editedProp)
-                                    .isBetween($scope.currentFiscalYear.currentYearMonthBefore,
-                                    $scope.currentFiscalYear.nextYear) || forCompute[prop] === null) {
+                                    .isBetween(start, end) || forCompute[prop] === null) {
 
                                     delete forCompute[prop];
                                 }
@@ -447,8 +464,7 @@
                             for (var prop in forCompute) {
                                 editedProp = prop.replace(/\//, '-') + '-01';
                                 if (!moment(editedProp)
-                                    .isBetween($scope.currentFiscalYear.currentYearMonthBefore,
-                                    $scope.currentFiscalYear.nextYear) || forCompute[prop] === null) {
+                                    .isBetween(start, end) || forCompute[prop] === null) {
 
                                     delete forCompute[prop];
                                 }
@@ -462,8 +478,7 @@
                             for (var prop in forCompute) {
                                 editedProp = prop.replace(/\//, '-') + '-01';
                                 if (!moment(editedProp)
-                                    .isBetween($scope.currentFiscalYear.currentYearMonthBefore,
-                                    $scope.currentFiscalYear.nextYear) || forCompute[prop] === null) {
+                                    .isBetween(start, end) || forCompute[prop] === null) {
 
                                     delete forCompute[prop];
                                 }
@@ -486,8 +501,7 @@
                         for (var prop in forCompute) {
                             editedProp = prop.replace(/\//, '-') + '-01';
                             if (!moment(editedProp)
-                                .isBetween($scope.currentFiscalYear.currentYearMonthBefore,
-                                $scope.currentFiscalYear.nextYear) || forCompute[prop] === null) {
+                                .isBetween(start, end) || forCompute[prop] === null) {
 
                                 delete forCompute[prop];
                             }
@@ -501,6 +515,7 @@
                             });
                         }
                     }
+                    /* END Francis Nash Jasmin 2022/03/03 */
 
                     //console.log(resSum, revSum, cmSum);
 
