@@ -545,3 +545,19 @@ td{
 }
 /*END Dullao, Joshua 02/23/2022*/
 
+
+/* START
+* Reynaldo Pena Jr.
+* February 28, 2022/
+
+/*Fixed Input Field for Page Size*/
+#pageSize{
+	width: 70px;
+}
+
+/* Alternate colors for the table rows*/
+.table-striped>tbody>tr:nth-child(even) {
+    background-color: rgb(194, 209, 232)
+}
+/*END Reynaldo Pena Jr. February 28, 2022*/
+
