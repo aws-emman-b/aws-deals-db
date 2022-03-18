@@ -2,7 +2,7 @@
     'use strict';
  
     angular
-        .module('app', ['ui.router', 'ui.bootstrap', 'ngToast'])
+        .module('app', ['ui.router', 'ui.bootstrap', 'ngToast', 'ngFileUpload', 'ngFileSaver'])
         .config(config)
         .run(run);
 

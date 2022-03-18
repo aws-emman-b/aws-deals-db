@@ -128,5 +128,17 @@
             return ($scope.fieldForm.type === 'dropdown' || $scope.fieldForm.type === 'radio' 
             || $scope.fieldForm.type === 'checkbox' ) ? true : false;
         }
+
+        /* START Francis Nash Jasmin 2022/03/15 
+        * Added function for adding new module to modules database. 
+        */
+        $scope.moduleName = '';
+        $scope.addModule = function(moduleName) {
+            ModulesService.addModule({name: moduleName}).then(function () {
+                ngToast.success('Module added.');
+            }).catch(function (err) {
+                ngToast.danger(err);
+            });
+        }
     }
 })();

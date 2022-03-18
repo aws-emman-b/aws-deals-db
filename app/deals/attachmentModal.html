@@ -1,0 +1,46 @@
+<!-- /*
+* START Francis Nash Jasmin 2022/03/09
+* 
+* Added modal for selecting files to be attached to a new or existing deal.
+* 
+*/ -->
+<div class="modal-header">
+    <h4 class="modal-title" id="modal-title">Attachments for Deal</h4>
+</div>
+<div class="modal-body" id="modal-body">
+    <form ng-controller="UploadCtrl as up" name="up.attachForm">
+        <div class="row">
+            <div class="col-md-3">
+                <label>Attach File</label>
+            </div>
+            <div class="col-md-9">
+                <input 
+                    type="file" 
+                    ngf-select
+                    class="form-control input-sm" 
+                    id="file" 
+                    name="file"
+                    ng-model="up.file"
+                    required
+                    file-upload
+                />
+            </div> 
+        </div>
+        <br/>
+        <div class="row">
+            <div class="col-md-3">
+                <label>Attachment Description</label>
+            </div>
+            <div class="col-md-9">
+                <textarea class="form-control input-sm" rows="4" ng-model="up.description"></textarea>
+            </div>
+        </div>
+        <!-- <i ng-show="up.upload_form.file.$error.required">*required</i><br> -->
+        <hr />
+        <div class="modal-footer">
+            <button class="btn btn-default" type="button" ng-click="modal.cancel()">Cancel</button>
+            <button class="btn btn-primary" type="button" ng-click="up.submit(modal.data)">Add file</button>
+        </div>
+    </form>
+</div>
+<!-- /*  END Francis Nash Jasmin 2022/03/18 */ -->

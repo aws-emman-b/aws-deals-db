@@ -235,6 +235,17 @@
             window.open($state.href('dealForm', { ID: dealID }), dealID);
         }
 
+        /*
+        * START Francis Nash Jasmin 2022/03/15
+        * 
+        * Added formatting of dates to YYYY/MM/DD.
+        * 
+        */
+        $scope.formatDate = (date) => {
+            return moment(new Date(date)).format('YYYY/MM/DD');
+        }
+        /* END Francis Nash Jasmin 2022/03/15 */
+
         // Used to get values under resources, revenue and cm in a deal's distribution field.
         // value for dist is res, rev or cm
         // contract is Direct to Customer or Intra-Company
@@ -244,14 +255,16 @@
                 if(deal.distribution[contract][dist] !== undefined) {
                     if(deal.distribution[contract][dist][distType] !== undefined) {
                         // cm field in distribution does not have jp or gd subfield
+                        /* START Francis Nash Jasmin 2022/03/15 Added parsing of numbers to Float when displaying in table and computing for totals. */
                         if(dist === 'cm') {
                             if(Object.keys(deal.distribution[contract][dist]).includes(month.substring(0, 7))) {
-                                return deal.distribution[contract][dist][month.substring(0, 7)];
+                                return parseFloat(deal.distribution[contract][dist][month.substring(0, 7)]);
                             } else return '';
                         }
                         if(Object.keys(deal.distribution[contract][dist][distType]).includes(month.substring(0, 7))) {
-                            return deal.distribution[contract][dist][distType][month.substring(0, 7)];
+                            return parseFloat(deal.distribution[contract][dist][distType][month.substring(0, 7)]);
                         } else return '';
+                        /* END Francis Nash Jasmin 2022/03/15 */
                     } else return '';
                 } else return '';
             } else return '';

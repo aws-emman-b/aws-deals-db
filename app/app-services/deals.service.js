@@ -30,6 +30,9 @@
         service.deleteDeal = deleteDeal;
         service.newDealFile = newDealFile;
         service.generateLogs = generateLogs;
+        service.addFileToDB = addFileToDB;
+        service.downloadFile = downloadFile;
+        service.deleteFile = deleteFile;
  
         return service;  
         
@@ -48,6 +51,22 @@
             return $http.post('/api/deals/generateLogs', dealIDs).then(handleSuccess, handleError);
         }
         /* END Francis Nash Jasmin 2022/02/23 */
+
+        /* START Francis Nash Jasmin 2022/03/09
+        * Added post, get, and delete request for adding, downloading and deleting attachments to the backend.
+        */
+        function addFileToDB(fileInfo) {
+            return $http.post('/api/deals/addFileToDB', fileInfo).then(handleSuccess, handleError);
+        }
+
+        function downloadFile(filename) {
+            return $http.get('/api/deals/downloadFile/' + filename, { responseType: 'blob' }).then(handleSuccess, handleError);
+        }
+
+        function deleteFile(filename) {
+            return $http.delete('/api/deals/deleteFile/' + filename).then(handleSuccess, handleError);
+        }
+        /* END Francis Nash Jasmin 2022/03/16 */
 
         function updateDeal(dealsForm) {
             //console.log(dealsForm)

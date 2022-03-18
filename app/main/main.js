@@ -6,7 +6,7 @@
         .controller('MainController', Controller);
 
     
-    function Controller($scope, $rootScope, $state, UserService, $window) {
+    function Controller($scope, $rootScope, $state, UserService, ModulesService, $window) {
         
         //console.log($rootScope.user);
         $scope.currentUser = $rootScope.user;
@@ -27,7 +27,7 @@
                     "<div>"+
                 "</div>"+
             "</div>",
-            //template: "<div class='popover tour'><div class='arrow'></div><div class='popover-content'></div><div class='popover-navigation'><button class='btn btn-default' data-role='prev'>Å· Prev</button><span data-role='separator'>|</span><button class='btn btn-default' data-role='next'>Next Å‚</button></div><button class='btn btn-default' data-role='end'>End tour</button></div>",
+            //template: "<div class='popover tour'><div class='arrow'></div><div class='popover-content'></div><div class='popover-navigation'><button class='btn btn-default' data-role='prev'>ÔøΩÔøΩ Prev</button><span data-role='separator'>|</span><button class='btn btn-default' data-role='next'>Next ÔøΩÔøΩ</button></div><button class='btn btn-default' data-role='end'>End tour</button></div>",
             onEnd: function (tour) { 
                 document.getElementById("overlay").style.display = "none";
             }
@@ -185,5 +185,20 @@
             document.getElementById("overlay").style.display = "block";
             introTour.start();
         }
+
+        /* START Francis Nash Jasmin 2022/03/18
+        * Added option to show or hide Import Deals tab through the Imports option in the Fields page.
+        */
+        $scope.showImportModule = true;
+
+        function getAllFields() {
+            ModulesService.getAllModules().then(function (allModules) {
+                $scope.showImportModule = allModules.find(a => a.name === 'imports').fields.find(a => a.name === 'Import Deals').showInList;
+            }).catch(function (err) {
+            });
+        }
+
+        getAllFields();
+        /* END Francis Nash Jasmin 2022/03/18 */
     }
 })();

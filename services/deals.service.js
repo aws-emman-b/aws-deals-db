@@ -29,6 +29,10 @@ var path = require('path');
 
 var xlsx = require('xlsx');
 
+var path = require("path");
+var { Console } = require('console');
+var moment = require('moment');
+
 var service = {};
 
 service.addDeal = addDeal;
@@ -37,7 +41,10 @@ service.getDealById = getDealById;
 service.deleteDeal = deleteDeal;
 service.uploadFile = uploadFile;
 service.generateLogs = generateLogs;
-
+service.attachFile = attachFile;
+service.addFileToDB = addFileToDB;
+service.downloadFile = downloadFile;
+service.deleteFile = deleteFile;
 
 module.exports = service;
 
@@ -47,9 +54,6 @@ module.exports = service;
 * Added generation of logs in the backend (for the use of import only).
 * 
 */
-var { Console } = require('console');
-var moment = require('moment');
-
 function generateLogs(dealIDs) {
     var deferred = Q.defer();
     var date = moment(new Date()).format('YYYY-MM-DD_HH-mm-ss');
@@ -134,6 +138,7 @@ function addDeal(deal, user) {
 
         //add change history array here
         deal['Change History'] = [];
+        deal['attachments'] = [];
         deal['Change History'].push({
             date: getCurrentDate(),
             user: user,
@@ -151,7 +156,7 @@ function addDeal(deal, user) {
             function (err, doc) {
                 if (err) deferred.reject(err);
 
-                deferred.resolve();
+                deferred.resolve(deal);
             });
 
     }
@@ -171,6 +176,159 @@ function addDeal(deal, user) {
 
     return deferred.promise;
 }
+
+/* START Francis Nash Jasmin 2022/03/09
+* Added post, get, and delete request for uploading, downloading and deleting attachments to the backend, 
+* as well as adding file information (filename, description, directory) to the database.
+*/
+function attachFile(req, res) {
+    var deferred = Q.defer();
+
+    // Create attachments folder if it does not exist yet.
+    var dir = './attachments';
+    if(!fs.existsSync(dir)){
+        fs.mkdirSync(dir);
+    }
+
+    // Stores the uploaded file in the attachments folder of the server
+    var storage = multer.diskStorage({
+        destination: function (req, file, cb) {
+            var folder = file.originalname.split(' ')[0].replace(/[\[\]']+/g,'');
+            if(!fs.existsSync(`${dir}/${folder}`)){
+                fs.mkdirSync(`${dir}/${folder}`);
+            }
+            cb(null, `./attachments/${folder}`)
+        },
+        filename: function (req, file, cb) {
+            cb(null, file.originalname)
+        }
+    });
+    
+    var upload = multer({
+        storage: storage
+    }).single('file');
+
+    upload(req, res, function(err) {
+        if(err) {
+            return deferred.reject({ error_code: 1, err_desc: err });
+        }
+    })
+    
+    deferred.resolve({ error_code: 0, err_desc: null });
+    return deferred.promise;
+}
+
+// Saves the filename, description, and directory in the mongo database.
+function addFileToDB(fileInfo) {
+    var deferred = Q.defer();
+    var deal = fileInfo.deal;
+    var attachmentsArr = [];
+    fileInfo.files.map(file => {
+        attachmentsArr.push({
+            fileName: file.file,
+            description: file.description,
+            directory: `./attachments/${deal.ID}/${file.file}`
+        })
+    });
+
+    db.deals.findOne({ _id: mongo.helper.toObjectID(deal._id) }, function (err, aDeal) {
+        if (err) {
+            deferred.reject(err);
+        } else if (aDeal) {
+            if(aDeal['attachments'] === undefined) {
+                aDeal['attachments'] = [];
+            }
+            
+            aDeal['attachments'] = aDeal['attachments'].concat(attachmentsArr);
+
+            db.deals.update({ ID: deal.ID }, { $set: { attachments: aDeal['attachments'] } }, function (err) {
+                if (err) {
+                    deferred.reject(err);
+                }
+                deferred.resolve();
+            });
+        } else {
+            deferred.reject({ notFound: true });
+        }
+    });
+
+    deferred.resolve();
+    return deferred.promise;
+}
+
+// Gets the file path where the file will be downloaded from.
+function downloadFile(filename) {
+    var deferred = Q.defer();
+
+    var ID = filename.split(' ')[0].replace(/[\[\]']+/g,'');
+    var selectedDeal = {};
+    var filePath = '';
+
+
+    db.deals.findOne({ ID: ID }, function (err, deal) {
+        if (err) deferred.reject(err);
+
+        if (deal) {
+            selectedDeal = deal;
+        } else {
+            deferred.reject();
+        }
+
+        filePath = selectedDeal.attachments.find(attach => attach.fileName === filename).directory;
+        deferred.resolve(filePath);
+    });
+   
+    return deferred.promise;
+}
+
+function deleteFile(filename) {
+    var deferred = Q.defer();
+    var ID = filename.split(' ')[0].replace(/[\[\]']+/g,'');
+    var selectedDeal = {};
+
+    db.deals.findOne({ ID: ID }, function (err, deal) {
+        if (err) deferred.reject(err);
+
+        if (deal) {
+            selectedDeal = deal;
+        } else {
+            deferred.reject();
+        }
+
+        // Remove the file from the attachments folder/ directory first
+        let filePath = selectedDeal.attachments.find(attach => attach.fileName === filename).directory;
+        fs.stat(filePath, function(err) {
+            if(err) {
+                console.log(err)
+                return deferred.reject(err);
+            }
+
+            fs.unlinkSync(filePath, function(err) {
+                if(err) {
+                    return deferred.reject(err);
+                }
+                deferred.resolve();
+            });
+        });
+
+        // Get attachments field
+        // Remove the entry with that specific file name
+        // Replace the old array with the new attachment array
+        deal['attachments'] = deal['attachments'].filter(attach => attach.fileName !== filename);
+        delete deal._id;
+
+        // Use update method
+        db.deals.update({ ID: deal.ID }, { $set: deal }, function (err) {
+            if (err) {
+                deferred.reject(err);
+            }
+            deferred.resolve();
+        });
+    });
+
+    return deferred.promise;
+}
+/*  END Francis Nash Jasmin 2022/03/18 */ 
 
 function editDeal(deal, user) {
     var deferred = Q.defer();
