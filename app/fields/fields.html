@@ -1,6 +1,9 @@
 <div class="row">
     <div class="col-md-3">
-        
+        <!-- Used to add new module "Attachments" to the database. -->
+        <!-- <input type="text" class="form-control" ng-model="moduleName" maxlength="50" placeholder="Module Name" required pattern="[^.$]+" />
+        <button type="submit" class="btn btn-primary" ng-click="addModule(moduleName)">Submit</button> -->
+
         <select class="form-control" ng-model="module.name" ng-change="getModuleByName();">
             <!--<option value="deals">Deals</option>
             <option value="clients">Clients</option>-->
@@ -10,6 +13,7 @@
             <option value="dealdistribution">Deal Distribution</option>
             <option value="dealstatus">Deal Status</option>
             <option value="dealcontent">Deal Content</option>
+            <option value="attachments">Attachments</option> <!-- START Francis Nash Jasmin March 10, 2022 Added Attachments module to fields page. END March 15, 2022-->
             <option value="businessunits">Business Units</option>
             <option value="clients">Clients</option>
             <option value="users">Users</option>
