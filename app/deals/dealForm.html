@@ -1400,6 +1400,56 @@
         </div>
         <div class="col-md-1"></div>
     </div>
+    <!-- /*
+    * START Francis Nash Jasmin 2022/03/09
+    * 
+    * Added attachments for a new or existing deal.
+    * 
+    */ -->
+    <hr class="dealsCollapsible">
+    <div class="row" ng-show="showAttachmentForm">
+        <div class="col-md-1"></div>
+        <div class="col-md-10">
+            <div class="panel-heading">
+                <h4 class="accordion-toggle attachmentsSection">
+                    <span class="glyphicon glyphicon-chevron-down" data-toggle="collapse" data-parent="#accordion" data-target="#attachmentsSection">&nbsp;</span>Attachments
+                    
+                    <button style="float: right;" type="button" class="btn btn-default btn-sm" ng-click="openModal()">
+                        <span class="glyphicon glyphicon-plus"></span>
+                    </button>
+                </h4>
+            </div>
+            <div id="attachmentsSection" class="collapse in">
+                <table class="table table-hover normal-table table-striped">
+                    <thead id="header-fixed">
+                        <th>
+                            <div>File Name</div>
+                        </th>
+                        <th>
+                            <div>Description</div>
+                        </th>
+                        <th></th>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="attachment in dealForm.attachments">
+                            <td>{{attachment.fileName.split(' ').slice(1).join(' ')}}</td>
+                            <td>{{(attachment.description === 'null' || attachment.description === null) ? 'No description' : attachment.description}}</td>
+
+                            <td class="tools">
+                                <a ng-hide="dealForm.ID === undefined"><i class="fa fa-download" aria-hidden="true" data-toggle="tooltip" title="Download" ng-click="downloadFile(attachment.fileName)"></i></a>
+                                &nbsp;
+                                <!-- Delete from directory and database -->
+                                <a><i class="fa fa-trash" aria-hidden="true" data-toggle="tooltip" title="Delete" ng-click="deleteFile(attachment.fileName)"></i></a>
+                            </td>
+                            <td ng-hide="true">{{attachment.directory}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-md-1"></div>
+    </div>
+    <!-- /*  END Francis Nash Jasmin 2022/03/18 */ -->
     <!-- CHANGE HISTORY -->
     <div class="row">
         <div class="col-md-1"></div>

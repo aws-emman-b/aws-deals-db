@@ -6,7 +6,7 @@
         .controller('DealFormController', Controller)
         .directive('numberInput', Directive);
 
-    function Controller($scope, $rootScope, $state, $stateParams, $filter, ModulesService, DealsService, ClientService, ngToast) {
+    function Controller($scope, $rootScope, $state, $stateParams, $filter, ModulesService, DealsService, ClientService, ngToast, $uibModal, FileSaver, Upload) {
         /*
         * START Francis Nash Jasmin 2022/02/21
         * 
@@ -39,7 +39,8 @@
             process: {},
             distribution: {},
             status: {},
-            content: {}
+            content: {},
+            attachments: []
         };
 
         //working format for two way conversion
@@ -75,7 +76,8 @@
             process: [],
             distribution: [],
             status: [],
-            content: []
+            content: [],
+            attachments: []
         };
 
         //default strings for distribution table
@@ -100,6 +102,12 @@
         $scope.total[distributionStrings.intra] = {};
         $scope.total[distributionStrings.intra][$scope.currentFiscalYear.years] = {};
 
+        /* START Francis Nash Jasmin 2022/03/15
+        * Added option to show or hide attachment section in deal form through the Attachments option in the Fields page.
+        */
+        $scope.showAttachmentForm = true;
+        /* END Francis Nash Jasmin 2022/03/15 */
+
         //get the fields arrays of dealessential, dealprofile, dealprocess, dealstatus, and dealcontent
         function getAllFields() {
             ModulesService.getAllModules().then(function (allModules) {
@@ -111,6 +119,10 @@
                         $scope.fields[category] = allModules[i].fields;
                     }
                 }
+                /* START Francis Nash Jasmin 2022/03/15 Added code for determining whether the attachment section should be shown in the deals form or not. */
+                $scope.fields.attachments = allModules.find(a => a.name === 'attachments').fields;
+                $scope.showAttachmentForm = $scope.fields.attachments.find(a => a.name === 'Attachments').showInList;
+                /* END Francis Nash Jasmin 2022/03/15 */
             }).catch(function (err) {
             });
         }
@@ -198,22 +210,64 @@
             });
         }
 
+        $scope.tempAttachments = [];
+
         $scope.submit = function () {
             //use Object.assign(target, source) instead
             var tempDealForm = {};
             Object.assign(tempDealForm, $scope.dealForm);
+            var createdDeal = {};
 
             //use false to convert date objects to datestrings
             try {
                 tempDealForm = preProcess(tempDealForm, false);
                 if (tempDealForm._id === undefined) {
                     DealsService.addDeal(tempDealForm)
-                        .then(function () {
+                        .then(function (deal) {
+                            // Gets the created deal from the backend for the processing of attachment files.
+                            createdDeal = deal;
                             ngToast.success('Deal added');
                             $state.transitionTo('dealList');
                         })
                         .catch(function (err) {
+                        })
+                        .finally(function () {
+                            /* START Francis Nash Jasmin 2022/03/14
+                            * Added code for adding attachments to a newly created deal.
+                            */
+                            // Only add the attachment files after the deal has been created and added to the database.
+                            if($scope.tempAttachments.length !== 0) {
+                                // Rename files first from [TEMP] Filename.extension to [DL-####] Filename.extension
+                                let renamedFiles = $scope.tempAttachments.map(attachment => {
+                                    let datetimestamp = moment(new Date()).format('YYYY-MM-DD_HH-mm-ss');
+                                    let originalName = attachment.file.name.substring(0, attachment.file.name.lastIndexOf('.')).split(' ').slice(1).join(' ');
+                                    let extension = attachment.file.name.split('.').pop();
+                                    let newName = `[${createdDeal.ID}] ${originalName}-${datetimestamp}.${extension}`;
+                                    let renamedFile = new File([attachment.file.slice(0, attachment.file.size, attachment.file.type)], newName, {type: attachment.file.type});
+                                    return {...attachment, file: renamedFile};
+                                })
+                                
+                                // Call attachFile from backend to upload files. Uses ng-file-upload.
+                                renamedFiles.map(attachment => {
+                                    Upload.upload({
+                                        url: 'http://localhost:5000/api/deals/attachFile',
+                                        data: { file: attachment.file, 'description': attachment.description, 'deal': createdDeal } 
+                                    }).then(function (res) {
+                                        if(res.data.error_code === 0){
+                                            ngToast.success('File attached');
+                                        } else {
+                                            ngToast.danger('An error occurred while uploading the file.')
+                                        }
+                                    });
+                                })
 
+                                // The following code adds the filename and description to the deals database.
+                                let files = renamedFiles.map(a => {
+                                    return {...a, file: a.file.name, description: a.description}
+                                })
+                                DealsService.addFileToDB({files: files, deal: createdDeal}).then(function () {}).catch(function (err) {})
+                            }
+                            /* END Francis Nash Jasmin 2022/03/18 */
                         });
                 } else {
                     DealsService.updateDeal(tempDealForm)
@@ -386,7 +440,6 @@
             */
             //use variables like sumRes as temporary sum
             var i, resJP, resGD, revJP, revGD, cm, resSum, revSum, cmSum, forCompute, editedProp;
-            // TODO: Adjust automatically based on duration start
             var start = moment($scope.startingMonthYear).subtract(1, 'months').format('YYYY-MM-DD');
             var end = moment($scope.startingMonthYear).add(12, 'month').format('YYYY-MM-DD');
             //for direct or indirect
@@ -428,8 +481,12 @@
                                     delete forCompute[prop];
                                 }
                             }
-                            resJP = Object.values(forCompute);
-                            //console.log(resJP);
+
+                            /* START Francis Nash Jasmin 2022/03/15 Added parsing of values to Float when computing for totals. */
+                            resJP = Object.values(forCompute).map(function (val) { 
+                                return parseFloat(val); 
+                            });
+                            /* END Francis Nash Jasmin 2022/03/15 */
                         }
 
                         //for GD
@@ -444,7 +501,12 @@
                                     delete forCompute[prop];
                                 }
                             }
-                            resGD = Object.values(forCompute);
+
+                            /* START Francis Nash Jasmin 2022/03/15 Added parsing of values to Float when computing for totals. */
+                            resGD = Object.values(forCompute).map(function (val) { 
+                                return parseFloat(val); 
+                            });
+                            /* END Francis Nash Jasmin 2022/03/15 */
                         }
 
                         //compute total resource
@@ -469,7 +531,12 @@
                                     delete forCompute[prop];
                                 }
                             }
-                            revJP = Object.values(forCompute);
+
+                            /* START Francis Nash Jasmin 2022/03/15 Added parsing of values to Float when computing for totals. */
+                            revJP = Object.values(forCompute).map(function (val) { 
+                                return parseFloat(val); 
+                            });
+                            /* END Francis Nash Jasmin 2022/03/15 */
                         }
                         //for GD
                         if ($scope.dealForm.distribution[$scope.contracts[i]].rev.gd !== undefined) {
@@ -483,7 +550,12 @@
                                     delete forCompute[prop];
                                 }
                             }
-                            revGD = Object.values(forCompute);
+
+                            /* START Francis Nash Jasmin 2022/03/15 Added parsing of values to Float when computing for totals. */
+                            revGD = Object.values(forCompute).map(function (val) { 
+                                return parseFloat(val); 
+                            });
+                            /* END Francis Nash Jasmin 2022/03/15 */
                         }
 
                         //compute total revenue
@@ -506,7 +578,12 @@
                                 delete forCompute[prop];
                             }
                         }
-                        cm = Object.values(forCompute);
+
+                        /* START Francis Nash Jasmin 2022/03/15 Added parsing of values to Float when computing for totals. */
+                        cm = Object.values(forCompute).map(function (val) { 
+                            return parseFloat(val); 
+                        });
+                        /* END Francis Nash Jasmin 2022/03/15 */
 
                         //compute total cm
                         if (cm.length > 0) {
@@ -677,6 +754,76 @@
                 $scope.dealForm['profile']['AWS Resp (Dev) BU'] = $scope.devBU[0].BU;
             }
         }
+
+        /*
+        * START Francis Nash Jasmin 2022/03/10
+        * Added functions for downloading and deleting attachments of an already existing deal.
+        */
+        $scope.downloadFile = function(filename) {
+            try {
+                DealsService.downloadFile(filename)
+                    .then(function (res) {
+                        FileSaver.saveAs(res, filename);
+                        ngToast.success('File downloaded');
+                    })
+                    .catch(function (err) {
+                        ngToast.danger(err);
+                    });
+            } catch(e) {
+                ngToast.danger(e);
+            }
+        };
+
+        $scope.deleteFile = function(filename) {
+            if($scope.dealForm.ID === undefined) {
+                $scope.tempAttachments = $scope.tempAttachments.filter(attachment => attachment.file.name !== filename);
+                $scope.dealForm.attachments = $scope.dealForm.attachments.filter(file => file.fileName !== filename);
+            } else {
+                try {
+                    DealsService.deleteFile(filename)
+                        .then(function () {
+                            if(!window.alert('The file ' + filename + ' has been deleted successfully.')){
+                                window.location.reload();
+                            };
+                        })
+                        .catch(function (err) {
+                            console.log(err)
+                            ngToast.danger('Delete failed. File cannot be found.');
+                        });
+                } catch(e) {
+                    ngToast.danger(e);
+                }
+            }
+        };
+        /* END Francis Nash Jasmin 2022/03/18 */
+        
+        /*
+        * START Francis Nash Jasmin 2022/03/09
+        * Added code for opening a modal for adding attachment and description.
+        */
+        $scope.openModal = function() {
+            var modalInstance = $uibModal.open({
+                animation: true,
+                ariaLabelledBy: 'modal-title',
+                ariaDescribedBy: 'modal-body',
+                templateUrl: 'deals/attachmentModal.html',
+                controller: 'ModalInstanceCtrl',
+                controllerAs: 'modal',
+                resolve: {
+                    data: function () {
+                        return $scope.dealForm;
+                    },
+                    tempAttachments: function () {
+                        return $scope.tempAttachments;
+                    }
+                }
+            })
+            modalInstance.result.then(function () {
+            }).catch(function (resp) {
+                if (['cancel', 'backdrop click', 'escape key press'].indexOf(resp) === -1) throw resp;
+            });;
+        };
+        /* END Francis Nash Jasmin 2022/03/18 */
     }
 
     /*
@@ -772,3 +919,102 @@
 
     /*  END Francis Nash Jasmin 2022/02/08 */ 
 })();
+
+/*
+* START Francis Nash Jasmin 2022/03/09
+* Added controller for a modal for adding attachment and description for new and existing deals.
+*/
+angular.module('app').controller('ModalInstanceCtrl', function ($uibModalInstance, data, tempAttachments, $scope, $window) {
+    var modal = this;
+    // Data contains deal information
+    modal.data = data;
+    // tempattachments contain files for a deal that has not been created yet.
+    modal.tempAttachments = tempAttachments;
+    
+    // Called when adding attachments to existing deals.
+    $scope.submit = function (fileName) {
+        $uibModalInstance.close();
+        if(!$window.alert('Success. ' + fileName + ' attached.')){
+            window.location.reload();
+        };
+    };
+
+    // Called when adding attachment and description for a deal that is not created or added to the database yet.
+    $scope.addFileToNewDeal = function(file, description) {
+        $uibModalInstance.close();
+        modal.tempAttachments.push({
+            file,
+            description
+        });
+    }
+  
+    modal.cancel = function () {
+        $uibModalInstance.dismiss('cancel');
+    };
+});
+/* END Francis Nash Jasmin 2022/03/18 */
+
+/*
+* START Francis Nash Jasmin 2022/03/09
+* Added controller for a modal for adding attachment and description for new and existing deals.
+*/
+angular.module('app').controller('UploadCtrl', ['Upload', '$window', '$scope', 'DealsService', function (Upload, $window, $scope, DealsService, data) {
+    var modal = this;
+    // Data contains deal information
+    modal.data = data;
+    
+    modal.submit = function (deal) {
+        // upload is only called when a file of any type has been selected.
+        if(modal.file) {
+            modal.upload(modal.file, modal.description, deal);
+        }
+    };
+
+    modal.upload = function (file, description, deal) {
+        var originalName = file.name.substring(0, file.name.lastIndexOf('.'));
+        var extension = file.name.split('.').pop();
+        let datetimestamp = moment(new Date()).format('YYYY-MM-DD_HH-mm-ss');
+        
+        // File naming convention is: [DL-####] Filename-YYYY-MM-DD_HH-mm-ss.ext for existing deals and [TEMP] Filename.ext for deals not created yet.
+        // [TEMP] file will be renamed to [DL-####] Filename-YYYY-MM-DD_HH-mm-ss.ext when deal has been created and added to DB.
+        if(deal.ID === undefined) {
+            var newName = `[TEMP] ${originalName}.${extension}`;
+        } else {
+            var newName = `[${deal.ID}] ${originalName}-${datetimestamp}.${extension}`;
+        }
+        var renamedFile = new File([file.slice(0, file.size, file.type)], newName, {type: file.type});
+
+        if(deal.ID !== undefined) {
+            // Code is executed when there is an existing deal.
+            // Calls attachFile function from backend to upload file.
+            Upload.upload({
+                url: 'http://localhost:5000/api/deals/attachFile',
+                data: { file: renamedFile, 'description': description, 'deal': deal } 
+            }).then(function (res) {
+                if(res.data.error_code === 0){
+                    $scope.submit(res.config.data.file.name);
+                } else {
+                    $window.alert('An error occured while uploading the file.');
+                }
+            });
+
+            // Used to add filename and description to the deals database.
+            let file = [{file: renamedFile.name, description: description}];
+            DealsService.addFileToDB({files: file, deal: deal})
+            .then(function () {})
+            .catch(function (err) {
+                console.log(err)
+            })
+        } else {
+            // Code is executed when deal is not created yet.
+            // Adds attachment to deal form.
+            deal.attachments.push({
+                fileName: renamedFile.name,
+                description: description,
+                directory: ''
+            });
+            $scope.addFileToNewDeal(renamedFile, description);
+        }
+    }
+}]);
+/* END Francis Nash Jasmin 2022/03/18 */
