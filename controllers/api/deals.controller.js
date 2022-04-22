@@ -122,12 +122,20 @@ router.delete('/deleteDeal/:ID', function(req, res, next) {
 });
 
 router.post('/upload/:name', function(req, res, next) {
-    dealsService.uploadFile(req, res).then(function() {
-        res.status(200).send();
+    // dealsService.uploadFile(req, res).then(function() {
+    /*
+    * START Francis Nash Jasmin 2022/04/19
+    * 
+    * Changed dealService function used in importing deals.
+    * 
+    */
+    dealsService.importDeals(req, res).then(function(deals) {
+        res.status(200).send(deals);
     }).catch(function(err) {
         res.status(400).send(err);
     });
 });
+/*  END Francis Nash Jasmin 2022/04/22 */ 
 
 module.exports = router;
 

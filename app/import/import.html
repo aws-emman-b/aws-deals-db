@@ -38,7 +38,7 @@
     </div>
     <!-- /*  END Francis Nash Jasmin 2022/02/21 */ -->
 </form>
-<div class="row" ng-show="showTable || importedDeals.length !== 0">
+<div class="row" ng-show="showTable">
     <!-- /*
     * START Francis Nash Jasmin 2022/02/21
     * 
@@ -162,7 +162,7 @@
                     <td class="tContents">{{ deal.Customer }}</td>
                     <td class="tContents">{{ deal.Subject }}</td>
                     <td class="tContents">{{ deal.Level }}</td>
-                    <td class="tContents">{{ getStep(deal.Step) }}</td>
+                    <td class="tContents">{{ deal.Step }}</td>
                     <td class="tContents">{{ deal.ServiceType }}</td>
                     <td class="tContents">{{ deal.dspRespSales }}</td>
                     <td class="tContents">{{ deal.dspRespDev }}</td>
@@ -198,21 +198,26 @@
         </table> 
     </div>
     <!-- /*  END Francis Nash Jasmin 2022/02/21 */ -->
-    <!-- /*
-    * START Francis Nash Jasmin 2022/02/28
-    * 
-    * Changed placement of Submit button.
-    * 
-    */ -->
-    <div style="padding: 10px;">
-        <button 
-            type="submit" 
-            class="btn btn-success"  
-            ng-click="addDeals(importedDeals)"
-        >
-            Submit
-        </button>
-    </div>
-    <!-- /*  END Francis Nash Jasmin 2022/02/28 */ -->
 </div>
+<!-- /*
+* START Francis Nash Jasmin 2022/04/19
+* 
+* Changed placement of Submit button so that the clicking of Preview button is optional when importing deals.
+* 
+*/ -->
+<div style="padding: 10px;">
+    <button 
+        type="submit" 
+        class="btn btn-success"  
+        ng-click="submitOnClick()"
+        ng-disabled="file === undefined || loading"
+    >
+        <span style="text-align:center" class="spinner" ng-show="loading">
+            <i class="glyphicon glyphicon-refresh spinning"></i>
+        </span>
+        {{ buttonText }}
+    </button>
+    
+</div>
+<!-- /*  END Francis Nash Jasmin 2022/04/22 */ -->
 <!-- /*  END Francis Nash Jasmin 2022/02 */ -->

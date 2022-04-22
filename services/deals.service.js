@@ -46,6 +46,8 @@ service.addFileToDB = addFileToDB;
 service.downloadFile = downloadFile;
 service.deleteFile = deleteFile;
 
+service.importDeals = importDeals;
+
 module.exports = service;
 
 /*
@@ -530,3 +532,275 @@ function getCurrentDate() {
     //format to yyyy/MM/dd
     return currentDate.getFullYear() + '/' + currentMonth + '/' + currentDay;
 }
+
+/*
+* START Francis Nash Jasmin 2022/04/19
+* 
+* Moved excel file reading and import preprocessing functionality to the backend.
+* 
+*/
+// Contains the deal's step, levels, JP and EN equivalent.
+var steps_levels = [
+    { "Step": "1", "Level": "1.1", "JA": "契約済", "EN": "Contracted" },
+    { "Step": "1", "Level": "1.2", "JA": "発注済", "EN": "Order Approved" },
+    { "Step": "2", "Level": "2.1", "JA": "発注待ち", "EN": "Waiting for Client Order" },
+    { "Step": "2", "Level": "2.2", "JA": "見積り提出済", "EN": "Estimate Submitted" },
+    { "Step": "2", "Level": "2.3", "JA": "見積り中", "EN": "Under Estimation" },
+    { "Step": "3", "Level": "3.1", "JA": "概算見積り提出済", "EN": "Rough Estimate Submitted" },
+    { "Step": "3", "Level": "3.2", "JA": "概算見積り提出予定", "EN": "Rough Estimate Submission Plan" },
+    { "Step": "3", "Level": "3.3", "JA": "提案済", "EN": "Plan Proposed" },
+    { "Step": "3", "Level": "3.4", "JA": "提案予定", "EN": "Plan Proposal" },
+    { "Step": "4", "Level": "4.1", "JA": "概要提案済", "EN": "Planned Overview Proposed" },
+    { "Step": "4", "Level": "4.2", "JA": "概要提案予定", "EN": "Planned Overview Proposal" },
+    { "Step": "5", "Level": "5.1", "JA": "訪問済", "EN": "Client Visited" },
+    { "Step": "5", "Level": "5.2", "JA": "訪問予定", "EN": "Client Visit Scheduled" },
+    { "Step": "9", "Level": "9.1", "JA": "失注", "EN": "Lost Order" }
+]
+
+// Makes the string into sentence case.
+function capitalize(s) { 
+    return s.replace(/\w\S*/g, function(t) { return t.charAt(0).toUpperCase() + t.substr(1).toLowerCase(); }); 
+}
+
+// Converts date to yyyy/mm/dd format
+function convertDateToString(date) {
+    return moment(new Date(Math.round((date - 25569) * 86400 * 1000))).format('YYYY/MM/DD');
+}
+
+// Get the equivalent/ code for the step, as step is imported as kanji.
+function getStep(stepJA) {
+    let steps = steps_levels;
+    var index = -1;
+    for(var i = 0; i < steps.length; i++) {
+        if(steps[i].JA.includes(stepJA.trim())) {
+            index = i;
+            break;
+        }
+    }
+    return steps[index].Level;
+}
+
+
+function preprocessDeals(dealArray) {
+    var processedDeals = [];
+    dealArray.forEach(dealObj => {
+        let deal = {
+            essential: {},
+            profile: {},
+            process: {},
+            distribution: {
+                'Direct to Client': { res: {}, rev: {}, cm: {} },
+                total: {}
+            },
+            status: {},
+            content: {}
+        };
+
+        deal['ID'] = dealObj.DocNumber;
+        deal.essential['Deal Name'] = dealObj.Subject;
+        deal.essential['Due Date'] = convertDateToString(dealObj.DueDate);
+        
+        deal.profile['Country'] = dealObj.BU;
+        deal.profile['Division'] = dealObj.Division;
+        deal.profile['Client'] = dealObj.Customer;
+        deal.profile['Client Resp'] = dealObj.Customer;
+        deal.profile['Level'] = dealObj.Level;
+        deal.profile['Step'] = getStep(dealObj.Step);
+        deal.profile['Step Description'] = dealObj.Step;
+        deal.profile['Type'] = dealObj.ServiceType === 'AG' ? dealObj.ServiceType : capitalize(dealObj.ServiceType);
+        deal.profile['Duration (Start)'] = convertDateToString(dealObj.StartDate);
+        deal.profile['Duration (End)'] = convertDateToString(dealObj.EndDate);
+        deal.profile['AWS Resp (Sales) person'] = dealObj.dspRespSales;
+        deal.profile['AWS Resp (Sales) BU'] = dealObj.BU;
+        deal.profile['AWS Resp (Dev) person'] = dealObj.dspRespDev;
+        deal.profile['AWS Resp (Dev) BU'] = dealObj.BUDev;
+        deal.profile['SD'] = dealObj.BUDev;
+
+        // get the fields that starts with Month
+        let filteredMonths = Object.keys(dealObj)
+            .filter(key => key.startsWith('Month'))
+            .reduce((obj, key) => {
+                obj[key] = dealObj[key];
+                return obj;
+            }, {});
+        
+        // Used to create the values for the distribution field
+        let resJP = getKeys(filteredMonths, dealObj, 'res', true)
+        let resGD = getKeys(filteredMonths, dealObj, 'res', false)
+        let revJP = getKeys(filteredMonths, dealObj, 'rev', true)
+        let revGD = getKeys(filteredMonths, dealObj, 'rev', false)
+        let cm = getKeys(filteredMonths, dealObj, 'cm', false)
+
+        // add distribution here, key name should be yyyy/mm only
+        deal.distribution['Direct to Client'].res['jp'] = resJP;
+        deal.distribution['Direct to Client'].res['gd'] = resGD;
+        deal.distribution['Direct to Client'].rev['jp'] = revJP;
+        deal.distribution['Direct to Client'].rev['gd'] = revGD;
+        deal.distribution['Direct to Client'].cm = cm;
+
+        processedDeals.push(deal);
+    })
+    return processedDeals;
+}
+
+// Get the values for res, rev, and cm under the distribution field
+// Sample structure in database:
+// distribution -> Direct to Client -> res -> jp -> 2022/04: "12"
+// type is res, rev, or cm
+// isJP tells whether the values fall under jp or gd
+function getKeys(filteredMonths, deal, type, isJP) {
+    // check if column names have the same ending (_1, _2, _3...), same ending means they fall on the same month
+    // remove J first if isJP is true, e.g. MM_6J to MM_6
+    // make value of month the key
+    let values = Object.keys(deal)
+        .filter(key => 
+            ((type === 'res' && isJP) && (key.startsWith('MM') && key.endsWith('J'))) ||
+            ((type === 'res' && !isJP) && (key.startsWith('MM') && !key.endsWith('J'))) ||
+            ((type === 'rev' && isJP) && (key.startsWith('Yen') && key.endsWith('J'))) ||
+            ((type === 'rev' && !isJP) && (key.startsWith('Yen') && !key.endsWith('J'))) ||
+            ((type === 'cm') && (key.startsWith('CM')))
+        )
+        .reduce((obj, key) => {
+            if(isJP) {
+                obj[key.slice(0, -1).split('_')[1]] = deal[key];
+            } else {
+                obj[key.split('_')[1]] = deal[key];
+            }
+            
+            return obj;
+        }, {});
+
+    let keys = {};
+    Object.keys(filteredMonths)
+        .filter(month => {
+            return Object.keys(values).includes(month.split('_')[1])
+        })
+        .forEach((month, index) => {
+            let value = Object.keys(values)[index];
+            if(value !== undefined) {
+                if(month.split('_')[1] === value){
+                    // Store this in an object
+                    keys[convertDateToString(filteredMonths[month]).slice(0, 7)] = values[value]
+                }
+            }
+            if (keys[convertDateToString(filteredMonths[month]).slice(0, 7)] === '') {
+                delete keys[convertDateToString(filteredMonths[month]).slice(0, 7)];
+            }
+            
+        })
+    return keys;
+}
+
+
+function importDeals(req, res) {
+    var deferred = Q.defer();
+    var dir = './uploads';
+    if(!fs.existsSync(dir)){
+        fs.mkdirSync(dir);
+    }
+    var storage = multer.diskStorage({
+        destination: dir,
+        filename: function (req, file, cb) {
+            return cb(null, file.originalname);
+        },
+    });
+    var upload = multer({
+        storage: storage,
+        fileFilter: function (req, file, cb) {
+            if (path.extname(file.originalname) !== '.xls' && path.extname(file.originalname) !== '.xlsx' && path.extname(file.originalname) !== '.ods' && path.extname(file.originalname) !== '.xlsm') {
+                return cb(new Error('Wrong file extension'));
+            }
+            cb(null, true);
+        }
+    }).single(req.params.name);
+
+    var spreadsheet = {};
+    var deals = [];
+
+    // Read excel file contents and convert to deal objects.
+    upload(req, res, function (err) {
+        if (err) {
+            console.log(err);
+            deferred.reject(err);
+        } else if (!req.file) {
+            console.log('no file uploaded');
+            deferred.reject({ NO_FILE: true });
+        } else {
+            // Read excel file contents, only first sheet is read.            
+            spreadsheet = xlsx.readFile('./uploads/' + req.file.originalname);
+            var sheet_name_list = spreadsheet.SheetNames;
+            var xlData = xlsx.utils.sheet_to_json(spreadsheet.Sheets[sheet_name_list[0]]);
+
+            // Preprocess deals (convert dates, step level, month headers)
+            deals = preprocessDeals(xlData);
+            
+            // As an object array, add all deals to the database at once, filter out duplicate ids.
+            addImportedDeals(deals, req.session.user.firstName + ' ' + req.session.user.lastName)
+            .then(function({ importedIDs, duplicateIDs }) {
+                // Get added deal IDs and duplicate IDs.
+                // Call generate logs function
+                // Return deal IDs added and not added to the database.
+                deferred.resolve({importedIDs, duplicateIDs});
+                generateLogs({
+                    importedDeals: importedIDs,
+                    duplicateDeals: duplicateIDs
+                }).then(function() {
+                    console.log('Import logs generated.');
+                }).catch(function() {
+                    console.log('Error creating logs.');
+                })
+            }).catch(function() {
+                deferred.reject('Deals not added to database.');
+            })
+        }
+    });
+
+    return deferred.promise;
+}
+
+function addImportedDeals(importedDeals, user) {
+    var deferred = Q.defer();
+
+    var duplicateIDs = [];
+    var importedIDs = [];
+
+    var IDs = importedDeals.map(deal => { return deal.ID; });
+
+    // check against deals in db for duplicates
+    db.deals.find({ ID: { $in: IDs } }, { _id: false, ID: true }).toArray(function(err, existingDeals) {
+        dealsToBeAdded = importedDeals.filter(deal => !existingDeals.find(d => d.ID === deal.ID));
+        saveToDB(dealsToBeAdded, existingDeals);
+    })
+
+    function saveToDB(deals, existingDeals) {
+        importedIDs = deals.map(deal => { return deal.ID });
+        duplicateIDs = existingDeals.map(deal => { return deal.ID });
+        deals.map(deal => {
+            //add change history array here
+            deal['Change History'] = [];
+            deal['attachments'] = [];
+            deal['Change History'].push({
+                date: getCurrentDate(),
+                user: user,
+                level: deal.profile['Level'],
+                content: 'Level was changed to ' + deal.profile['Level']
+            });
+
+            //set closedDate only if the level is 1
+            if (deal.profile['Level'] === '1') {
+                deal.closedDate = getCurrentDate();
+            }
+        })
+        
+        db.deals.insertMany(
+            deals,
+            function (err, doc) {}
+        );
+
+        // Promise returns the deal IDs added and not added to the database.
+        deferred.resolve({ importedIDs, duplicateIDs });
+    }
+
+    return deferred.promise;
+}
+/*  END Francis Nash Jasmin 2022/04/22 */ 
