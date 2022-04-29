@@ -98,15 +98,19 @@
                 $scope.deals = allDeals;
                 switch ($scope.displayOption) {
                     //display levels 2,3,4,5 only
+                    /*
+                    * START Francis Nash Jasmin 2022/04/28
+                    * Added code for converting level to string if it is an integer.
+                    */
                     case 'Active': {
                         $scope.deals = $scope.deals.filter(function (aDeal) {
-                            return aDeal.profile['Level'] !== '1' && aDeal.profile['Level'] !== '9';
+                            return aDeal.profile['Level'].toString() !== '1' && aDeal.profile['Level'].toString() !== '9';
                         });
                     } break;
 
                     case 'Mine': {
                         $scope.deals = $scope.deals.filter(function (aDeal) {
-                            return ((aDeal.profile['Level'] !== '1' && aDeal.profile['Level'] !== '9') &&
+                            return ((aDeal.profile['Level'].toString() !== '1' && aDeal.profile['Level'].toString() !== '9') &&
                                 (aDeal.profile['AWS Resp (Sales) person'] === $rootScope.user.email ||
                                     aDeal.profile['AWS Resp (Dev) person'] === $rootScope.user.email));
                         });
@@ -124,7 +128,7 @@
                             //if this is used, deals due on august are also included
                             diff = nextMonth.diff(aDeal.essential['Due Date'].replace(/\//g, '-'), 'months', true);
                             //console.log(diff);
-                            return ((aDeal.profile['Level'] !== '1' && aDeal.profile['Level'] !== '9') &&
+                            return ((aDeal.profile['Level'].toString() !== '1' && aDeal.profile['Level'].toString() !== '9') &&
                                 (diff >= 0));
                         });
                     } break;
@@ -137,24 +141,25 @@
                             //i.e. next month & next next month
                             diff = nextMonth.diff(aDeal.essential['Due Date'].replace(/\//g, '-'), 'months', true);
                             //console.log(diff);
-                            return ((aDeal.profile['Level'] !== '1' && aDeal.profile['Level'] !== '9') &&
+                            return ((aDeal.profile['Level'].toString() !== '1' && aDeal.profile['Level'].toString() !== '9') &&
                                 (diff >= 0 && diff <= 2));
                         });
                     } break;
                     case 'Over Due': {
                         $scope.deals = $scope.deals.filter(function (aDeal) {
-                            return aDeal.profile['Level'] !== '1' &&
-                                aDeal.profile['Level'] !== '9' &&
+                            return aDeal.profile['Level'].toString() !== '1' &&
+                                aDeal.profile['Level'].toString() !== '9' &&
                                 moment().diff(aDeal.essential['Due Date'].replace(/\//g, '-'), 'days') > 0;
                         });
                     } break;
 
                     case 'Closed in 2018': {
                         $scope.deals = $scope.deals.filter(function (aDeal) {
-                            return aDeal.profile['Level'] === '1' &&
+                            return aDeal.profile['Level'].toString() === '1' &&
                                 moment(aDeal.closedDate).year() === new Date().getFullYear();
                         });
                     }
+                    /* END Francis Nash Jasmin 2022/04/29 */
                 }
                 //getAllFields();
                 processDeals();
