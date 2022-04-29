@@ -604,7 +604,7 @@ function preprocessDeals(dealArray) {
         deal.profile['Division'] = dealObj.Division;
         deal.profile['Client'] = dealObj.Customer;
         deal.profile['Client Resp'] = dealObj.Customer;
-        deal.profile['Level'] = dealObj.Level;
+        deal.profile['Level'] = dealObj.Level.toString();
         deal.profile['Step'] = getStep(dealObj.Step);
         deal.profile['Step Description'] = dealObj.Step;
         deal.profile['Type'] = dealObj.ServiceType === 'AG' ? dealObj.ServiceType : capitalize(dealObj.ServiceType);
@@ -637,6 +637,43 @@ function preprocessDeals(dealArray) {
         deal.distribution['Direct to Client'].rev['jp'] = revJP;
         deal.distribution['Direct to Client'].rev['gd'] = revGD;
         deal.distribution['Direct to Client'].cm = cm;
+
+        /*
+        * START Francis Nash Jasmin 2022/04/26
+        * Added code for adding total values for cm, rev and res to deal profile when importing.
+        */
+        var resSum = 0;
+        var revSum = 0;
+        var cmSum = 0;
+
+        //compute total resource
+        if (Object.values(resJP).length > 0 || Object.values(resGD).length > 0) {
+            resSum = Object.values(resJP).concat(Object.values(resGD)).reduce(function (total, value) {
+                return (value !== undefined && value !== null) ? total + value : total + 0;
+            });
+        }
+
+        //compute total revenue
+        if (Object.values(revJP).length > 0 || Object.values(revGD).length > 0) {
+            revSum = Object.values(revJP).concat(Object.values(revGD)).reduce(function (total, value) {
+                return (value !== undefined && value !== null) ? total + value : total + 0;
+            });
+        }
+
+        //compute total cm
+        if (Object.values(cm).length > 0) {
+            cmSum = Object.values(cm).reduce(function (total, value) {
+                return (value !== undefined && value !== null) ? total + value : total + 0;
+            });
+        }
+
+        var tempPercent = (cmSum / revSum) * 100;
+
+        deal.profile['Resource Size (MM)'] = resSum;
+        deal.profile['Resource Size (FTE)'] = tempPercent;
+        deal.profile['Revenue'] = revSum;
+        deal.profile['CM'] = cmSum;
+        /* END Francis Nash Jasmin 2022/04/29 */
 
         processedDeals.push(deal);
     })
@@ -680,7 +717,7 @@ function getKeys(filteredMonths, deal, type, isJP) {
             if(value !== undefined) {
                 if(month.split('_')[1] === value){
                     // Store this in an object
-                    keys[convertDateToString(filteredMonths[month]).slice(0, 7)] = values[value]
+                    keys[convertDateToString(filteredMonths[month]).slice(0, 7)] = parseFloat(values[value])
                 }
             }
             if (keys[convertDateToString(filteredMonths[month]).slice(0, 7)] === '') {
