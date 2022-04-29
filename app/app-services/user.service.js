@@ -13,6 +13,13 @@
         service.logout = logout;
         service.Insert = Insert;
         service.Update = Update;
+
+        /*
+        * START Francis Nash Jasmin 2022/04/28
+        * Added reset password function to user service.
+        */
+        service.resetPassword = resetPassword;
+        /*  END Francis Nash Jasmin 2022/04/29 */ 
  
         return service;    
         
@@ -27,6 +34,15 @@
         function logout() {
             return $http.get('/api/user/logout').then(handleSuccess, handleError);
         }
+
+        /*
+        * START Francis Nash Jasmin 2022/04/28
+        * Added reset password function to user service.
+        */
+        function resetPassword(resetForm) {
+            return $http.post('/api/user/resetPassword', resetForm).then(handleSuccess, handleError);
+        }
+        /*  END Francis Nash Jasmin 2022/04/29 */ 
 
         /*
             Function name: User App Service CRUD
