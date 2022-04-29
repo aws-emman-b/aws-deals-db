@@ -108,9 +108,18 @@
                 parent: 'main',
                 templateUrl: 'import/import.html',
                 controller: 'ImportController'
-            });
+            })
             /*  END Francis Nash Jasmin 2022/01/31 */ 
-
+            /*
+            * START Francis Nash Jasmin 2022/04/28
+            * Added forget/reset password directory to deals app.
+            */
+            .state('forgot-password', {
+                url: '/forgot-password',
+                templateUrl: 'forgotPassword/forgotPassword.html',
+                controller: 'ForgotPasswordController'
+            });
+            /*  END Francis Nash Jasmin 2022/04/29 */ 
 
         $httpProvider.interceptors.push(function($q, $window, $location){
             return {
@@ -162,9 +171,16 @@
         $rootScope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams){
             //not logged in
             if ($rootScope.user.email === undefined && toState.name !== 'login') {
-                $state.transitionTo('login');
+                /*
+                * START Francis Nash Jasmin 2022/04/28
+                * Added access to forget/reset password page when not logged in.
+                */
+                if(toState.name !== 'forgot-password') {
+                    $state.transitionTo('login');
+                }
+                /*  END Francis Nash Jasmin 2022/04/29 */ 
             //already logged in
-            } else if ($rootScope.user.email !== undefined && toState.name === 'login') {
+            } else if ($rootScope.user.email !== undefined && (toState.name === 'login' || toState.name === 'forgot-password')) {
                 //return to previous page
                 $state.transitionTo($rootScope.fromState.name);
             //restrict access of 'users' to fields page

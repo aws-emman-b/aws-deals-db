@@ -84,26 +84,58 @@ function resetPass(email) {
     db.users.findOne({ email: email }, function (err, user) {
         if (err) deferred.reject(err);
  
+        /*
+        * START Francis Nash Jasmin 2022/04/28
+        * Added condition to check if user is active when requesting to reset password.
+        * Added code to send email to user containing the temporary password to login.
+        */
         if (user) {
-            var crypto = require("crypto");
-            var tempPass = crypto.randomBytes(4).toString('hex');
-            // authentication successful
-
-            hash = bcrypt.hashSync(tempPass, 10);
-
-            db.users.update({email: email}, 
-                {$set:{hash: hash}}, 
-                function(err, task){
-                    if (err) deferred.reject(err);
-                
+            if(!user.status) {
+                deferred.reject(err);
+            } else {
+                var crypto = require("crypto");
+                var tempPass = crypto.randomBytes(4).toString('hex');
+                // authentication successful
+    
+                hash = bcrypt.hashSync(tempPass, 10);
+    
+                db.users.update({email: email}, 
+                    {$set:{hash: hash}}, 
+                    function(err, task){
+                        if (err) deferred.reject(err);
+                    
+                        deferred.resolve();
+                });
+    
+                var mailOptions = {
+                    //sender user & pass
+                    user: config.user,
+                    pass: config.pass,
+                    from: config.from,
+                    to: email,
+                    subject: 'AWS Deal Management System - Password Reset',
+                    html: `
+                        <p>Hello ${user.firstName},<p>
+                        <br/>
+                        <p>Your temporary password in the Deals DB is '${tempPass}' without quotes.
+                        Please change your password after reading this message.</p>
+                        <br/>
+                        <p>This is an auto-generated message. Please do not reply.</p>
+                        `
+                }
+    
+                emailService.sendMail(mailOptions).then(function() {
+                    console.log('email sent!');
                     deferred.resolve();
-            });
-
-            deferred.resolve(tempPass);
+                }).catch(function(err) {
+                    console.log('error sending email');
+                    deferred.reject({invalid:true});
+                });
+            }
         } else {
-            // authentication failed
-            deferred.resolve();
+            deferred.reject(err);
         }
+        /*  END Francis Nash Jasmin 2022/04/29 */ 
     });
  
     return deferred.promise;

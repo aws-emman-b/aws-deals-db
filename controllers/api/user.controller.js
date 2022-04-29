@@ -59,4 +59,17 @@ router.put('/:_id', function(req, res, next) {
         });
 });
 
+/*
+* START Francis Nash Jasmin 2022/04/28
+* Added reset password function route to user controller.
+*/
+router.post('/resetPassword', function(req, res) {
+    userService.resetPass(req.body.email).then(function() {
+        res.status(200).send();
+    }).catch(function(err) {
+        res.status(400).send(err);
+    });
+});
+/*  END Francis Nash Jasmin 2022/04/29 */ 
+
 module.exports = router;

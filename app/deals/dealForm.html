@@ -996,21 +996,28 @@
                         <div class="col-md-4"></div>
                         <div class="col-md-5">
                             <table class="table table-condensed">
+                                <!-- /*
+                                * START Francis Nash Jasmin 2022/04/28
+                                * 
+                                * Added commas to the total values.
+                                * 
+                                */ -->
                                 <tr class="active">
                                     <th>Total</th>
-                                    <td>{{total[contract][currentFiscalYear.years].resource}} <text class="pull-right">(MM)</text></td>
-                                    <td>{{total[contract][currentFiscalYear.years].revenue}} <text class="pull-right">(JPY)</text></td>
+                                    <td>{{total[contract][currentFiscalYear.years].resource.toLocaleString('en', {useGrouping: true})}} <text class="pull-right">(MM)</text></td>
+                                    <td>{{total[contract][currentFiscalYear.years].revenue.toLocaleString('en', {useGrouping: true})}} <text class="pull-right">(JPY)</text></td>
                                 </tr>
                                 <tr class="active">
                                     <th>Average</th>
                                     <td></td>
-                                    <td>{{total[contract][currentFiscalYear.years].average | number: 3}} <text class="pull-right">(JPY/MM)</text></td>
+                                    <td>{{total[contract][currentFiscalYear.years].average.toLocaleString('en', {useGrouping: true}) | number: 3}} <text class="pull-right">(JPY/MM)</text></td>
                                 </tr>
                                 <tr class="active">
                                     <th>CM</th>
-                                    <td>{{total[contract][currentFiscalYear.years].cm}} <text class="pull-right">(JPY)</text></td>
-                                    <td>{{total[contract][currentFiscalYear.years].percent | number: 1}} <text class="pull-right">(%)</text></td>
+                                    <td>{{total[contract][currentFiscalYear.years].cm.toLocaleString('en', {useGrouping: true})}} <text class="pull-right">(JPY)</text></td>
+                                    <td>{{total[contract][currentFiscalYear.years].percent.toLocaleString('en', {useGrouping: true}) | number: 1}} <text class="pull-right">(%)</text></td>
                                 </tr>
+                                <!-- /*  END Francis Nash Jasmin 2022/04/28 */ -->
                             </table>
                         </div>
                     </div>

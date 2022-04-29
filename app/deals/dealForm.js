@@ -342,6 +342,19 @@
             if (isLoaded) {
                 //set the sow scheme (for the distribution table)
                 $scope.setContracts(tempObject.process['SOW Scheme']);
+
+                /*
+                * START Francis Nash Jasmin 2022/04/28
+                * 
+                * Added code for converting level to string if it is an integer.
+                * 
+                */
+                tempObject.profile['Level'] = tempObject.profile['Level'].toString();
+                tempObject['Change History'] = tempObject['Change History'].map(history => {
+                    history.level = history.level.toString();
+                    return history;
+                })
+                /* END Francis Nash Jasmin 2022/04/28 */
             //during submit
             } else {
                 //explicitly set SOW scheme (because default selected options is not working) to Direct

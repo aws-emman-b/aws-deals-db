@@ -37,9 +37,14 @@ app.use(bodyParser.json());
 app.use(session({ secret: config.secret, resave: false, saveUninitialized: true })); //equvalent of 9h (same as jwt)
 
 // use JWT auth to secure the api   // edited by dyan0: added '/api/users/emailOn'
-app.use('/api', expressJwt({ secret: config.secret }).unless({ path: ['/api/user/login', '/api/user/current', '/api/user/logout'] }), function (err, req, res, next) {
+/*
+* START Francis Nash Jasmin 2022/04/28
+* Added resetPassword as one of the functions to call when not logged in.
+*/
+app.use('/api', expressJwt({ secret: config.secret }).unless({ path: ['/api/user/login', '/api/user/current', '/api/user/logout', '/api/user/resetPassword'] }), function (err, req, res, next) {
 
 });
+/*  END Francis Nash Jasmin 2022/04/29 */ 
 
 // routes
 app.use('/app', require('./controllers/app.controller'));

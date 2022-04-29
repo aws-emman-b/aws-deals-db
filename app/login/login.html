@@ -33,8 +33,15 @@
             <input id="password" type="password" class="form-control" ng-model="loginForm.password" required>
             <label id="warning" align="center" ><img src="./app-content/alert.png" length="17px" width="17px"/><font color="#30369F" size="2">Caps lock is on.</font></label><br>
          
-            <button id="login" type="submit" class="btn btn-primary pull-right">Login</button>
             <br>
+            <button id="login" type="submit" class="btn btn-primary pull-right">Login</button>
+            <!-- /*
+            * START Francis Nash Jasmin 2022/04/28
+            * Added link to forgot/reset password page to login page.
+            */ -->
+            <a ui-sref="forgot-password">Forgot Password?</a>
+            <!-- /*  END Francis Nash Jasmin 2022/04/29 */  -->
+
         </div>
     </form>
 </div>
