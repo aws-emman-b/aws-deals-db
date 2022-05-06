@@ -29,7 +29,14 @@
             </div>
             <br/>
             <div class="form-inline" ng-class="{'has-error': myForm['essential Assignee'].$invalid}">
-                <label>Assignee:</label>
+                 <!-- /*
+                    * START Francis Nash Jasmin 2022/05/06
+                    * 
+                    * Changed the Assignee to Person in Charge
+                    * 
+                    */ -->
+                <label>Person in Charge:</label>
+                <!-- END Jasmin, Francis -->
                 <span style="color:red" ng-if="getField('essential', 'Assignee').required">*</span>
                 <select class="form-control input-sm pull-right" name="essential Assignee" ng-model="dealForm.essential['Assignee']" ng-required="getField('essential', 'Assignee').required"
                 uib-tooltip="{{getTooltipMessage(myForm['essential Assignee'])}}" tooltip-enable="{{myForm['essential Assignee'].$invalid}}">
@@ -386,21 +393,32 @@
                             </tr>
                             <tr>
                                 <td>
+                                     <!-- /*
+                                    * START Dullao, Joshua 2022/05/04
+                                    * 
+                                    * Displays numeric input as comma-separated values.
+                                    * 
+                                    */ -->
                                     <label>Revenue</label>
                                     <span style="color:red" ng-if="getField('profile', 'Revenue').required">*</span>
                                     <div class="form-inline pull-right" ng-class="{'has-error': myForm['profile Revenue'].$invalid}">
-                                        <input type="number" min="0" step="1" class="form-control input-sm" name="profile Revenue" ng-model="dealForm.profile['Revenue']"
+                                        <input type="text" min="0" step="1" class="form-control input-sm" name="profile Revenue" ng-model="dealForm.profile['Revenue']"
                                             ng-required="getField('profile', 'Revenue').required"
-                                            uib-tooltip="{{getTooltipMessage(myForm['profile Revenue'])}}" tooltip-enable="{{myForm['profile Revenue'].$invalid}}" readonly> (JPY)
+                                            uib-tooltip="{{getTooltipMessage(myForm['profile Revenue'])}}" tooltip-enable="{{myForm['profile Revenue'].$invalid}}" readonly
+                                            number-input
+                                            ng-maxlength="20"> (JPY)
                                     </div>
                                     <br/>
                                     <br/>
                                     <label>CM</label>
                                     <span style="color:red" ng-if="getField('profile', 'CM').required">*</span>
                                     <div class="form-inline pull-right" ng-class="{'has-error': myForm['profile CM'].$invalid}">
-                                        <input type="number" min="0" step="1" class="form-control input-sm" name="profile CM" ng-model="dealForm.profile['CM']" ng-required="getField('profile', 'CM').required"
-                                        uib-tooltip="{{getTooltipMessage(myForm['profile CM'])}}" tooltip-enable="{{myForm['profile CM'].$invalid}}" readonly> (JPY)
+                                        <input type="text" min="0" step="1" class="form-control input-sm" name="profile CM" ng-model="dealForm.profile['CM']" ng-required="getField('profile', 'CM').required"
+                                        uib-tooltip="{{getTooltipMessage(myForm['profile CM'])}}" tooltip-enable="{{myForm['profile CM'].$invalid}}" readonly
+                                        number-input
+                                        ng-maxlength="20"> (JPY)
                                     </div>
+                                    <!-- /*  END Dullao, Joshua C 2022/05/04 */ -->
                                 </td>
                             </tr>
                             <tr>
@@ -1141,7 +1159,7 @@
                                         */ -->
                                         <textarea class="form-control input-sm" rows="3" name="status Dependency" ng-model="dealForm.status['Dependency']" ng-required="getField('status', 'Dependency').required"
                                         uib-tooltip="{{getTooltipMessage(myForm['status Dependency'])}}" tooltip-enable="{{myForm['status Dependency'].$invalid}}"
-                                        maxlength="50">
+                                        maxlength="300">
                                         </textarea>
                                         <!-- /* END Francis Nash Jasmin 2022/02/17 */ -->
                                     </div>
@@ -1160,7 +1178,7 @@
                                         */ -->
                                         <textarea class="form-control input-sm" rows="3" name="status Action" ng-model="dealForm.status['Action']" ng-required="getField('status', 'Action').required"
                                         uib-tooltip="{{getTooltipMessage(myForm['status Action'])}}" tooltip-enable="{{myForm['status Action'].$invalid}}"
-                                        maxlength="50">
+                                        maxlength="300">
                                         </textarea>
                                         <!-- /* END Francis Nash Jasmin 2022/02/17 */ -->
                                     </div>
@@ -1222,7 +1240,7 @@
                                         */ -->
                                         <textarea class="form-control input-sm" rows="3" name="status Status" ng-model="dealForm.status['Status']" ng-required="getField('status', 'Status').required"
                                         uib-tooltip="{{getTooltipMessage(myForm['status Status'])}}" tooltip-enable="{{myForm['status Status'].$invalid}}"
-                                        maxlength="50">
+                                        maxlength="300">
                                         </textarea>
                                         <!-- /* END Francis Nash Jasmin 2022/02/17 */ -->
                                     </div>
@@ -1241,7 +1259,7 @@
                                         */ -->
                                         <textarea class="form-control input-sm" rows="3" ng-model="dealForm.status['Step to Close']" name="status Step to Close" ng-required="getField('status', 'Step to Close').required"
                                         uib-tooltip="{{getTooltipMessage(myForm['status Step to Close'])}}" tooltip-enable="{{myForm['status Step to Close'].$invalid}}"
-                                        maxlength="50">
+                                        maxlength="300">
                                         </textarea>
                                         <!-- /* END Francis Nash Jasmin 2022/02/17 */ -->
                                     </div>
