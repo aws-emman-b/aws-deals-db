@@ -199,6 +199,169 @@
     </div>
     <!-- /*  END Francis Nash Jasmin 2022/02/21 */ -->
 </div>
+<div class="row" ng-show="showTableMultipleSheets">
+    <!-- /*
+    * START Francis Nash Jasmin 2022/05/04
+    * Added table preview for excel file with multiple sheets.
+    */ -->
+    <div class="col-md-12 table-responsive">
+        <table class="table table-hover compact dealTable normal-table">
+            <thead>
+                <tr>
+                    <th class="tContents">
+                        <div class="tHeaders inline">
+                            No
+                        </div>
+                    </th>
+                    <th class="tContents">
+                        <div class="tHeaders inline">
+                            Deal Name
+                        </div>
+                    </th>
+                    <th class="tContents">
+                        <div class="tHeaders inline">
+                            Due Date
+                        </div>
+                    </th>
+                    <th class="tContents">
+                        <div class="tHeaders inline">
+                            Assignee
+                        </div>
+                    </th>
+                    <th class="tContents">
+                        <div class="tHeaders inline">
+                            Country
+                        </div>
+                    </th>
+                    <th class="tContents">
+                        <div class="tHeaders inline">
+                            Div
+                        </div>
+                    </th>
+                    <th class="tContents">
+                        <div class="tHeaders inline">
+                            Client
+                        </div>
+                    </th>
+                    <th class="tContents">
+                        <div class="tHeaders inline">
+                            Client Resp
+                        </div>
+                    </th>
+                    <th class="tContents">
+                        <div class="tHeaders inline">
+                            Service
+                        </div>
+                    </th>
+                    <th class="tContents">
+                        <div class="tHeaders inline">
+                            Level
+                        </div>
+                    </th>
+                    <th class="tContents">
+                        <div class="tHeaders inline">
+                            Step
+                        </div>
+                    </th>
+                    <th class="tContents">
+                        <div class="tHeaders inline">
+                            Type
+                        </div>
+                    </th>
+                    <th class="tContents">
+                        <div class="tHeaders inline">
+                            Confidence
+                        </div>
+                    </th>
+                    <th class="tContents">
+                        <div class="tHeaders inline">
+                            MM
+                        </div>
+                    </th>
+                    <th class="tContents">
+                        <div class="tHeaders inline">
+                            Budget
+                        </div>
+                    </th>
+                    <th class="tContents">
+                        <div class="tHeaders inline">
+                            FTE
+                        </div>
+                    </th>
+                    <th class="tContents">
+                        <div class="tHeaders inline">
+                            CM Yen
+                        </div>
+                    </th>
+                    <th class="tContents">
+                        <div class="tHeaders inline">
+                            Start
+                        </div>
+                    </th>
+                    <th class="tContents">
+                        <div class="tHeaders inline">
+                            End
+                        </div>
+                    </th>
+                    <th class="tContents">
+                        <div class="tHeaders inline">
+                            AWS Sales
+                        </div>
+                    </th>
+                    <th class="tContents">
+                        <div class="tHeaders inline">
+                            AWS Dev
+                        </div>
+                    </th>
+                    <th class="tContents">
+                        <div class="tHeaders inline">
+                            BU Dev
+                        </div>
+                    </th>
+                    <th class="tContents">
+                        <div class="tHeaders inline">
+                            Key Assign
+                        </div>
+                    </th>
+                    <th class="tContents">
+                        <div class="tHeaders inline">
+                            Remark
+                        </div>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="deal in importedDealsMultipleSheets">
+                    <td class="tContents">{{ deal['No'] }}</td>
+                    <td class="tContents">{{ deal['Deal name'] }}</td>
+                    <td class="tContents">{{ deal['Due Date'] }}</td>
+                    <td class="tContents">{{ deal['Assignees'].split(',').pop() }}</td>
+                    <td class="tContents">{{ deal['Country'] }}</td>
+                    <td class="tContents">{{ deal['Div'] }}</td>
+                    <td class="tContents">{{ deal['Client'] }}</td>
+                    <td class="tContents">{{ deal['Client Resp'] }}</td>
+                    <td class="tContents">{{ deal['Service'] }}</td>
+                    <td class="tContents">{{ deal['Level'] }}</td>
+                    <td class="tContents">{{ deal['Step'] }}</td>
+                    <td class="tContents">{{ deal['Type'] }}</td>
+                    <td class="tContents">{{ deal['Confidence'] }}</td>
+                    <td class="tContents">{{ deal['MM'] }}</td>
+                    <td class="tContents">{{ deal['Budget'] }}</td>
+                    <td class="tContents">{{ deal['FTE'] }}</td>
+                    <td class="tContents">{{ deal['CM Yen'] }}</td>
+                    <td class="tContents">{{ deal['Start'] }}</td>
+                    <td class="tContents">{{ deal['End'] }}</td>
+                    <td class="tContents">{{ deal['AWS Sales'] }}</td>
+                    <td class="tContents">{{ deal['AWS Dev'] }}</td>
+                    <td class="tContents">{{ deal['BU Dev'] }}</td>
+                    <td class="tContents">{{ deal['Key Assign'] }}</td>
+                    <td class="tContents">{{ deal['Remark'] }}</td>
+                </tr>
+            </tbody>
+        </table> 
+    </div>
+    <!-- /*  END Francis Nash Jasmin 2022/05/06 */ -->
+</div>
 <!-- /*
 * START Francis Nash Jasmin 2022/04/19
 * 

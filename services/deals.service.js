@@ -102,31 +102,23 @@ function addDeal(deal, user) {
         */
         //use .length to get number of documents
         if ((deals.length > 0 && deals['ID'] === undefined)) {
-            if(checkForDuplicateID(deals, deal.ID)) {
-                deferred.reject();
+            previousID = deals[deals.length - 1].ID;
+            IDnumber = previousID.slice(3, 7);
+            IDnumber++;
+            if (IDnumber <= 9) {
+                // 0-9
+                ID = previousID.slice(0, 6) + IDnumber;
+            } else if (IDnumber > 9 && IDnumber <= 99) {
+                // 10-99
+                ID = previousID.slice(0, 5) + IDnumber;
+            } else if (IDnumber > 99 && IDnumber <= 999) {
+                // 100-999
+                ID = previousID.slice(0, 4) + IDnumber;
             } else {
-                if(deal.ID !== undefined) {
-                    ID = deal.ID;
-                } else {
-                    previousID = deals[deals.length - 1].ID;
-                    IDnumber = previousID.slice(3, 7);
-                    IDnumber++;
-                    if (IDnumber <= 9) {
-                        // 0-9
-                        ID = previousID.slice(0, 6) + IDnumber;
-                    } else if (IDnumber > 9 && IDnumber <= 99) {
-                        // 10-99
-                        ID = previousID.slice(0, 5) + IDnumber;
-                    } else if (IDnumber > 99 && IDnumber <= 999) {
-                        // 100-999
-                        ID = previousID.slice(0, 4) + IDnumber;
-                    } else {
-                        // 1000 above
-                        ID = previousID.slice(0, 3) + IDnumber;
-                    }
-                }
-                saveToDB();
+                // 1000 above
+                ID = previousID.slice(0, 3) + IDnumber;
             }
+            saveToDB();
 
         } else {
             saveToDB();
@@ -162,19 +154,6 @@ function addDeal(deal, user) {
             });
 
     }
-
-    /*
-    * START Francis Nash Jasmin 2022/02/07
-    * 
-    * Added function used for checking of duplicate IDs when importing an excel file.
-    * 
-    */
-    function checkForDuplicateID(deals, id) {
-        return deals.some(function (deal) {
-            return deal.ID === id;
-        });
-    }
-    /*  END Francis Nash Jasmin 2022/02/09 */ 
 
     return deferred.promise;
 }
@@ -728,6 +707,149 @@ function getKeys(filteredMonths, deal, type, isJP) {
     return keys;
 }
 
+/*
+* START Francis Nash Jasmin 2022/05/04
+* Added code for preprocessing excel file contents that have multiple sheets.
+*/
+// This preprocess method is used for an excel file with multiple sheets.
+function preprocessDealsMultiSheets(dealArray, intraMMData, intraRevData, intraCMData, directMMData, directRevData, directCMData) {
+    var processedDeals = [];
+    dealArray.forEach(dealObj => {
+        if(dealObj['No'].startsWith('DL')) {
+            let deal = {
+                essential: {},
+                profile: {},
+                process: {},
+                distribution: {
+                    'Direct to Client': { res: {}, rev: {}, cm: {} },
+                    'Intra-Company': { res: {}, rev: {}, cm: {} },
+                    total: {}
+                },
+                status: {},
+                content: {}
+            };
+    
+            // ESSENTIAL FIELDS
+            deal['ID'] = dealObj['No'];
+            deal.essential['Deal Name'] = dealObj['Deal name'];
+            deal.essential['Due Date'] = moment(new Date(dealObj['Due Date'])).format('YYYY/MM/DD');
+            deal.essential['Assignee'] = dealObj['Assignees'].split(',').pop()
+            
+            // PROFILE FIELDS
+            deal.profile['Country'] = dealObj['Country'];
+            deal.profile['Division'] = dealObj['Div'];
+            deal.profile['Client'] = dealObj['Client'];
+            deal.profile['Client Resp'] = dealObj['Client Resp'];
+            deal.profile['Service'] = dealObj['Service'];
+            deal.profile['Level'] = dealObj['Level'].toString();
+            deal.profile['Step'] = getStep(dealObj['Step']);
+            deal.profile['Step Description'] = dealObj['Step'];
+            deal.profile['Type'] = dealObj['Type'] === 'AG' ? dealObj['Type'] : capitalize(dealObj['Type']);
+            deal.profile['Confidence'] = dealObj['Confidence']; 
+            deal.profile['Resource Size (MM)'] = parseFloat(dealObj['MM']);
+            deal.profile['Resource Size (FTE)'] = parseFloat(dealObj['FTE']);
+            deal.profile['Revenue'] = parseFloat(dealObj['Budget'].replace(/¥|,/g, ""));
+            deal.profile['CM'] = parseFloat(dealObj['CM Yen']);
+            deal.profile['Duration (Start)'] = moment(new Date(dealObj['Start'])).format('YYYY/MM/DD');
+            deal.profile['Duration (End)'] = moment(new Date(dealObj['End'])).format('YYYY/MM/DD');
+            deal.profile['AWS Resp (Sales) person'] = dealObj['AWS Sales'];
+            deal.profile['AWS Resp (Dev) person'] = dealObj['AWS Dev'];
+            deal.profile['AWS Resp (Dev) BU'] = dealObj['BU Dev'];
+            deal.profile['SD'] = dealObj['BU Dev'];
+            deal.profile['Key Assignment'] = dealObj['Key Assign'];
+            if(dealObj['Remark'] !== undefined) {
+                deal.profile['Remark'] = dealObj['Remark'];
+            } 
+    
+            // PROCESS FIELDS
+            deal.process['SRB No'] = dealObj['SRB No'];
+            deal.process['SOW Scheme'] = dealObj['SOW Scheme'] === 'Direct to client' ? 'Direct to Customer' : 'Transfer Pricing to UBICOM';
+            deal.process['SOW No'] = dealObj['SOW No'];
+            deal.process['SRB Date'] = moment(new Date(dealObj['SRB Date'])).format('YYYY/MM/DD');
+            deal.process['SOW Date'] = moment(new Date(dealObj['SOW Date'])).format('YYYY/MM/DD');
+            deal.process['SRB Status'] = dealObj['SRB Status'];
+            deal.process['SOW Status'] = dealObj['SOW Status'];
+
+            // STATUS FIELDS
+            deal.status['Dependency'] = dealObj['Dependency'];
+            deal.status['Status'] = dealObj['Status'];
+            deal.status['Action'] = dealObj['Action'];
+            deal.status['Step to Close'] = dealObj['Step to Close'];
+
+            // DISTRIBUTION FIELDS
+            deal.distribution['Intra-Company'].res['jp'] = getDistData(intraMMData, dealObj, true);
+            deal.distribution['Intra-Company'].res['gd'] = getDistData(intraMMData, dealObj, false);
+            deal.distribution['Intra-Company'].rev['jp'] = getDistData(intraRevData, dealObj, true);
+            deal.distribution['Intra-Company'].rev['gd'] = getDistData(intraRevData, dealObj, false);
+            deal.distribution['Intra-Company'].cm = getDistData(intraCMData, dealObj, true);
+
+            deal.distribution['Direct to Client'].res['jp'] = getDistData(directMMData, dealObj, true);
+            deal.distribution['Direct to Client'].res['gd'] = getDistData(directMMData, dealObj, false);
+            deal.distribution['Direct to Client'].rev['jp'] = getDistData(directRevData, dealObj, true);
+            deal.distribution['Direct to Client'].rev['gd'] = getDistData(directRevData, dealObj, false);
+            deal.distribution['Direct to Client'].cm = getDistData(directCMData, dealObj, true);
+
+            processedDeals.push(deal);
+        }
+    })
+    return processedDeals;
+}
+
+// Used to get distribution data (resources, revenue, cm) for excel file with multiple sheets.
+// the keys of distData json look like this: Mo#1, Mo#2, Mo#3... and Mo#1_1, Mo#2_1, Mo#3_1...
+function getDistData(distData, dealObj, isJP) {
+    // Used to store dist values (e.g. {2022/04: 10, 2022/05: 12})
+    let keys = {};
+
+    distData.map((deal) => {
+        // Check if the json data has the same deal number and name.
+        if((dealObj['No'] === deal['No']) && (dealObj['Deal name'].includes(deal['Deal name']))) {
+            // Starting date for dist values is based on the 'Start' column
+            let start = moment(new Date(deal['Start']));
+            let end = moment(new Date(deal['Start'])).add(11, 'month');
+            
+            // Generate the 12 months from the start to end.
+            const months = [];
+            while (end.diff(start, 'months') >= 0) {
+                months.push(start.format('YYYY/MM'));
+                start.add(1, 'month');
+            }
+
+            // Keys that do not end in _1 indicate JP values, otherwise they are GD.
+            let values = Object.keys(deal)
+                .filter(key => {
+                    if(isJP) {
+                        return key.startsWith('Mo#') && !key.endsWith('_1');
+                    } else {
+                        return key.startsWith('Mo#') && key.endsWith('_1');
+                    }
+                })
+                .reduce((obj, key) => {
+                    obj[key] = deal[key];
+                    return obj;
+                }, {});
+            
+            // Populate the keys with the values variable, which is the data from distData.
+            Object.keys(months)
+                .forEach((month, index) => {
+                    let value = Object.keys(values)[index];
+
+                    if(value !== undefined) {
+                        // Currency symbols and commas are removed from the value.
+                        if((parseInt(month) + 1) == value.split('#')[1]) {
+                            keys[months[month]] = parseFloat(values[value].replace(/¥|,/g, ""))
+                        }
+                        if(parseInt(month) + 1 == value.split('#')[1].split('_')[0]) {
+                            keys[months[month]] = parseFloat(values[value].replace(/¥|,/g, ""))
+                        }
+                    }
+                })
+        }
+        
+    })
+    return keys;
+}
+/* END Francis Nash Jasmin 2022/05/06 */
 
 function importDeals(req, res) {
     var deferred = Q.defer();
@@ -763,14 +885,74 @@ function importDeals(req, res) {
             console.log('no file uploaded');
             deferred.reject({ NO_FILE: true });
         } else {
-            // Read excel file contents, only first sheet is read.            
+            // Read excel file contents
+            // NOTE: files with single sheet and files with multiple sheets have different table format.            
             spreadsheet = xlsx.readFile('./uploads/' + req.file.originalname);
             var sheet_name_list = spreadsheet.SheetNames;
-            var xlData = xlsx.utils.sheet_to_json(spreadsheet.Sheets[sheet_name_list[0]]);
 
-            // Preprocess deals (convert dates, step level, month headers)
-            deals = preprocessDeals(xlData);
-            
+            /*
+            * START Francis Nash Jasmin 2022/05/04
+            * Added code for checking if excel file have single or multiple sheets.
+            */
+            if(sheet_name_list.length <= 1) {
+                var xlData = xlsx.utils.sheet_to_json(spreadsheet.Sheets[sheet_name_list[0]]);
+    
+                // Preprocess deals (convert dates, step level, month headers)
+                deals = preprocessDeals(xlData);
+                
+            } else {
+                // List of sheets:
+                // Profile
+                // Process, Status
+                // Intra MM Dist
+                // Intra Rev Dist
+                // Intra CM Dist
+                // Direct MM Dist
+                // Direct Rev Dist
+                // Direct CM Dist
+                var profileData, processData, intraMMData, intraRevData, intraCMData, directMMData, directRevData, directCMData;
+
+                profileData = xlsx.utils.sheet_to_json(spreadsheet.Sheets[sheet_name_list.find(sheet => sheet.includes('Profile'))]);
+                processData = xlsx.utils.sheet_to_json(spreadsheet.Sheets[sheet_name_list.find(sheet => sheet.includes('Process'))]);
+
+                intraMMData = xlsx.utils.sheet_to_json(spreadsheet.Sheets[sheet_name_list.find(sheet => sheet.includes('Intra MM'))]);
+                intraRevData = xlsx.utils.sheet_to_json(spreadsheet.Sheets[sheet_name_list.find(sheet => sheet.includes('Intra Rev'))]);
+                intraCMData = xlsx.utils.sheet_to_json(spreadsheet.Sheets[sheet_name_list.find(sheet => sheet.includes('Intra CM'))]);
+                
+                directMMData = xlsx.utils.sheet_to_json(spreadsheet.Sheets[sheet_name_list.find(sheet => sheet.includes('Direct MM'))]);
+                directRevData = xlsx.utils.sheet_to_json(spreadsheet.Sheets[sheet_name_list.find(sheet => sheet.includes('Direct Rev'))]);
+                directCMData = xlsx.utils.sheet_to_json(spreadsheet.Sheets[sheet_name_list.find(sheet => sheet.includes('Direct CM'))]);
+                
+                let merged = [];
+
+                // Merge profile and process arrays based on deal number.
+                for(let i=0; i < profileData.length; i++) {
+                    merged.push({
+                        ...profileData[i], 
+                        ...(processData.find((deal) => 
+                            deal['No'] === profileData[i]['No'] &&
+                            deal['Deal name'] === profileData[i]['Deal name']
+                        ))
+                    });
+                }
+
+                // Used to create the deal objects with their distribution values.
+                deals = preprocessDealsMultiSheets(merged, intraMMData, intraRevData, intraCMData, directMMData, directRevData, directCMData);
+                
+                // USed to find duplicate deal IDs in the deal array and rename the duplicate deal IDs by appending _1, _2... to the deal IDs.
+                let renamedDeals = [];
+                deals.forEach(function(deal) {
+                    if (renamedDeals.indexOf(deal.ID) > -1) {
+                        deal.ID = renameDuplicate(deal.ID); 
+                        while(renamedDeals.indexOf(deal.ID) > -1) {
+                            deal.ID = renameDuplicate(deal.ID);
+                        }
+                    } 
+                    renamedDeals.push(deal.ID);
+                });
+            }
+            /* END Francis Nash Jasmin 2022/05/06 */
+
             // As an object array, add all deals to the database at once, filter out duplicate ids.
             addImportedDeals(deals, req.session.user.firstName + ' ' + req.session.user.lastName)
             .then(function({ importedIDs, duplicateIDs }) {
@@ -794,6 +976,22 @@ function importDeals(req, res) {
 
     return deferred.promise;
 }
+
+/*
+* START Francis Nash Jasmin 2022/05/04
+* Added code for renaming duplicate Deal IDs in imported excel file.
+*/
+// Used to rename deal IDs, appending _1, _2... to the ID.
+function renameDuplicate(dealID) {
+    let splitted = dealID.split("_");
+    if(splitted.length > 1) {
+        let renamedID = splitted[0];
+        let num = parseInt(splitted[1]);
+        return `${renamedID}_${num + 1}`;
+    } 
+    return `${dealID}_${1}`;
+}
+/* END Francis Nash Jasmin 2022/05/06 */
 
 function addImportedDeals(importedDeals, user) {
     var deferred = Q.defer();

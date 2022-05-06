@@ -14,7 +14,9 @@
 
     function Controller($scope, $state, DealsService, ngToast) {
         $scope.importedDeals = [];
+        $scope.importedDealsMultipleSheets = [];
         $scope.showTable = false;
+        $scope.showTableMultipleSheets = false;
 
         $scope.processedDeals = [];
 
@@ -38,12 +40,24 @@
                 reader.onload = function() {
                     fileData = reader.result;
                     workbook = XLSX.read(fileData, { type: 'binary', cellText: false });
-                    var sheet_name_list = workbook.SheetNames;
-                    rowObj = XLSX.utils.sheet_to_json(workbook.Sheets[sheet_name_list[0]]);
-    
-                    $scope.importedDeals = rowObj;
-                    $scope.months = Object.keys(rowObj[0]).filter(key => key.startsWith('Month'));
-                    $scope.showTable = true;
+                    let sheet_name_list = workbook.SheetNames;
+                    
+                    if(sheet_name_list.length <= 1) {
+                        rowObj = XLSX.utils.sheet_to_json(workbook.Sheets[sheet_name_list[0]]);
+        
+                        $scope.importedDeals = rowObj;
+                        $scope.months = Object.keys(rowObj[0]).filter(key => key.startsWith('Month'));
+                        $scope.showTable = true;
+                    } else {
+                        /*
+                        * START Francis Nash Jasmin 2022/05/04
+                        * Added code for displaying excel file contents that have multiple sheets (only first sheet is displayed on table)
+                        */
+                        rowObj = XLSX.utils.sheet_to_json(workbook.Sheets[sheet_name_list.find(sheet => sheet.includes('Profile'))]);
+                        $scope.importedDealsMultipleSheets = rowObj.filter(deal => deal['No'].includes('DL'));
+                        $scope.showTableMultipleSheets = true;
+                        /* END Francis Nash Jasmin 2022/05/06 */
+                    }
                 };
             }
         }
