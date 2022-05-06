@@ -266,17 +266,20 @@
             dealCMPerDateQ.push(['Q'+(q+1), 0]);
           }
 
+          //START 05062022 Dullao, Joshua
+          //Used the dealUniqueDate instead of dealPerUniqueMonth
           //initialize stacked chart deals
-          for(var i = 0; i < dealPerUniqueMonth.length; i++){
-            dealRevenueLevel1.push([dealPerUniqueMonth[i], 0]);
-            dealRevenueLevel2.push([dealPerUniqueMonth[i], 0]);
-            dealRevenueLevel3.push([dealPerUniqueMonth[i], 0]);
-            dealRevenueLevel4.push([dealPerUniqueMonth[i], 0]);
+          for(var i = 0; i < dealPerUniqueDate.length; i++){
+            dealRevenueLevel1.push([dealPerUniqueDate[i], 0]);
+            dealRevenueLevel2.push([dealPerUniqueDate[i], 0]);
+            dealRevenueLevel3.push([dealPerUniqueDate[i], 0]);
+            dealRevenueLevel4.push([dealPerUniqueDate[i], 0]);
 
             //for deals revenue levels 5 and 9
-            dealRevenueLevel5.push([dealPerUniqueMonth[i], 0]);
-            dealRevenueLevel9.push([dealPerUniqueMonth[i], 0]);
+            dealRevenueLevel5.push([dealPerUniqueDate[i], 0]);
+            dealRevenueLevel9.push([dealPerUniqueDate[i], 0]);
           }
+          //END 05062022 Dullao, Joshua
 
           //initialize quarterly bar chart deals
           for(var q = 0; q < 4; q++){
@@ -360,8 +363,11 @@
 
               //Load data in monthly hbar chart
               //level 1
+
+              //START 05062022 Dullao, Joshua
+              //Used the getTimeStamp instead of getMonthOnly
               for(var k = 0; k < dealRevenueLevel1.length; k++){
-                if(dealRevenueLevel1[k][0] == getMonthOnly(monthly) && deals[j].profile['Level'] == 1){
+                if(dealRevenueLevel1[k][0] == getTimeStamp(monthly) && deals[j].profile['Level'] == 1){
                   if(isNaN(deals[j].profile.Revenue)){
                     dealRevenueLevel1[k][1] += 0;
                   }else{
@@ -372,7 +378,7 @@
 
               //level 2
               for(var k = 0; k < dealRevenueLevel2.length; k++){
-                if(dealRevenueLevel2[k][0] == getMonthOnly(monthly) && deals[j].profile['Level'] == 2){
+                if(dealRevenueLevel2[k][0] == getTimeStamp(monthly) && deals[j].profile['Level'] == 2){
                   if(isNaN(deals[j].profile.Revenue)){
                     dealRevenueLevel2[k][1] += 0;
                   }else{
@@ -383,7 +389,7 @@
 
               //level 3
               for(var k = 0; k < dealRevenueLevel3.length; k++){
-                if(dealRevenueLevel3[k][0] == getMonthOnly(monthly) && deals[j].profile['Level'] == 3){
+                if(dealRevenueLevel3[k][0] == getTimeStamp(monthly) && deals[j].profile['Level'] == 3){
                   if(isNaN(deals[j].profile.Revenue)){
                     dealRevenueLevel3[k][1] += 0;
                   }else{
@@ -394,7 +400,7 @@
 
               //level 4
               for(var k = 0; k < dealRevenueLevel4.length; k++){
-                if(dealRevenueLevel4[k][0] == getMonthOnly(monthly) && deals[j].profile['Level'] == 4){
+                if(dealRevenueLevel4[k][0] == getTimeStamp(monthly) && deals[j].profile['Level'] == 4){
                   if(isNaN(deals[j].profile.Revenue)){
                     dealRevenueLevel4[k][1] += 0;
                   }else{
@@ -406,7 +412,7 @@
               //Added by: Glenn
               //level 5
               for(var k = 0; k < dealRevenueLevel5.length; k++){
-                if(dealRevenueLevel5[k][0] == getMonthOnly(monthly) && deals[j].profile['Level'] == 5){
+                if(dealRevenueLevel5[k][0] == getTimeStamp(monthly) && deals[j].profile['Level'] == 5){
                   if(isNaN(deals[j].profile.Revenue)){
                     dealRevenueLevel5[k][1] += 0;
                   }else{
@@ -418,7 +424,7 @@
               //Added by: Glenn
               //level 9
               for(var k = 0; k < dealRevenueLevel9.length; k++){
-                if(dealRevenueLevel9[k][0] == getMonthOnly(monthly) && deals[j].profile['Level'] == 9){
+                if(dealRevenueLevel9[k][0] == getTimeStamp(monthly) && deals[j].profile['Level'] == 9){
                   if(isNaN(deals[j].profile.Revenue)){
                     dealRevenueLevel9[k][1] += 0;
                   }else{
@@ -426,6 +432,7 @@
                   }
                 }
               }
+              //END 05062022 Dullao, Joshua
 
               //Added by Glenn
               //Load data in monthly hbar chart
@@ -497,29 +504,30 @@
           }
 
           //dealRevenueLevel1.sort(function(a, b) { return monthNames[a[0].split(' ')[0]] - monthNames[b[0].split(' ')[0]];});
+//START 05062022 Dullao, Joshua
+//Commented codes as it is not necessary
+          // sort deals revenue level by month
+          // dealRevenueLevel1.sort(function(a, b) {
+          //  return monthNames[a[0].split(' ')[0]] - monthNames[b[0].split(' ')[0]];
+          // });
+          // dealRevenueLevel2.sort(function(a, b) {
+          //   return monthNames[a[0].split(' ')[0]] - monthNames[b[0].split(' ')[0]];
+          // });
+          // dealRevenueLevel3.sort(function(a, b) {
+          //   return monthNames[a[0].split(' ')[0]] - monthNames[b[0].split(' ')[0]];
+          // });
+          // dealRevenueLevel4.sort(function(a, b) {
+          //   return monthNames[a[0].split(' ')[0]] - monthNames[b[0].split(' ')[0]];
+          // });
 
-          //sort deals revenue level by month
-          dealRevenueLevel1.sort(function(a, b) {
-           return monthNames[a[0].split(' ')[0]] - monthNames[b[0].split(' ')[0]];
-          });
-          dealRevenueLevel2.sort(function(a, b) {
-            return monthNames[a[0].split(' ')[0]] - monthNames[b[0].split(' ')[0]];
-          });
-          dealRevenueLevel3.sort(function(a, b) {
-            return monthNames[a[0].split(' ')[0]] - monthNames[b[0].split(' ')[0]];
-          });
-          dealRevenueLevel4.sort(function(a, b) {
-            return monthNames[a[0].split(' ')[0]] - monthNames[b[0].split(' ')[0]];
-          });
-
-          //deal revenues for level 5 and 9
-          dealRevenueLevel5.sort(function(a, b) {
-            return monthNames[a[0].split(' ')[0]] - monthNames[b[0].split(' ')[0]];
-          });
-          dealRevenueLevel9.sort(function(a, b) {
-            return monthNames[a[0].split(' ')[0]] - monthNames[b[0].split(' ')[0]];
-          });
-          
+          // //deal revenues for level 5 and 9
+          // dealRevenueLevel5.sort(function(a, b) {
+          //   return monthNames[a[0].split(' ')[0]] - monthNames[b[0].split(' ')[0]];
+          // });
+          // dealRevenueLevel9.sort(function(a, b) {
+          //   return monthNames[a[0].split(' ')[0]] - monthNames[b[0].split(' ')[0]];
+          // });
+// END 05062022 Dullao, Joshua
           //set deals by Timeline Selection
           //Change chart timeline
           if($scope.selectedTimeline == 'monthly'){
@@ -562,8 +570,11 @@
           if($scope.selectedTimeline == 'monthly'){
 
             scaleXData = {
-              minValue: getTimeStamp([new Date().getFullYear() -1, '04', '01']),
-              maxValue: getTimeStamp([new Date().getFullYear(), '03', '31']),
+              //START 05062022 Dullao, Joshua 
+              //Display the current fiscal year
+              minValue: getTimeStamp([new Date().getFullYear(), '04', '01']),
+              maxValue: getTimeStamp([new Date().getFullYear() +1, '03', '31']),
+              //END 05062022 Dullao, Joshua
               zooming: true,
               // zoomTo:[0,15],
               step: 'day',
@@ -694,10 +705,12 @@
               "plot": {
                 "bars-space-left": 0.15,
                 "bars-space-right": 0.15,
+              //START 05062022 Dullao, Joshua
+              //Limit the displayed labels only to max values
                 "valueBox":{
-                  "placement":"top-out",
-                  "short":true
+                  type: "max" 
                 }
+              //END 05062022 Dullao, Joshua
               },
               "preview":{
                 "adjustLayout": true,
@@ -706,10 +719,20 @@
                   "backgroundColor":"#E3E3E5"
                 }
               },
-              "scale-x": {
-                "zooming": true,
-                "zoomTo":[0,15],
+              //START 05062022 Dullao, Joshua
+              //Added the fiscal year limit to the revenue bar chart
+              "scale-x":{
+              "min-value": getTimeStamp([new Date().getFullYear(), '04', '01']),
+              "max-value": getTimeStamp([new Date().getFullYear() +1, '03', '31']),
+              "zooming": true,
+              "zoomTo":[0,15],
+              "step": 'month',
+              "transform":{
+                "type": 'date',
+                "all": '%M %d'
+              }
               },
+              //END 05062022 Dullao, Joshua
               "scale-y": {
                 "short":true,
                 "shortUnit":"K"
