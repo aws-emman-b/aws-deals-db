@@ -200,12 +200,21 @@
 
         $scope.sortColumn = function (category, fieldName) {
             //$scope.column = category + '.' + fieldName;
-            $scope.column = category + "['" + fieldName + "']";
-            $scope.reverse = TableService.sortSelectedColumn($scope.reverse, $scope.column).result;
+            if(fieldName !== 'ID') {
+                $scope.column = category + "['" + fieldName + "']";
+                $scope.reverse = TableService.sortSelectedColumn($scope.reverse, $scope.column).result;
+            } else {
+                $scope.column = "['" + fieldName + "']";
+                $scope.reverse = TableService.sortSelectedColumn($scope.reverse, $scope.column).result;
+            }
         }
 
         $scope.sortClass = function (category, fieldName) {
-            return TableService.sortSelectedClass($scope.reverse, category + "['" + fieldName + "']", $scope.column);
+            if(fieldName !== 'ID') { 
+                return TableService.sortSelectedClass($scope.reverse, category + "['" + fieldName + "']", $scope.column);
+            } else {
+                return TableService.sortSelectedClass($scope.reverse, "['" + fieldName + "']", $scope.column);
+            }
         }
 
         /* $scope.deleteDeal = function (aDeal) {
@@ -246,7 +255,8 @@
                 });
 
                 assignee = $scope.users.find(function (user) {
-                    return user.email === aDeal['essential']['Assignee'];
+                    // return user.email === aDeal['essential']['Assignee'];
+                    return user.email === aDeal['essential']['Person in Charge'];
                 });
 
                 //assign nickname to AWS Sales & AWS Dev
@@ -259,7 +269,8 @@
                 }
 
                 if (assignee !== undefined) {
-                    aDeal['essential']['Assignee'] = assignee.nickname;
+                    // aDeal['essential']['Assignee'] = assignee.nickname;
+                    aDeal['essential']['Person in Charge'] = assignee.nickname;
                 }
 
                 for (var category in $scope.fields) {

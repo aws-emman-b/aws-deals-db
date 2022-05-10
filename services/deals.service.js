@@ -733,7 +733,7 @@ function preprocessDealsMultiSheets(dealArray, intraMMData, intraRevData, intraC
             deal['ID'] = dealObj['No'];
             deal.essential['Deal Name'] = dealObj['Deal name'];
             deal.essential['Due Date'] = moment(new Date(dealObj['Due Date'])).format('YYYY/MM/DD');
-            deal.essential['Assignee'] = dealObj['Assignees'].split(',').pop()
+            deal.essential['Person in Charge'] = dealObj['Assignees'].split(',').pop()
             
             // PROFILE FIELDS
             deal.profile['Country'] = dealObj['Country'];

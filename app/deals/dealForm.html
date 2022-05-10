@@ -28,18 +28,18 @@
                 </div>
             </div>
             <br/>
-            <div class="form-inline" ng-class="{'has-error': myForm['essential Assignee'].$invalid}">
+            <div class="form-inline" ng-class="{'has-error': myForm['essential Person in Charge'].$invalid}">
                  <!-- /*
                     * START Francis Nash Jasmin 2022/05/06
                     * 
-                    * Changed the Assignee to Person in Charge
+                    * Changed the Person in Charge to Person in Charge
                     * 
                     */ -->
                 <label>Person in Charge:</label>
                 <!-- END Jasmin, Francis -->
-                <span style="color:red" ng-if="getField('essential', 'Assignee').required">*</span>
-                <select class="form-control input-sm pull-right" name="essential Assignee" ng-model="dealForm.essential['Assignee']" ng-required="getField('essential', 'Assignee').required"
-                uib-tooltip="{{getTooltipMessage(myForm['essential Assignee'])}}" tooltip-enable="{{myForm['essential Assignee'].$invalid}}">
+                <span style="color:red" ng-if="getField('essential', 'Person in Charge').required">*</span>
+                <select class="form-control input-sm pull-right" name="essential Person in Charge" ng-model="dealForm.essential['Person in Charge']" ng-required="getField('essential', 'Person in Charge').required"
+                uib-tooltip="{{getTooltipMessage(myForm['essential Person in Charge'])}}" tooltip-enable="{{myForm['essential Person in Charge'].$invalid}}">
                     <option value="">- select -</option>
                     <!-- /*
                     * START Francis Nash Jasmin 2022/02/10
