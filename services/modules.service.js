@@ -317,6 +317,23 @@ function updateModuleField(moduleName, fieldObject){
                     else{
                         console.log(writeResult.result);
                         deferred.resolve();
+
+                        /*
+                        * START Francis Nash Jasmin 2022/05/10
+                        * Added code to rename deal field names in DB when field name is changed in modules DB.
+                        */
+                        if(moduleName.includes('deal')) {
+                            let oldName = `${moduleName.replace("deal", "")}.${duplicateFields[0].name}`;
+                            let newName = `${moduleName.replace("deal", "")}.${fieldObject.name}`;
+                            
+                            if(oldName !== newName) {
+                                db.deals.update({}, { $rename: { [oldName]: newName } }, { upsert: false, multi: true }, function(err) {
+                                    console.log(err)
+                                    deferred.reject(err);
+                                });
+                            }
+                        }
+                        /* END Francis Nash Jasmin 2022/05/10 */
                     }
                 });
             }
