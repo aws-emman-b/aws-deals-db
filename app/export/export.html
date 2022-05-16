@@ -1,93 +1,62 @@
 <!-- /*
-* START Francis Nash Jasmin 2022/01/31
+* START Francis Nash Jasmin 2022/05/11
 * 
-* Added an export feature for deals where its columns can be filtered based on user input.
+* Changed layout of export page and added new dropdown filters.
 * 
 */ -->
+<label>No. of Deals to be Exported: <u>{{ dealCount }}</u></label>
 <div class="row">
     <div class="col-md-12 form-inline">
         <form name="viewSelect">
-            <!-- /*
-            * START Francis Nash Jasmin 2022/04/29
-            * Added page size input for table display
-            */ -->
-            <label for="pageSize">Page size: </label>
-            <input id="pageSize" type="number" ng-model="pageSize" class="form-control" min="1" max={{deals.length}}
-                onkeypress="return event.charCode >= 48 && event.charCode <= 57">
-            <!-- /*  END Francis Nash Jasmin 2022/05/02 */ -->
+            <button class="btn btn-success" ng-click="exportData()">Export Deals</button>
             |
-            <button class="btn btn-success" ng-click="exportData()">Export as Excel</button>
+            <label>Division:</label>
+            <select class="form-control input-sm" name="Division" ng-model="divisionOption" ng-change="filterDeals()">
+                <option value="">- ALL -</option>
+                <option ng-repeat="division in divisions">{{division}}</option>
+            </select>
             &nbsp;
             &nbsp;
-            
-            <div style="float: right;">
-                <label>Search by Column: </label>
-                <select ng-model="searchColumn" class="form-control">
-                    <option value="all,$"> -- ALL -- </option>
-                    <!-- /*
-                    * START Francis Nash Jasmin 2022/02/28
-                    * 
-                    * Fixed entries to be displayed in search by column dropdown.
-                    * 
-                    */ -->
-                    <option ng-repeat="essentialField in fields.essential" 
-                        ng-if="essentialField.showInList"
-                        value="{{'essential,' + essentialField.name}}">
-                        {{ (renamedFields['essential'][essentialField.name] ? renamedFields['essential'][essentialField.name] : essentialField.name) }}
-                    </option>
-                    <option ng-repeat="profileField in fields.profile" 
-                        ng-if="profileField.showInList && 
-                        profileField.name !== 'Resource Size (MM)' && 
-                        profileField.name !== 'Resource Size (FTE)' &&
-                        profileField.name !== 'Revenue' &&
-                        profileField.name !== 'CM'" 
-                        value="{{'profile,' + profileField.name}}">
-                        {{ (renamedFields['profile'][profileField.name] ? renamedFields['profile'][profileField.name] : profileField.name) }}
-                    </option>
-                    <!-- /*  END Francis Nash Jasmin 2022/02/28 */ -->
-                </select>
-                <input type="text" class="form-control" ng-model="searchText" ng-change="setSearch()" placeholder="Search">
-            </div>
+            <label>SD:</label>
+            <ng-dropdown-multiselect options="sd" selected-model="sdOption" events="filterDeals()" translation-texts="{ buttonDefaultText: 'Select SDs' }" checkboxes="true" extra-settings="myDropdownSettings"></ng-dropdown-multiselect>
+            &nbsp;
+            &nbsp;
+            <label>BU Dev:</label>
+            <ng-dropdown-multiselect options="devBU" selected-model="buDevOption" events="filterDeals()" translation-texts="{ buttonDefaultText: 'Select BUs' }" checkboxes="true" extra-settings="myDropdownSettings"></ng-dropdown-multiselect>
+            &nbsp;
+            &nbsp;
+            <label>Search by Column: </label>
+            <select ng-model="searchColumn" class="form-control input-sm">
+                <option value="all,$"> -- ALL -- </option>
+                <!-- /*
+                * START Francis Nash Jasmin 2022/02/28
+                * 
+                * Fixed entries to be displayed in search by column dropdown.
+                * 
+                */ -->
+                <option ng-repeat="essentialField in fields.essential" 
+                    ng-if="essentialField.showInList"
+                    value="{{'essential,' + essentialField.name}}">
+                    {{ (renamedFields['essential'][essentialField.name] ? renamedFields['essential'][essentialField.name] : essentialField.name) }}
+                </option>
+                <option ng-repeat="profileField in fields.profile" 
+                    ng-if="profileField.showInList && 
+                    profileField.name !== 'Resource Size (MM)' && 
+                    profileField.name !== 'Resource Size (FTE)' &&
+                    profileField.name !== 'Revenue' &&
+                    profileField.name !== 'CM'" 
+                    value="{{'profile,' + profileField.name}}">
+                    {{ (renamedFields['profile'][profileField.name] ? renamedFields['profile'][profileField.name] : profileField.name) }}
+                </option>
+                <!-- /*  END Francis Nash Jasmin 2022/02/28 */ -->
+            </select>
+            <input type="text" class="form-control" ng-model="searchText" ng-change="filterDeals()" placeholder="Search">
         </form>
     </div>
+    <br />
+    <br />
     <div class="col-md-12 form-inline">
-        <form name="distSelect" style="display: inline-block;">
-            <!-- /*
-            * START Francis Nash Jasmin 2022/02/21
-            * 
-            * Added additional filters for displaying JP or GD values.
-            * 
-            */ -->
-            <h5>Display Distribution Type</h5>
-            <div class="form-inline">
-                <label>
-                    <input type="checkbox" ng-model="distValues.directJP">
-                    Direct to Customer (JP)
-                </label>
-                &nbsp;
-                &nbsp;
-                <label>
-                    <input type="checkbox" ng-model="distValues.intraJP">
-                    Intra-Company (JP)
-                </label>
-                <br>
-                <label>
-                    <input type="checkbox" ng-model="distValues.directGD">
-                    Direct to Customer (GD)
-                </label>
-                &nbsp;
-                &nbsp;
-                <label>
-                    <input type="checkbox" ng-model="distValues.intraGD">
-                    Intra-Company (GD)
-                </label>
-            </div>
-            <!-- /*  END Francis Nash Jasmin 2022/02/22 */ -->
-        </form>
-        &nbsp;
-        &nbsp;
-        &nbsp;
-        <form name="dateSelect" style="display: inline-block;">
+        <form name="dateSelect">
             <!-- Pass the dates entered to the part where generateMonths function is found. -->
             <div class="form-inline">
                 <h5>Display Dates for Resources, Revenue, and CM</h5>
@@ -118,19 +87,20 @@
                     </span>
                 </div>
                 &nbsp;
-
-                <!-- /*
-                * START Francis Nash Jasmin 2022/02/21
-                * 
-                * Added disable for button when no start date is entered.
-                * 
-                */ -->
                 <button class="btn btn-primary" ng-click="setDates(enteredStartDate, enteredEndDate)" ng-disabled="enteredStartDate === ''">Enter Dates</button>
-                <!-- /*  END Francis Nash Jasmin 2022/02/22 */ -->
+                &nbsp;
+                &nbsp;
+                <div style="float: right;">
+                    <label style="text-shadow: 1px 1px 0px  #fff, -1px -1px 0px  #fff, 1px -1px 0px  #fff, -1px 1px 0px  #fff" for="pageSize">Preview page size: </label>
+                    <input id="pageSize" type="number" ng-model="pageSize" class="form-control" min="1" max={{deals.length}}
+                    onkeypress="return event.charCode >= 48 && event.charCode <= 57"> 
+                </div>
             </div>
+            
         </form>
     </div>
 </div>
+<!-- /*  END Francis Nash Jasmin 2022/05/16 */ -->
 <br />
 <div class="row">
     <div class="col-md-12 table-responsive alternateView">
@@ -138,477 +108,178 @@
             <img src="loader.gif" />
         </div>
         <div id="altView">
-            <!-- /*
-            * START Francis Nash Jasmin 2022/02/21
-            * 
-            * Changed order of columns displayed in the export table.
-            * 
-            */ -->
             <table class="table table-hover compact dealTable normal-table table-striped">
                 <thead id="header-fixed">
-                    <!-- /*
-                    * START Francis Nash Jasmin 2022/02/28
-                    * 
-                    * Formatted headers as bold when exported and displayed date headers as MM/YY.
-                    * 
-                    */ -->
                     <tr>
-                        <th class="tContents" data-f-bold="true">
+                        <th class="tContents">
                             <div class="tHeaders inline">
                                 <b>DocNumber</b>
                                 <div ng-click="sortColumn('essential', 'ID')" ng-class="sortClass('essential', 'ID')" />
                             </div>
                         </th>
                         <!-- Customer -->
-                        <th class="tContents" data-f-bold="true">
+                        <th class="tContents">
                             <div class="tHeaders inline">
                                 <b>Customer</b>
                                 <div ng-click="sortColumn('profile', 'Client')" ng-class="sortClass('profile', 'Client')" />
                             </div>
                         </th>
                         <!-- Subject -->
-                        <th class="tContents" data-f-bold="true">
+                        <th class="tContents">
                             <div class="tHeaders inline">
                                 <b>Subject</b>
                                 <div ng-click="sortColumn('essential', 'Deal Name')" ng-class="sortClass('essential', 'Deal Name')" />
                             </div>
                         </th>
                         <!-- Level -->
-                        <th class="tContents" data-f-bold="true">
+                        <th class="tContents">
                             <div class="tHeaders inline">
                                 <b>Level</b>
                                 <div ng-click="sortColumn('profile', 'Level')" ng-class="sortClass('profile', 'Level')" />
                             </div>
                         </th>
                         <!-- Step (JA) -->
-                        <th class="tContents" data-f-bold="true">
+                        <th class="tContents">
                             <div class="tHeaders inline">
                                 <b>Step</b>
                                 <div ng-click="sortColumn('profile', 'Step')" ng-class="sortClass('profile', 'Step')" />
                             </div>
                         </th>
                         <!-- ServiceType -->
-                        <th class="tContents" data-f-bold="true">
+                        <th class="tContents">
                             <div class="tHeaders inline">
                                 <b>ServiceType</b>
                                 <div ng-click="sortColumn('profile', 'Type')" ng-class="sortClass('profile', 'Type')" />
                             </div>
                         </th>
                         <!-- RespSales -->
-                        <th class="tContents" data-f-bold="true">
+                        <th class="tContents">
                             <div class="tHeaders inline">
                                 <b>RespSales</b>
                                 <div ng-click="sortColumn('profile', 'AWS Resp (Sales) person')" ng-class="sortClass('profile', 'AWS Resp (Sales) person')" />
                             </div>
                         </th>
                         <!-- RespDev -->
-                        <th class="tContents" data-f-bold="true">
+                        <th class="tContents">
                             <div class="tHeaders inline">
                                 <b>RespDev</b>
                                 <div ng-click="sortColumn('profile', 'AWS Resp (Dev) person')" ng-class="sortClass('profile', 'AWS Resp (Dev) person')" />
                             </div>
                         </th>
                         <!-- StartDate -->
-                        <th class="tContents" data-f-bold="true">
+                        <th class="tContents">
                             <div class="tHeaders inline">
                                 <b>StartDate</b>
                                 <div ng-click="sortColumn('profile', 'Duration (Start)')" ng-class="sortClass('profile', 'Duration (Start)')" />
                             </div>
                         </th>
                         <!-- EndDate -->
-                        <th class="tContents" data-f-bold="true">
+                        <th class="tContents">
                             <div class="tHeaders inline">
                                 <b>EndDate</b>
                                 <div ng-click="sortColumn('profile', 'Duration (End)')" ng-class="sortClass('profile', 'Duration (End)')" />
                             </div>
                         </th>
                         <!-- DueDate -->
-                        <th class="tContents" data-f-bold="true">
+                        <th class="tContents">
                             <div class="tHeaders inline">
                                 <b>DueDate</b>
                                 <div ng-click="sortColumn('essential', 'Due Date')" ng-class="sortClass('essential', 'Due Date')" />
                             </div>
                         </th>
 
-                        <!-- JP -->
-                        <th data-a-h="right" style="text-align:right" class="tContents" data-f-bold="true" ng-repeat="month in generateMonths(startDate, endDate)" ng-if="showDates && distValues.directJP">
+                        <th data-a-h="right" style="text-align:right" class="tContents" ng-repeat="month in generateMonths(startDate, endDate)">
                             <div class="tHeaders inline">
                                 {{ formatMonthHeader(month) }}
                             </div>
                         </th>
-                        <th class="tContents" data-f-bold="true" ng-if="distValues.directJP">
+                        <th class="tContents">
                             <div class="tHeaders inline">
-                                RMM Total (Direct to Client JP)
+                                RMM Total
                             </div>
                         </th>
 
-                        <th data-a-h="right" style="text-align:right" class="tContents" data-f-bold="true" ng-repeat="month in generateMonths(startDate, endDate)" ng-if="showDates && distValues.directJP">
+                        <th data-a-h="right" style="text-align:right" class="tContents" ng-repeat="month in generateMonths(startDate, endDate)">
                             <div class="tHeaders inline">
                                 {{ formatMonthHeader(month) }}
                             </div>
                         </th>
-                        <th class="tContents" data-f-bold="true" ng-if="distValues.directJP">
+                        <th class="tContents">
                             <div class="tHeaders inline">
-                                Revenue Total (Direct to Client JP)
+                                Revenue Total
                             </div>
                         </th>
 
-                        <th data-a-h="right" style="text-align:right" class="tContents" data-f-bold="true" ng-repeat="month in generateMonths(startDate, endDate)" ng-if="showDates && (distValues.directJP || distValues.directGD)">
+                        <th data-a-h="right" style="text-align:right" class="tContents" ng-repeat="month in generateMonths(startDate, endDate)">
                             <div class="tHeaders inline">
                                 {{ formatMonthHeader(month) }}
                             </div>
                         </th>
-                        <th class="tContents" data-f-bold="true" ng-if="(distValues.directJP || distValues.directGD)">
+                        <th class="tContents">
                             <div class="tHeaders inline">
-                                CM Total (Direct to Client)
+                                CM Total
                             </div>
                         </th>
-
-                        <th data-a-h="right" style="text-align:right" class="tContents" data-f-bold="true" ng-repeat="month in generateMonths(startDate, endDate)" ng-if="showDates && distValues.intraJP">
-                            <div class="tHeaders inline">
-                                {{ formatMonthHeader(month) }}
-                            </div>
-                        </th>
-                        <th class="tContents" data-f-bold="true" ng-if="distValues.intraJP">
-                            <div class="tHeaders inline">
-                                RMM Total (Intra-Company JP)
-                            </div>
-                        </th>
-
-                        <th data-a-h="right" style="text-align:right" class="tContents" data-f-bold="true" ng-repeat="month in generateMonths(startDate, endDate)" ng-if="showDates && distValues.intraJP">
-                            <div class="tHeaders inline">
-                                {{ formatMonthHeader(month) }}
-                            </div>
-                        </th>
-                        <th class="tContents" data-f-bold="true" ng-if="distValues.intraJP">
-                            <div class="tHeaders inline">
-                                Revenue Total (Intra-Company JP)
-                            </div>
-                        </th>
-
-                        <th data-a-h="right" style="text-align:right" class="tContents" data-f-bold="true" ng-repeat="month in generateMonths(startDate, endDate)" ng-if="showDates && (distValues.intraJP || distValues.intraGD)">
-                            <div class="tHeaders inline">
-                                {{ formatMonthHeader(month) }}
-                            </div>
-                        </th>
-                        <th class="tContents" data-f-bold="true" ng-if="(distValues.intraJP || distValues.intraGD)">
-                            <div class="tHeaders inline">
-                                CM Total (Intra-Company)
-                            </div>
-                        </th>
-
-                        <!-- GD -->
-                        <th data-a-h="right" style="text-align:right" class="tContents" data-f-bold="true" ng-repeat="month in generateMonths(startDate, endDate)" ng-if="showDates && distValues.directGD">
-                            <div class="tHeaders inline">
-                                {{ formatMonthHeader(month) }}
-                            </div>
-                        </th>
-                        <th class="tContents" data-f-bold="true" ng-if="distValues.directGD">
-                            <div class="tHeaders inline">
-                                RMM Total (Direct to Client GD)
-                            </div>
-                        </th>
-
-                        <th data-a-h="right" style="text-align:right" class="tContents" data-f-bold="true" ng-repeat="month in generateMonths(startDate, endDate)" ng-if="showDates && distValues.directGD">
-                            <div class="tHeaders inline">
-                                {{ formatMonthHeader(month) }}
-                            </div>
-                        </th>
-                        <th class="tContents" data-f-bold="true" ng-if="distValues.directGD">
-                            <div class="tHeaders inline">
-                                Revenue Total (Direct to Client GD)
-                            </div>
-                        </th>
-
-                        <th data-a-h="right" style="text-align:right" class="tContents" data-f-bold="true" ng-repeat="month in generateMonths(startDate, endDate)" ng-if="showDates && distValues.intraGD">
-                            <div class="tHeaders inline">
-                                {{ formatMonthHeader(month) }}
-                            </div>
-                        </th>
-                        <th class="tContents" data-f-bold="true" ng-if="distValues.intraGD">
-                            <div class="tHeaders inline">
-                                RMM Total (Intra-Company GD)
-                            </div>
-                        </th>
-
-                        <th data-a-h="right" style="text-align:right" class="tContents" data-f-bold="true" ng-repeat="month in generateMonths(startDate, endDate)" ng-if="showDates && distValues.intraGD">
-                            <div class="tHeaders inline">
-                                {{ formatMonthHeader(month) }}
-                            </div>
-                        </th>
-                        <th class="tContents" data-f-bold="true" ng-if="distValues.intraGD">
-                            <div class="tHeaders inline">
-                                Revenue Total (Intra-Company GD)
-                            </div>
-                        </th>
-                        <th class="tContents" data-f-bold="true">
+                        <th class="tContents">
                             <div class="tHeaders inline">
                                 <b>BU Sales</b>
                                 <div ng-click="sortColumn('profile', 'AWS Resp (Sales) BU')" ng-class="sortClass('profile', 'AWS Resp (Sales) BU')" />
                             </div>
                         </th>
-                        <th class="tContents" data-f-bold="true">
+                        <th class="tContents">
                             <div class="tHeaders inline">
                                 <b>BU Dev</b>
                                 <div ng-click="sortColumn('profile', 'AWS Resp (Dev) BU')" ng-class="sortClass('profile', 'AWS Resp (Dev) BU')" />
                             </div>
                         </th>
-                        <th class="tContents" data-f-bold="true">
+                        <th class="tContents">
                             <div class="tHeaders inline">
                                 <b>Division</b>
                                 <div ng-click="sortColumn('profile', 'Division')" ng-class="sortClass('profile', 'Division')" />
                             </div>
                         </th>
+                        <th class="tContents">
+                            <div class="tHeaders inline">
+                                <b>SD</b>
+                                <div ng-click="sortColumn('profile', 'SD')" ng-class="sortClass('profile', 'SD')" />
+                            </div>
+                        </th>
                     </tr>
-                    <!-- /*  END Francis Nash Jasmin 2022/02/28 */ -->
                 </thead>
-                <!-- /*
-                * START Francis Nash Jasmin 2022/02/28
-                * 
-                * Added ¥ symbol to revenue and cm totals.
-                * 
-                */ -->
+                
                 <tbody>
                     <tr ng-repeat="deal in filteredDeals | orderBy: column : reverse | pagination: (currentPage - 1) * pageSize | limitTo: pageSize">
                         <td class="tContents"><a href="" ng-click="open(deal['ID'])">{{ deal['ID'] }}</a></td>
                         
                         <td class="tContents">{{deal.profile['Client']}}</td>
                         <td class="tContents">{{deal.essential['Deal Name']}}</td>
-                        <td class="tContents" style="text-align:right" data-t="n">{{deal.profile['Level']}}</td>
+                        <td class="tContents" style="text-align:right">{{deal.profile['Level']}}</td>
                         <td class="tContents">{{deal.profile['Step Description'] !== undefined ? deal.profile['Step Description'] : getStepJA(deal.profile['Step'])}}</td>
                         <td class="tContents">{{deal.profile['Type'].toUpperCase()}}</td>
                         <td class="tContents">{{deal.profile['AWS Resp (Sales) person']}}</td>
                         <td class="tContents">{{deal.profile['AWS Resp (Dev) person']}}</td>
-                        <!-- START Francis Nash Jasmin March 15, 2022 Added formatting of date to YYYY/MM/DD. END March 15, 2022-->
                         <td class="tContents">{{formatDate(deal.profile['Duration (Start)'])}}</td>
                         <td class="tContents">{{formatDate(deal.profile['Duration (End)'])}}</td>
                         <td class="tContents">{{formatDate(deal.essential['Due Date'])}}</td>
                         
                         <!-- Columns for display -->
-                        <td data-exclude="true" class="tContents" style="text-align:right" ng-repeat="month in generateMonths(startDate, endDate) | filter as resMonths" ng-if="showDates && distValues.directJP">{{ getDistValue(deal, month, 'res', 'Direct to Client', 'jp').toLocaleString('en', {useGrouping: true}) }}</td>
-                        <td data-exclude="true" class="tContents" style="text-align:right" ng-if="distValues.directJP">{{ calculateTotal(deal, resMonths, 'res', 'Direct to Client', 'jp').toLocaleString('en', {useGrouping: true}) }}</td>
-                        <td data-exclude="true" data-exclude="true" class="tContents" style="text-align:right" ng-repeat="month in generateMonths(startDate, endDate) | filter as revMonths" ng-if="showDates && distValues.directJP">{{ getDistValue(deal, month, 'rev', 'Direct to Client', 'jp').toLocaleString('en', {useGrouping: true, style: 'currency', currency: 'JPY'}) }}</td>
-                        <td data-exclude="true" class="tContents" style="text-align:right" ng-if="distValues.directJP">{{ calculateTotal(deal, revMonths, 'rev', 'Direct to Client', 'jp').toLocaleString('en', {useGrouping: true, style: 'currency', currency: 'JPY'}) }}</td>
-                        <td data-exclude="true" class="tContents" style="text-align:right" ng-repeat="month in generateMonths(startDate, endDate)  | filter as cmMonths" ng-if="showDates && (distValues.directJP || distValues.directGD)">{{ getDistValue(deal, month, 'cm', 'Direct to Client', 'jp').toLocaleString('en', {useGrouping: true, style: 'currency', currency: 'JPY'}) }}</td>
-                        <td data-exclude="true" class="tContents" style="text-align:right" ng-if="(distValues.directJP || distValues.directGD)">{{ calculateTotal(deal, cmMonths, 'cm', 'Direct to Client', 'jp').toLocaleString('en', {useGrouping: true, style: 'currency', currency: 'JPY'}) }}</td>
-
-                        <!-- INTRA-COMPANY JP -->
-                        <td data-exclude="true" class="tContents" style="text-align:right" ng-repeat="month in generateMonths(startDate, endDate) | filter as resMonths" ng-if="showDates && distValues.intraJP">{{ getDistValue(deal, month, 'res', 'Intra-Company', 'jp').toLocaleString('en', {useGrouping: true}) }}</td>
-                        <td data-exclude="true" class="tContents" style="text-align:right" ng-if="distValues.intraJP">{{ calculateTotal(deal, resMonths, 'res', 'Intra-Company', 'jp').toLocaleString('en', {useGrouping: true}) }}</td>
-                        <td data-exclude="true" class="tContents" style="text-align:right" ng-repeat="month in generateMonths(startDate, endDate) | filter as revMonths" ng-if="showDates && distValues.intraJP">{{ getDistValue(deal, month, 'rev', 'Intra-Company', 'jp').toLocaleString('en', {useGrouping: true, style: 'currency', currency: 'JPY'}) }}</td>
-                        <td data-exclude="true" class="tContents" style="text-align:right" ng-if="distValues.intraJP">{{ calculateTotal(deal, revMonths, 'rev', 'Intra-Company', 'jp').toLocaleString('en', {useGrouping: true, style: 'currency', currency: 'JPY'}) }}</td>
-                        <td data-exclude="true" class="tContents" style="text-align:right" ng-repeat="month in generateMonths(startDate, endDate) | filter as cmMonths" ng-if="showDates && (distValues.intraJP || distValues.intraGD)">{{ getDistValue(deal, month, 'cm', 'Intra-Company', 'jp').toLocaleString('en', {useGrouping: true, style: 'currency', currency: 'JPY'}) }}</td>
-                        <td data-exclude="true" class="tContents" style="text-align:right" ng-if="(distValues.intraJP || distValues.intraGD)">{{ calculateTotal(deal, cmMonths, 'cm', 'Intra-Company', 'jp').toLocaleString('en', {useGrouping: true, style: 'currency', currency: 'JPY'}) }}</td>
-
-                        <!-- DIRECT TO CLIENT GD -->
-                        <td data-exclude="true" class="tContents" style="text-align:right" ng-repeat="month in generateMonths(startDate, endDate) | filter as resMonths" ng-if="showDates && distValues.directGD">{{ getDistValue(deal, month, 'res', 'Direct to Client', 'gd').toLocaleString('en', {useGrouping: true}) }}</td>
-                        <td data-exclude="true" class="tContents" style="text-align:right" ng-if="distValues.directGD">{{ calculateTotal(deal, resMonths, 'res', 'Direct to Client', 'gd').toLocaleString('en', {useGrouping: true}) }}</td>
-                        <td data-exclude="true" class="tContents" style="text-align:right" ng-repeat="month in generateMonths(startDate, endDate) | filter as revMonths" ng-if="showDates && distValues.directGD">{{ getDistValue(deal, month, 'rev', 'Direct to Client', 'gd').toLocaleString('en', {useGrouping: true, style: 'currency', currency: 'JPY'}) }}</td>
-                        <td data-exclude="true" class="tContents" style="text-align:right" ng-if="distValues.directGD">{{ calculateTotal(deal, revMonths, 'rev', 'Direct to Client', 'gd').toLocaleString('en', {useGrouping: true, style: 'currency', currency: 'JPY'}) }}</td>
-
-                        <!-- INTRA-COMPANY GD -->
-                        <td data-exclude="true" class="tContents" style="text-align:right" ng-repeat="month in generateMonths(startDate, endDate) | filter as resMonths" ng-if="showDates && distValues.intraGD">{{ getDistValue(deal, month, 'res', 'Intra-Company', 'gd').toLocaleString('en', {useGrouping: true}) }}</td>
-                        <td data-exclude="true" class="tContents" style="text-align:right" ng-if="distValues.intraGD">{{ calculateTotal(deal, resMonths, 'res', 'Intra-Company', 'gd').toLocaleString('en', {useGrouping: true}) }}</td>
-                        <td data-exclude="true" class="tContents" style="text-align:right" ng-repeat="month in generateMonths(startDate, endDate) | filter as revMonths" ng-if="showDates && distValues.intraGD">{{ getDistValue(deal, month, 'rev', 'Intra-Company', 'gd').toLocaleString('en', {useGrouping: true, style: 'currency', currency: 'JPY'}) }}</td>
-                        <td data-exclude="true" class="tContents" style="text-align:right" ng-if="distValues.intraGD">{{ calculateTotal(deal, revMonths, 'rev', 'Intra-Company', 'gd').toLocaleString('en', {useGrouping: true, style: 'currency', currency: 'JPY'}) }}</td>
-
-                        <!-- Columns for export -->
-                        <!-- DIRECT TO CLIENT JP -->
-                        <td data-t="n" data-num-fmt="#,##0.0_);;;" class="tContents" style="display:none;" ng-repeat="month in generateMonths(startDate, endDate) | filter as resMonths" ng-if="showDates && distValues.directJP">
-                            {{ getDistValue(deal, month, 'res', 'Direct to Client', 'jp') }}
-                        </td>
-                        <td data-t="n" data-num-fmt="#,##0.0_);;;" class="tContents" style="display:none;" ng-if="distValues.directJP">
-                            {{ calculateTotal(deal, resMonths, 'res', 'Direct to Client', 'jp') }}
-                        </td>
-
-                        <td data-t="n" data-num-fmt="#,##0_);;;" class="tContents" style="display: none;" ng-repeat="month in generateMonths(startDate, endDate) | filter as revMonths" ng-if="showDates && distValues.directJP">
-                            {{ getDistValue(deal, month, 'rev', 'Direct to Client', 'jp') }}
-                        </td>
-                        <td data-t="n" data-num-fmt="_-¥* #,##0_-;-¥* #,##0_-;_-¥* -_-;_-@_-" class="tContents" style="display:none;" ng-if="distValues.directJP">
-                            {{ calculateTotal(deal, revMonths, 'rev', 'Direct to Client', 'jp') }}
-                        </td>
-
-                        <td data-t="n" data-num-fmt="#,##0_);;;" class="tContents" style="display:none;" ng-repeat="month in generateMonths(startDate, endDate)  | filter as cmMonths" ng-if="showDates && (distValues.directJP || distValues.directGD)">
-                            {{ getDistValue(deal, month, 'cm', 'Direct to Client', 'jp') }}
-                        </td>
-                        <td data-t="n" data-num-fmt="_-¥* #,##0_-;-¥* #,##0_-;_-¥* -_-;_-@_-" class="tContents" style="display:none;" ng-if="(distValues.directJP || distValues.directGD)">
-                            {{ calculateTotal(deal, cmMonths, 'cm', 'Direct to Client', 'jp') }}
-                        </td>
-
-                        <!-- INTRA-COMPANY JP -->
-                        <td data-t="n" data-num-fmt="#,##0.0_);;;" class="tContents" style="display:none;" ng-repeat="month in generateMonths(startDate, endDate) | filter as resMonths" ng-if="showDates && distValues.intraJP">
-                            {{ getDistValue(deal, month, 'res', 'Intra-Company', 'jp') }}
-                        </td>
-                        <td data-t="n" data-num-fmt="#,##0.0_);;;" class="tContents" style="display:none;" ng-if="distValues.intraJP">
-                            {{ calculateTotal(deal, resMonths, 'res', 'Intra-Company', 'jp') }}
-                        </td>
-
-                        <td data-t="n" data-num-fmt="#,##0_);;;" class="tContents" style="display:none;" ng-repeat="month in generateMonths(startDate, endDate) | filter as revMonths" ng-if="showDates && distValues.intraJP">
-                            {{ getDistValue(deal, month, 'rev', 'Intra-Company', 'jp') }}
-                        </td>
-
-                        <td data-t="n" data-num-fmt="_-¥* #,##0_-;-¥* #,##0_-;_-¥* -_-;_-@_-" class="tContents" style="display:none;" ng-if="distValues.intraJP">
-                            {{ calculateTotal(deal, revMonths, 'rev', 'Intra-Company', 'jp') }}
-                        </td>
-
-                        <td data-t="n" data-num-fmt="#,##0_);;;" class="tContents" style="display:none;" ng-repeat="month in generateMonths(startDate, endDate) | filter as cmMonths" ng-if="showDates && (distValues.intraJP || distValues.intraGD)">
-                            {{ getDistValue(deal, month, 'cm', 'Intra-Company', 'jp') }}
-                        </td>
-
-                        <td data-t="n" data-num-fmt="_-¥* #,##0_-;-¥* #,##0_-;_-¥* -_-;_-@_-" class="tContents" style="display:none;" ng-if="(distValues.intraJP || distValues.intraGD)">
-                            {{ calculateTotal(deal, cmMonths, 'cm', 'Intra-Company', 'jp') }}
-                        </td>
-
-
-                        <!-- DIRECT TO CLIENT GD -->
-                        <td data-t="n" data-num-fmt="#,##0.0_);;;" class="tContents" style="display:none;" ng-repeat="month in generateMonths(startDate, endDate) | filter as resMonths" ng-if="showDates && distValues.directGD">
-                            {{ getDistValue(deal, month, 'res', 'Direct to Client', 'gd') }}
-                        </td>
-                        <td data-t="n" data-num-fmt="#,##0.0_);;;" class="tContents" style="display:none;" ng-if="distValues.directGD">
-                            {{ calculateTotal(deal, resMonths, 'res', 'Direct to Client', 'gd') }}
-                        </td>
-
-                        <td data-t="n" data-num-fmt="#,##0_);;;" class="tContents" style="display:none;" ng-repeat="month in generateMonths(startDate, endDate) | filter as revMonths" ng-if="showDates && distValues.directGD">
-                            {{ getDistValue(deal, month, 'rev', 'Direct to Client', 'gd') }}
-                        </td>
-                        <td data-t="n" data-num-fmt="_-¥* #,##0_-;-¥* #,##0_-;_-¥* -_-;_-@_-" class="tContents" style="display:none;" ng-if="distValues.directGD">
-                            {{ calculateTotal(deal, revMonths, 'rev', 'Direct to Client', 'gd') }}
-                        </td>
-
-                        <!-- INTRA-COMPANY GD -->
-                        <td data-t="n" data-num-fmt="#,##0.0_);;;" class="tContents" style="display:none;" ng-repeat="month in generateMonths(startDate, endDate) | filter as resMonths" ng-if="showDates && distValues.intraGD">
-                            {{ getDistValue(deal, month, 'res', 'Intra-Company', 'gd') }}
-                        </td>
-                        <td data-t="n" data-num-fmt="#,##0.0_);;;" class="tContents" style="display:none;" ng-if="distValues.intraGD">
-                            {{ calculateTotal(deal, resMonths, 'res', 'Intra-Company', 'gd') }}
-                        </td>
-
-                        <td data-t="n" data-num-fmt="#,##0_);;;" class="tContents" style="display:none;" ng-repeat="month in generateMonths(startDate, endDate) | filter as revMonths" ng-if="showDates && distValues.intraGD">
-                            {{ getDistValue(deal, month, 'rev', 'Intra-Company', 'gd') }}
-                        </td>
-                        <td data-t="n" data-num-fmt="_-¥* #,##0_-;-¥* #,##0_-;_-¥* -_-;_-@_-" class="tContents" style="display:none;" ng-if="distValues.intraGD">
-                            {{ calculateTotal(deal, revMonths, 'rev', 'Intra-Company', 'gd') }}
-                        </td>
+                        <td class="tContents" style="text-align:right" ng-repeat="month in generateMonths(startDate, endDate) | filter as resMonths">{{ getDistValue(deal, month, 'res', 'ph').toLocaleString('en', {useGrouping: true}) }}</td>
+                        <td class="tContents" style="text-align:right">{{ calculateTotal(deal, resMonths, 'res', 'ph').toLocaleString('en', {useGrouping: true}) }}</td>
+                        <td class="tContents" style="text-align:right" ng-repeat="month in generateMonths(startDate, endDate) | filter as revMonths">{{ getDistValue(deal, month, 'rev', 'ph').toLocaleString('en', {useGrouping: true, style: 'currency', currency: 'JPY'}) }}</td>
+                        <td class="tContents" style="text-align:right">{{ calculateTotal(deal, revMonths, 'rev', 'ph').toLocaleString('en', {useGrouping: true, style: 'currency', currency: 'JPY'}) }}</td>
+                        <td class="tContents" style="text-align:right" ng-repeat="month in generateMonths(startDate, endDate)  | filter as cmMonths">{{ getDistValue(deal, month, 'cm', 'jp').toLocaleString('en', {useGrouping: true, style: 'currency', currency: 'JPY'}) }}</td>
+                        <td class="tContents" style="text-align:right">{{ calculateTotal(deal, cmMonths, 'cm', 'jp').toLocaleString('en', {useGrouping: true, style: 'currency', currency: 'JPY'}) }}</td>
 
                         <td class="tContents">{{deal.profile['AWS Resp (Sales) BU']}}</td>
                         <td class="tContents">{{deal.profile['AWS Resp (Dev) BU']}}</td>
                         <td class="tContents">{{deal.profile['Division']}}</td>
+                        <td class="tContents">{{deal.profile['SD']}}</td>
                     </tr>
                 </tbody>
-                <!-- Total for each column in direct to client and intra-company -->
-                <tfoot>
-                    <tr>
-                        <td class="tContents" ng-repeat="x in [].constructor(11) track by $index" />
-
-                        <!-- Columns for display -->
-                        <!-- DIRECT TO CLIENT JP -->
-                        <td data-exclude="true" class="tContents" style="text-align:right" ng-repeat="month in generateMonths(startDate, endDate) | filter as resMonths" ng-if="showDates && distValues.directJP"><b>{{ calculateDistValueTotal(filteredDeals, month, 'res', 'Direct to Client', 'jp').toLocaleString('en', {useGrouping: true}) }}</b></td>
-                        <td data-exclude="true" class="tContents" style="text-align:right" ng-if="distValues.directJP"><b>{{ calculateOverallTotal(filteredDeals, resMonths, 'res', 'Direct to Client', 'jp').toLocaleString('en', {useGrouping: true}) }}</b></td>
-                        <td data-exclude="true" class="tContents" style="text-align:right" ng-repeat="month in generateMonths(startDate, endDate) | filter as revMonths" ng-if="showDates && distValues.directJP"><b>{{ calculateDistValueTotal(filteredDeals, month, 'rev', 'Direct to Client', 'jp').toLocaleString('en', {useGrouping: true, style: 'currency', currency: 'JPY'}) }}</b></td>
-                        <td data-exclude="true" class="tContents" style="text-align:right" ng-if="distValues.directJP"><b>{{ calculateOverallTotal(filteredDeals, revMonths, 'rev', 'Direct to Client', 'jp').toLocaleString('en', {useGrouping: true, style: 'currency', currency: 'JPY'}) }}</b></td>
-                        <td data-exclude="true" class="tContents" style="text-align:right" ng-repeat="month in generateMonths(startDate, endDate) | filter as cmMonths" ng-if="showDates && (distValues.directJP || distValues.directGD)"><b>{{ calculateDistValueTotal(filteredDeals, month, 'cm', 'Direct to Client', 'jp').toLocaleString('en', {useGrouping: true, style: 'currency', currency: 'JPY'}) }}</b></td>
-                        <td data-exclude="true" class="tContents" style="text-align:right" ng-if="(distValues.directJP || distValues.directGD)"><b>{{ calculateOverallTotal(filteredDeals, resMonths, 'cm', 'Direct to Client', 'jp').toLocaleString('en', {useGrouping: true, style: 'currency', currency: 'JPY'}) }}</b></td>
-
-                        <!-- INTRA-COMPANY JP -->
-                        <td data-exclude="true" class="tContents" style="text-align:right" ng-repeat="month in generateMonths(startDate, endDate) | filter as resMonths" ng-if="showDates && distValues.intraJP"><b>{{ calculateDistValueTotal(filteredDeals, month, 'res', 'Intra-Company', 'jp').toLocaleString('en', {useGrouping: true}) }}</b></td>
-                        <td data-exclude="true" class="tContents" style="text-align:right" ng-if="distValues.intraJP"><b>{{ calculateOverallTotal(filteredDeals, resMonths, 'res', 'Intra-Company', 'jp').toLocaleString('en', {useGrouping: true}) }}</b></td>
-                        <td data-exclude="true" class="tContents" style="text-align:right" ng-repeat="month in generateMonths(startDate, endDate) | filter as revMonths" ng-if="showDates && distValues.intraJP"><b>{{ calculateDistValueTotal(filteredDeals, month, 'rev', 'Intra-Company', 'jp').toLocaleString('en', {useGrouping: true, style: 'currency', currency: 'JPY'}) }}</b></td>
-                        <td data-exclude="true" class="tContents" style="text-align:right" ng-if="distValues.intraJP"><b>{{ calculateOverallTotal(filteredDeals, revMonths, 'rev', 'Intra-Company', 'jp').toLocaleString('en', {useGrouping: true, style: 'currency', currency: 'JPY'}) }}</b></td>
-                        <td data-exclude="true" class="tContents" style="text-align:right" ng-repeat="month in generateMonths(startDate, endDate) | filter as cmMonths" ng-if="showDates && (distValues.intraJP || distValues.GD)"><b>{{ calculateDistValueTotal(filteredDeals, month, 'cm', 'Intra-Company', 'jp').toLocaleString('en', {useGrouping: true, style: 'currency', currency: 'JPY'}) }}</b></td>
-                        <td data-exclude="true" class="tContents" style="text-align:right" ng-if="(distValues.intraJP || distValues.GD)"><b>{{ calculateOverallTotal(filteredDeals, resMonths, 'cm', 'Intra-Company', 'jp').toLocaleString('en', {useGrouping: true, style: 'currency', currency: 'JPY'}) }}</b></td>
-
-                        <!-- DIRECT TO CLIENT GD -->
-                        <td data-exclude="true" class="tContents" style="text-align:right" ng-repeat="month in generateMonths(startDate, endDate) | filter as resMonths" ng-if="showDates && distValues.directGD"><b>{{ calculateDistValueTotal(filteredDeals, month, 'res', 'Direct to Client', 'gd').toLocaleString('en', {useGrouping: true}) }}</b></td>
-                        <td data-exclude="true" class="tContents" style="text-align:right" ng-if="distValues.directGD"><b>{{ calculateOverallTotal(filteredDeals, resMonths, 'res', 'Direct to Client', 'gd').toLocaleString('en', {useGrouping: true}) }}</b></td>
-                        <td data-exclude="true" class="tContents" style="text-align:right" ng-repeat="month in generateMonths(startDate, endDate) | filter as revMonths" ng-if="showDates && distValues.directGD"><b>{{ calculateDistValueTotal(filteredDeals, month, 'rev', 'Direct to Client', 'gd').toLocaleString('en', {useGrouping: true, style: 'currency', currency: 'JPY'}) }}</b></td>
-                        <td data-exclude="true" class="tContents" style="text-align:right" ng-if="distValues.directGD"><b>{{ calculateOverallTotal(filteredDeals, revMonths, 'rev', 'Direct to Client', 'gd').toLocaleString('en', {useGrouping: true, style: 'currency', currency: 'JPY'}) }}</b></td>
-
-                        <!-- INTRA-COMPANY GD -->
-                        <td data-exclude="true" class="tContents" style="text-align:right" ng-repeat="month in generateMonths(startDate, endDate) | filter as resMonths" ng-if="showDates && distValues.intraGD"><b>{{ calculateDistValueTotal(filteredDeals, month, 'res', 'Intra-Company', 'gd').toLocaleString('en', {useGrouping: true}) }}</b></td>
-                        <td data-exclude="true" class="tContents" style="text-align:right" ng-if="distValues.intraGD"><b>{{ calculateOverallTotal(filteredDeals, resMonths, 'res', 'Intra-Company', 'gd').toLocaleString('en', {useGrouping: true}) }}</b></td>
-                        <td data-exclude="true" class="tContents" style="text-align:right" ng-repeat="month in generateMonths(startDate, endDate) | filter as revMonths" ng-if="showDates && distValues.intraGD"><b>{{ calculateDistValueTotal(filteredDeals, month, 'rev', 'Intra-Company', 'gd').toLocaleString('en', {useGrouping: true, style: 'currency', currency: 'JPY'}) }}</b></td>
-                        <td data-exclude="true" class="tContents" style="text-align:right" ng-if="distValues.intraGD"><b>{{ calculateOverallTotal(filteredDeals, revMonths, 'rev', 'Intra-Company', 'gd').toLocaleString('en', {useGrouping: true, style: 'currency', currency: 'JPY'}) }}</b></td>
-
-                        <!-- Columns for export -->
-                        <!-- DIRECT TO CLIENT JP -->
-                        <td data-t="n" data-num-fmt="#,##0.0_);;;" class="tContents" style="display:none;" ng-repeat="month in generateMonths(startDate, endDate) | filter as resMonths" ng-if="showDates && distValues.directJP">
-                            <b>{{ calculateDistValueTotal(filteredDeals, month, 'res', 'Direct to Client', 'jp') }}</b>
-                        </td>
-                        <td data-t="n" data-num-fmt="#,##0.0_);;;" class="tContents" style="display:none;" ng-if="distValues.directJP">
-                            <b>{{ calculateOverallTotal(filteredDeals, resMonths, 'res', 'Direct to Client', 'jp') }}</b>
-                        </td>
-                        <td data-t="n" data-num-fmt="_-¥* #,##0_-;-¥* #,##0_-;_-¥* -_-;_-@_-" class="tContents" style="display:none;" ng-repeat="month in generateMonths(startDate, endDate) | filter as revMonths" ng-if="showDates && distValues.directJP">
-                            <b>{{ calculateDistValueTotal(filteredDeals, month, 'rev', 'Direct to Client', 'jp') }}</b>
-                        </td>
-                        <td data-t="n" data-num-fmt="_-¥* #,##0_-;-¥* #,##0_-;_-¥* -_-;_-@_-" class="tContents" style="display:none;" ng-if="distValues.directJP">
-                            <b>{{ calculateOverallTotal(filteredDeals, revMonths, 'rev', 'Direct to Client', 'jp') }}</b>
-                        </td>
-                        <td data-t="n" data-num-fmt="_-¥* #,##0_-;-¥* #,##0_-;_-¥* -_-;_-@_-" class="tContents" style="display:none;" ng-repeat="month in generateMonths(startDate, endDate) | filter as cmMonths" ng-if="showDates && (distValues.directJP || distValues.directGD)">
-                            <b>{{ calculateDistValueTotal(filteredDeals, month, 'cm', 'Direct to Client', 'jp') }}</b>
-                        </td>
-                        <td data-t="n" data-num-fmt="_-¥* #,##0_-;-¥* #,##0_-;_-¥* -_-;_-@_-" class="tContents" style="display:none;" ng-if="(distValues.directJP || distValues.directGD)">
-                            <b>{{ calculateOverallTotal(filteredDeals, resMonths, 'cm', 'Direct to Client', 'jp') }}</b>
-                        </td>
-
-                        <!-- INTRA-COMPANY JP -->
-                        <td data-t="n" data-num-fmt="#,##0.0_);;;" class="tContents" style="display:none;" ng-repeat="month in generateMonths(startDate, endDate) | filter as resMonths" ng-if="showDates && distValues.intraJP">
-                            <b>{{ calculateDistValueTotal(filteredDeals, month, 'res', 'Intra-Company', 'jp') }}</b>
-                        </td>
-                        <td data-t="n" data-num-fmt="#,##0.0_);;;" class="tContents" style="display:none;" ng-if="distValues.intraJP">
-                            <b>{{ calculateOverallTotal(filteredDeals, resMonths, 'res', 'Intra-Company', 'jp') }}</b>
-                        </td>
-                        <td data-t="n" data-num-fmt="_-¥* #,##0_-;-¥* #,##0_-;_-¥* -_-;_-@_-" class="tContents" style="display:none;" ng-repeat="month in generateMonths(startDate, endDate) | filter as revMonths" ng-if="showDates && distValues.intraJP">
-                            <b>{{ calculateDistValueTotal(filteredDeals, month, 'rev', 'Intra-Company', 'jp') }}</b>
-                        </td>
-                        <td data-t="n" data-num-fmt="_-¥* #,##0_-;-¥* #,##0_-;_-¥* -_-;_-@_-" class="tContents" style="display:none;" ng-if="distValues.intraJP">
-                            <b>{{ calculateOverallTotal(filteredDeals, revMonths, 'rev', 'Intra-Company', 'jp') }}</b>
-                        </td>
-                        <td data-t="n" data-num-fmt="_-¥* #,##0_-;-¥* #,##0_-;_-¥* -_-;_-@_-" class="tContents" style="display:none;" ng-repeat="month in generateMonths(startDate, endDate) | filter as cmMonths" ng-if="showDates && (distValues.intraJP || distValues.GD)">
-                            <b>{{ calculateDistValueTotal(filteredDeals, month, 'cm', 'Intra-Company', 'jp') }}</b>
-                        </td>
-                        <td data-t="n" data-num-fmt="_-¥* #,##0_-;-¥* #,##0_-;_-¥* -_-;_-@_-" class="tContents" style="display:none;" ng-if="(distValues.intraJP || distValues.GD)">
-                            <b>{{ calculateOverallTotal(filteredDeals, resMonths, 'cm', 'Intra-Company', 'jp') }}</b>
-                        </td>
-
-
-                        <!-- DIRECT TO CLIENT GD -->
-                        <td data-t="n" data-num-fmt="#,##0.0_);;;" class="tContents" style="display:none;" ng-repeat="month in generateMonths(startDate, endDate) | filter as resMonths" ng-if="showDates && distValues.directGD">
-                            <b>{{ calculateDistValueTotal(filteredDeals, month, 'res', 'Direct to Client', 'gd') }}</b>
-                        </td>
-                        <td data-t="n" data-num-fmt="#,##0.0_);;;" class="tContents" style="display:none;" ng-if="distValues.directGD">
-                            <b>{{ calculateOverallTotal(filteredDeals, resMonths, 'res', 'Direct to Client', 'gd') }}</b>
-                        </td>
-                        <td data-t="n" data-num-fmt="_-¥* #,##0_-;-¥* #,##0_-;_-¥* -_-;_-@_-" class="tContents" style="display:none;" ng-repeat="month in generateMonths(startDate, endDate) | filter as revMonths" ng-if="showDates && distValues.directGD">
-                            <b>{{ calculateDistValueTotal(filteredDeals, month, 'rev', 'Direct to Client', 'gd') }}</b>
-                        </td>
-                        <td data-t="n" data-num-fmt="_-¥* #,##0_-;-¥* #,##0_-;_-¥* -_-;_-@_-" class="tContents" style="display:none;" ng-if="distValues.directGD">
-                            <b>{{ calculateOverallTotal(filteredDeals, revMonths, 'rev', 'Direct to Client', 'gd') }}</b>
-                        </td>
-
-                        <!-- INTRA-COMPANY GD -->
-                        <td data-t="n" data-num-fmt="#,##0.0_);;;" class="tContents" style="display:none;" ng-repeat="month in generateMonths(startDate, endDate) | filter as resMonths" ng-if="showDates && distValues.intraGD">
-                            <b>{{ calculateDistValueTotal(filteredDeals, month, 'res', 'Intra-Company', 'gd') }}</b>
-                        </td>
-                        <td data-t="n" data-num-fmt="#,##0.0_);;;" class="tContents" style="display:none;" ng-if="distValues.intraGD">
-                            <b>{{ calculateOverallTotal(filteredDeals, resMonths, 'res', 'Intra-Company', 'gd') }}</b>
-                        </td>
-                        <td data-t="n" data-num-fmt="_-¥* #,##0_-;-¥* #,##0_-;_-¥* -_-;_-@_-" class="tContents" style="display:none;" ng-repeat="month in generateMonths(startDate, endDate) | filter as revMonths" ng-if="showDates && distValues.intraGD">
-                            <b>{{ calculateDistValueTotal(filteredDeals, month, 'rev', 'Intra-Company', 'gd') }}</b>
-                        </td>
-                        <td data-t="n" data-num-fmt="_-¥* #,##0_-;-¥* #,##0_-;_-¥* -_-;_-@_-" class="tContents" style="display:none;" ng-if="distValues.intraGD">
-                            <b>{{ calculateOverallTotal(filteredDeals, revMonths, 'rev', 'Intra-Company', 'gd') }}</b>
-                        </td>
-
-                        <td class="tContents" ng-repeat="x in [].constructor(3) track by $index" />
-                    </tr>
-                </tfoot>
-                <!-- /*  END Francis Nash Jasmin 2022/02/28 */ -->
             </table>
-            <!-- /*  END Francis Nash Jasmin 2022/02/22 */ -->
         </div>
     </div>
 </div>
-<!-- /*  END Francis Nash Jasmin 2022/02 */ -->
 <!-- /*
 * START Francis Nash Jasmin 2022/04/29
 * Added page numbers below table

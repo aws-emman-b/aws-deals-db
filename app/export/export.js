@@ -23,22 +23,7 @@
         $scope.selectedView = 'alternate';
         
         $scope.currentPage = 1;
-        $scope.pageSize = 10;
-        
-        /*
-        * START Francis Nash Jasmin 2022/02/21
-        * 
-        * Added additional filters for displaying columns (JP and GD values in distribution fields).
-        * 
-        */
-        // Sets whether direct to client (jp or gd) or intra-company (jp or gd) should be displayed on the table in alternative view.
-        $scope.distValues = {
-            directJP: true,
-            intraJP: false,
-            directGD: false,
-            intraGD: false
-        };
-        /* END Francis Nash Jasmin 2022/02/22 */
+        $scope.pageSize = 15;
 
         $scope.DATE_FORMAT = 'yyyy/MM/dd';
         // Set default dates
@@ -162,11 +147,86 @@
                 'SD': 'SD'
             }
         };
+        
+        /*
+        * START Francis Nash Jasmin 2022/05/11
+        * Added filtering for deals to be exported.
+        */
+        $scope.dealCount = 0;
+        $scope.businessUnits = [];
+        $scope.sd = [];
+        $scope.devBU = [];
+        $scope.divisions = [];
+
+        $scope.divisionOption = '';
+        $scope.buDevOption = [];
+        $scope.sdOption = [];
+
+        $scope.myDropdownSettings = {
+            styleActive: true,
+            scrollableHeight: '300px',
+            scrollable: true,
+	        enableSearch: true,
+            smartButtonTextProvider(selectionArray) {
+                if (selectionArray.length === 1) {
+                    return selectionArray[0].label;
+                } else {
+                    return selectionArray.length + ' Selected';
+                }
+            }
+        };
 
         // get deals from db
         ModulesService.getAllModuleDocs('deals').then(function (allDeals) {
             $scope.deals = allDeals;
             $scope.filteredDeals = $scope.deals;
+            $scope.dealCount = $scope.filteredDeals.length;
+
+            $scope.divisions = [...new Set($scope.deals.map(deal => deal.profile['Division']).filter(function (el) {
+                return el != null;
+            }))];
+
+            let devModule, sdModule;
+
+            ModulesService.getAllModuleDocs('businessunits').then(function (businessUnits) {
+                //exclude deactivated business units
+                $scope.businessUnits = businessUnits.filter(function (aBusinessUnit) {
+                    //do not include inactive/deleted clients
+                    return aBusinessUnit.status !== false;
+                });
+
+                sdModule = $scope.businessUnits.filter(function(businessUnit) {
+                    return businessUnit['Is it an SD?'] !== undefined && businessUnit['Is it an SD?'] === 'Yes';
+                });
+
+                devModule = $scope.businessUnits.filter(function(businessUnit) {
+                    return businessUnit['Category'] === 'Dev';
+                });
+                
+                $scope.sd = [...new Set([...$scope.deals.map(deal => deal.profile['SD']), ...sdModule])].filter(function (el) {
+                    return el != null;
+                }).sort().map(dev => {
+                    return {
+                        id: dev.BU !== undefined ? dev.BU : dev,
+                        label: dev.BU !== undefined ? dev.BU : dev,
+                        division: dev.Division
+                    }
+                });
+                
+                $scope.devBU = [...new Set([...$scope.deals.map(deal => deal.profile['AWS Resp (Dev) BU']), ...devModule])].filter(function (el) {
+                    return el != null;
+                }).sort().map(dev => {
+                    return {
+                        id: dev.BU !== undefined ? dev.BU : dev,
+                        label: dev.BU !== undefined ? dev.BU : dev,
+                        division: dev.Division
+                    }
+                });
+
+            }).catch(function (err) {
+
+            });
+
         }).catch(function (err) {
             console.log(err);
         }).finally(function () {
@@ -189,6 +249,43 @@
         }
 
         getAllFields();
+
+        $scope.filterDeals = function () {
+            $scope.filteredDeals = $scope.deals;
+
+            if($scope.divisionOption !== '') {
+                $scope.filteredDeals = $scope.filteredDeals.filter(function (aDeal) {
+                    return aDeal.profile['Division'] === $scope.divisionOption;
+                });
+            }
+
+            if($scope.sdOption.length !== 0) {
+                $scope.filteredDeals = $scope.filteredDeals.filter(function (aDeal) {
+                    return $scope.sdOption.map(sd => sd.id).includes(aDeal.profile['SD']);
+                });
+            } 
+
+            if($scope.buDevOption.length !== 0) {
+                $scope.filteredDeals = $scope.filteredDeals.filter(function (aDeal) {
+                    return $scope.buDevOption.map(bu => bu.id).includes(aDeal.profile['AWS Resp (Dev) BU']);
+                });
+            } 
+
+            $scope.search = {};
+
+            var splitted = angular.copy($scope.searchColumn.split(','));
+            if (splitted[0] === 'all' || splitted[1] === 'ID') {
+                $scope.search[splitted[1]] = $scope.searchText;
+            } else if($scope.searchText !== '' && $scope.searchText !== undefined) {
+                $scope.search[splitted[0]] = {};
+                $scope.search[splitted[0]][splitted[1]] = $scope.searchText;
+            }
+            
+            $scope.filteredDeals = $filter('filter')($scope.filteredDeals, $scope.search);
+
+            $scope.dealCount = $scope.filteredDeals.length;
+        }
+        /* END Francis Nash Jasmin 2022/05/16 */
 
         $scope.sortColumn = function (category, fieldName) {
             $scope.column = category + "['" + fieldName + "']";
@@ -214,6 +311,7 @@
             }
             
             $scope.filteredDeals = $filter('filter')($scope.deals, $scope.search);
+            $scope.dealCount = $scope.filteredDeals.length;
         }
 
         /*
@@ -249,7 +347,10 @@
             let totalRow = computeTotals($scope.filteredDeals);
             preprocessedDeals.push(totalRow);
 
-            XLSX.utils.sheet_add_json(ws, preprocessedDeals, { origin: 'A2', skipHeader: true });
+            let wscols = adjustColumnWidth(preprocessedDeals);   
+            ws["!cols"] = wscols;
+
+            XLSX.utils.sheet_add_json(ws, preprocessedDeals, { origin: 'A3', skipHeader: true });
 
             ws = styleTable(ws);
 
@@ -266,6 +367,8 @@
             let numColumns = [];
             let totalColumnsRes = [];
             let totalColumnsOthers = [];
+
+            let buDivSDColumns = []
             for (var i in ws) {
 				if (typeof(ws[i]) != "object") continue;
 				let cell = XLSX.utils.decode_cell(i);
@@ -274,82 +377,101 @@
 				ws[i].s = { font: { name: "Calibri", sz: 11 } };
 
                 // Style first row
-				if (cell.r == 0) { 
+				if (cell.r <= 1) { 
 					ws[i].s = { font: { name: "Calibri", sz: 11, bold: true } }
                     
-                    if(ws[i].v.includes('RMM Total')) {
+                    if(ws[i].v.includes('RMM')) {
                         totalColumnsRes.push(cell.c);
                     }
 
-                    if(ws[i].v.includes('Revenue Total') || ws[i].v.includes('CM Total')) {
+                    if(ws[i].v.includes('Revenue') || ws[i].v.includes('CM')) {
                         totalColumnsOthers.push(cell.c);
                     }
 
                     if(ws[i].v.includes('/')) {
                         numColumns.push(cell.c);
+                        ws[i].s.alignment = {
+                            horizontal: "right"
+                        }
+                    }
+
+                    if(ws[i].v.includes('BU') || ws[i].v.includes('Division') || ws[i].v.includes('SD')) {
+                        buDivSDColumns.push(cell.c);
                     }
 				} 
 
                 // Style 'Level' column
-                if(cell.c == 3 && cell.r != 0) {
+                if(cell.c == 3) {
                     ws[i].s.alignment = {
-                        horizontal: "right"
+                        horizontal: "center"
                     }
                 }
 
-                if(numColumns.includes(cell.c) && cell.r != 0) {
+                if(numColumns.includes(cell.c) && cell.r > 1) {
                     ws[i].s.numFmt = "#,##0.0;[Red]-#,##0.0";
                 }
 
-                if(totalColumnsRes.includes(cell.c) && cell.r != 0) {
+                if(totalColumnsRes.includes(cell.c) && cell.r > 1) {
                     ws[i].s.numFmt = "#,##0.0_);;;";
                 }
 
-                if(totalColumnsOthers.includes(cell.c) && cell.r != 0) {
+                if(totalColumnsOthers.includes(cell.c) && cell.r > 1) {
                     ws[i].s.numFmt = '_-"¥"* #,##0_-;-"¥"* #,##0_-;_-"¥"* "-"_-;_-@_-';
+                }
+
+                if(buDivSDColumns.includes(cell.c)) {
+                    ws[i].s.alignment = {
+                        horizontal: "center"
+                    }
                 }
 			}
             return ws;
         }
 
+        function adjustColumnWidth(preprocessedDeals) {
+            const jsonKeys = Object.keys(preprocessedDeals[0]);
+
+            let objectMaxLength = []; 
+            for (let i = 0; i < preprocessedDeals.length; i++) {
+                let value = preprocessedDeals[i];
+                for (let j = 0; j < jsonKeys.length; j++) {
+                    if (typeof value[jsonKeys[j]] == "number") {
+                        objectMaxLength[j] = 15;
+                    } else {
+                        const l = value[jsonKeys[j]] ? value[jsonKeys[j]].length : 0;
+                        objectMaxLength[j] = objectMaxLength[j] >= l ? objectMaxLength[j] : l;
+                    }
+                }
+            
+                let key = jsonKeys;
+                for (let j = 0; j < key.length; j++) {
+                    objectMaxLength[j] = objectMaxLength[j] >= key[j].length ? objectMaxLength[j] : key[j].length;
+                }
+            }
+
+            let wscols = objectMaxLength.map(w => {
+                return {width: w}
+            });
+
+            return wscols;
+        }
+
         // Sets the name of the headers of the table to be exported.
         function createHeaders() {
             let monthHeaders = $scope.months.map(month => $scope.formatMonthHeader(month));
-            let headers = [['DocNumber', 'Customer', 'Subject', 'Level', 'Step', 'ServiceType', 'RespSales', 'RespDev', 'StartDate', 'EndDate', 'DueDate']];
+            let headers = [
+            [
+                '', '', '', '', '', '', '', '', '', '','',
+                Array(monthHeaders.length).fill(''), 'RMM', Array(monthHeaders.length).fill(''), 'Revenue', Array(monthHeaders.length).fill(''), 'CM',
+                '', '', '', ''
+            ],
+            [
+                'DocNumber', 'Customer', 'Subject', 'Level', 'Step', 'ServiceType', 'RespSales', 'RespDev', 'StartDate', 'EndDate', 'DueDate',
+                monthHeaders, 'Total', monthHeaders, 'Total', monthHeaders, 'Total',
+                'BU Sales', 'BU Dev', 'Division', 'SD'
+            ]];
 
-            if($scope.distValues.directJP) {
-                headers[0].push(
-                    monthHeaders, 'RMM Total (Direct to Client JP)', 
-                    monthHeaders, 'Revenue Total (Direct to Client JP)',
-                    monthHeaders, 'CM Total (Direct to Client)'
-                );
-            }
-
-            if($scope.distValues.intraJP) {
-                headers[0].push(
-                    monthHeaders, 'RMM Total (Intra-Company JP)',
-                    monthHeaders, 'Revenue Total (Intra-Company JP)',
-                    monthHeaders, 'CM Total (Intra-Company)'
-                );
-            }
-
-            if($scope.distValues.directGD) {
-                headers[0].push(
-                    monthHeaders, 'RMM Total (Direct to Client GD)',
-                    monthHeaders, 'Revenue Total (Direct to Client GD)'
-                );
-            }
-
-            if($scope.distValues.intraGD) {
-                headers[0].push(
-                    monthHeaders, 'RMM Total (Intra-Company GD)',
-                    monthHeaders, 'Revenue Total (Intra-Company GD)'
-                )
-            }
-
-            headers[0].push('BU Sales', 'BU Dev', 'Division');
-
-            return [headers[0].flat()];
+            return [headers[0].flat(), headers[1].flat()];
         }
 
         // Created the array of deal objects to be added in the exported file.
@@ -383,49 +505,21 @@
                 deal.DueDate = $scope.formatDate(dealObj.essential['Due Date']);
                 
                 // Format of the distribution value in the created deal object
-                // 04/22_[DIR/INT]_[RES/REV/CM]_[J/G]
+                // 04/22_[res/rev/cm]
 
-                if($scope.distValues.directJP) {
-                    deal = assignDistValues(deal, dealObj, 'res', 'Direct to Client', 'jp');
-                    deal['RMM Total (Direct to Client JP)'] = $scope.calculateTotal(dealObj, $scope.months, 'res', 'Direct to Client', 'jp');
-    
-                    deal = assignDistValues(deal, dealObj, 'rev', 'Direct to Client', 'jp');
-                    deal['Revenue Total (Direct to Client JP)'] = $scope.calculateTotal(dealObj, $scope.months, 'rev', 'Direct to Client', 'jp');
-    
-                    deal = assignDistValues(deal, dealObj, 'cm', 'Direct to Client', 'jp');
-                    deal['CM Total (Direct to Client)'] = $scope.calculateTotal(dealObj, $scope.months, 'cm', 'Direct to Client', 'jp');
-                }
+                deal = assignDistValues(deal, dealObj, 'res', 'ph');
+                deal['RMM Total'] = $scope.calculateTotal(dealObj, $scope.months, 'res', 'ph');
 
-                if($scope.distValues.intraJP) {
-                    deal = assignDistValues(deal, dealObj, 'res', 'Intra-Company', 'jp');
-                    deal['RMM Total (Intra-Company JP)'] = $scope.calculateTotal(dealObj, $scope.months, 'res', 'Intra-Company', 'jp');
-    
-                    deal = assignDistValues(deal, dealObj, 'rev', 'Intra-Company', 'jp');
-                    deal['Revenue Total (Intra-Company JP)'] = $scope.calculateTotal(dealObj, $scope.months, 'rev', 'Intra-Company', 'jp');
-    
-                    deal = assignDistValues(deal, dealObj, 'cm', 'Intra-Company', 'jp');
-                    deal['CM Total (Intra-Company)'] = $scope.calculateTotal(dealObj, $scope.months, 'cm', 'Intra-Company', 'jp');
-                }
+                deal = assignDistValues(deal, dealObj, 'rev', 'ph');
+                deal['Revenue Total'] = $scope.calculateTotal(dealObj, $scope.months, 'rev', 'ph');
 
-                if($scope.distValues.directGD) {                    
-                    deal = assignDistValues(deal, dealObj, 'res', 'Direct to Client', 'gd');
-                    deal['RMM Total (Direct to Client GD)'] = $scope.calculateTotal(dealObj, $scope.months, 'res', 'Direct to Client', 'gd');
-    
-                    deal = assignDistValues(deal, dealObj, 'rev', 'Direct to Client', 'gd');
-                    deal['Revenue Total (Direct to Client GD)'] = $scope.calculateTotal(dealObj, $scope.months, 'rev', 'Direct to Client', 'gd');
-                }
-
-                if($scope.distValues.intraGD) {
-                    deal = assignDistValues(deal, dealObj, 'res', 'Intra-Company', 'gd');
-                    deal['RMM Total (Intra-Company GD)'] = $scope.calculateTotal(dealObj, $scope.months, 'res', 'Intra-Company', 'gd');
-    
-                    deal = assignDistValues(deal, dealObj, 'rev', 'Intra-Company', 'gd');
-                    deal['Revenue Total (Intra-Company GD)'] = $scope.calculateTotal(dealObj, $scope.months, 'rev', 'Intra-Company', 'gd');
-                }
+                deal = assignDistValues(deal, dealObj, 'cm', 'jp');
+                deal['CM Total'] = $scope.calculateTotal(dealObj, $scope.months, 'cm', 'jp');
 
                 deal['BU Sales'] = dealObj.profile['AWS Resp (Sales) BU'];
                 deal['BU Dev'] = dealObj.profile['AWS Resp (Dev) BU'];
                 deal.Division = dealObj.profile['Division'];
+                deal.SD = dealObj.profile['SD'];
 
                 processedDeals.push(deal);
             })
@@ -434,9 +528,9 @@
         }
 
         // Gets the distribution values (resources, revenue and cm) for the deals to be added in the exported file.
-        function assignDistValues(deal, dealObj, dist, contract, distType) {
+        function assignDistValues(deal, dealObj, dist, distType) {
             for(var i = 0; i < $scope.months.length; i++){
-                deal[`${$scope.formatMonthHeader($scope.months[i])}_${contract}_${dist}_${distType}`] = $scope.getDistValue(dealObj, $scope.months[i], dist, contract, distType);
+                deal[`${$scope.formatMonthHeader($scope.months[i])}_${dist}`] = $scope.getDistValue(dealObj, $scope.months[i], dist, distType);
             }
             return deal;
         }
@@ -446,50 +540,14 @@
             let total = {};
 
             $scope.months.map(month => {
-                if($scope.distValues.directJP) {
-                    total[`${$scope.formatMonthHeader(month)}_Direct to Client_res_jp`] = $scope.calculateDistValueTotal(deals, month, 'res', 'Direct to Client', 'jp');
-                    total[`${$scope.formatMonthHeader(month)}_Direct to Client_rev_jp`] = $scope.calculateDistValueTotal(deals, month, 'rev', 'Direct to Client', 'jp');
-                    total[`${$scope.formatMonthHeader(month)}_Direct to Client_cm_jp`] = $scope.calculateDistValueTotal(deals, month, 'cm', 'Direct to Client', 'jp');
-                }
-
-                if($scope.distValues.intraJP) {
-                    total[`${$scope.formatMonthHeader(month)}_Intra-Company_res_jp`] = $scope.calculateDistValueTotal(deals, month, 'res', 'Intra-Company', 'jp');
-                    total[`${$scope.formatMonthHeader(month)}_Intra-Company_rev_jp`] = $scope.calculateDistValueTotal(deals, month, 'rev', 'Intra-Company', 'jp');
-                    total[`${$scope.formatMonthHeader(month)}_Intra-Company_cm_jp`] = $scope.calculateDistValueTotal(deals, month, 'cm', 'Intra-Company', 'jp');
-                }
-
-                if($scope.distValues.directGD) {                    
-                    total[`${$scope.formatMonthHeader(month)}_Direct to Client_res_gd`] = $scope.calculateDistValueTotal(deals, month, 'res', 'Direct to Client', 'gd');
-                    total[`${$scope.formatMonthHeader(month)}_Direct to Client_rev_gd`] = $scope.calculateDistValueTotal(deals, month, 'rev', 'Direct to Client', 'gd');
-                }
-
-                if($scope.distValues.intraGD) {
-                    total[`${$scope.formatMonthHeader(month)}_Intra-Company_res_gd`] = $scope.calculateDistValueTotal(deals, month, 'res', 'Intra-Company', 'gd');
-                    total[`${$scope.formatMonthHeader(month)}_Intra-Company_rev_gd`] = $scope.calculateDistValueTotal(deals, month, 'rev', 'Intra-Company', 'gd');
-                }
+                total[`${$scope.formatMonthHeader(month)}_res`] = $scope.calculateDistValueTotal(deals, month, 'res', 'ph');
+                total[`${$scope.formatMonthHeader(month)}_rev`] = $scope.calculateDistValueTotal(deals, month, 'rev', 'ph');
+                total[`${$scope.formatMonthHeader(month)}_cm`] = $scope.calculateDistValueTotal(deals, month, 'cm', 'jp');
             });
-            
-            if($scope.distValues.directJP) {
-                total['RMM Total (Direct to Client JP)'] = $scope.calculateOverallTotal(deals, $scope.months, 'res', 'Direct to Client', 'jp')
-                total['Revenue Total (Direct to Client JP)'] = $scope.calculateOverallTotal(deals, $scope.months, 'rev', 'Direct to Client', 'jp')
-                total['CM Total (Direct to Client)'] = $scope.calculateOverallTotal(deals, $scope.months, 'cm', 'Direct to Client', 'jp')
-            }
 
-            if($scope.distValues.intraJP) {
-                total['RMM Total (Intra-Company JP)'] = $scope.calculateOverallTotal(deals, $scope.months, 'res', 'Intra-Company', 'jp')
-                total['Revenue Total (Intra-Company JP)'] = $scope.calculateOverallTotal(deals, $scope.months, 'rev', 'Intra-Company', 'jp')
-                total['CM Total (Intra-Company)'] = $scope.calculateOverallTotal(deals, $scope.months, 'cm', 'Intra-Company', 'jp')
-            }
-
-            if($scope.distValues.directGD) {                    
-                total['RMM Total (Direct to Client GD)'] = $scope.calculateOverallTotal(deals, $scope.months, 'res', 'Direct to Client', 'gd')
-                total['Revenue Total (Direct to Client GD)'] = $scope.calculateOverallTotal(deals, $scope.months, 'rev', 'Direct to Client', 'gd')
-            }
-
-            if($scope.distValues.intraGD) {
-                total['RMM Total (Intra-Company GD)'] = $scope.calculateOverallTotal(deals, $scope.months, 'res', 'Intra-Company', 'gd')
-                total['Revenue Total (Intra-Company GD)'] = $scope.calculateOverallTotal(deals, $scope.months, 'rev', 'Intra-Company', 'gd')
-            }
+            total['RMM Total'] = $scope.calculateOverallTotal(deals, $scope.months, 'res', 'ph')
+            total['Revenue Total'] = $scope.calculateOverallTotal(deals, $scope.months, 'rev', 'ph')
+            total['CM Total'] = $scope.calculateOverallTotal(deals, $scope.months, 'cm', 'jp')
 
             return total;
         }
@@ -513,12 +571,20 @@
         // Used to get values under resources, revenue and cm in a deal's distribution field.
         // value for dist is res, rev or cm
         // contract is Direct to Customer or Intra-Company
-        // distType is jp or gd
-        $scope.getDistValue = function(deal, month, dist, contract, distType) {
+        // distType is jp or ph
+        $scope.getDistValue = function(deal, month, dist, distType) {
+            // Direct to Customer sow scheme gets the GD/PH values of Direct to Client distribution.
+            // Transfer Pricing to UBICOM sow scheme gets the GD/PH values of Intra-Company distribution.
+            let contract = deal.process['SOW Scheme'] === 'Transfer Pricing to UBICOM' ? 'Intra-Company' : 'Direct to Client';
             if(deal.distribution[contract] !== undefined) {
                 if(deal.distribution[contract][dist] !== undefined) {
+                    if(dist === 'cm') {
+                        if(Object.keys(deal.distribution[contract][dist]).includes(month.substring(0, 7))) {
+                            return parseFloat(deal.distribution[contract][dist][month.substring(0, 7)]);
+                        } else return '';
+                    }
                     if(deal.distribution[contract][dist][distType] !== undefined) {
-                        // cm field in distribution does not have jp or gd subfield
+                        // cm field in distribution does not have jp or ph subfield
                         /* START Francis Nash Jasmin 2022/03/15 Added parsing of numbers to Float when displaying in table and computing for totals. */
                         if(dist === 'cm') {
                             if(Object.keys(deal.distribution[contract][dist]).includes(month.substring(0, 7))) {
@@ -535,9 +601,9 @@
         }
 
         // Computes the total of resources, revenue and cm based on the range of dates specified.
-        $scope.calculateTotal = function(deal, months, dist, contract, distType){
+        $scope.calculateTotal = function(deal, months, dist, distType){
             let values = months.map(month => {
-                return $scope.getDistValue(deal, month, dist, contract, distType)
+                return $scope.getDistValue(deal, month, dist, distType)
             }).filter(value => value !== '')
             let total = 0;
             angular.forEach(values, function(item){
@@ -546,10 +612,13 @@
             return total;
         }
 
-        // Computes the total of resources, revenue and cm for a single month.
-        $scope.calculateDistValueTotal = function(deals, month, dist, contract, distType) {
+        $scope.calculateDistValueTotal = function(deals, month, dist, distType) {
             let values = deals.map(deal => {
-                return $scope.getDistValue(deal, month, dist, contract, distType)
+                if(deal.process['SOW Scheme'] === 'Direct to Customer') {
+                    return $scope.getDistValue(deal, month, dist, distType);
+                } else {
+                    return $scope.getDistValue(deal, month, dist, distType);
+                }
             }).filter(value => value !== '')
             let total = 0;
             angular.forEach(values, function(item){
@@ -558,10 +627,9 @@
             return total;
         }
 
-        // Computes the overall total of resources, revenue, and cm for all months based on the range of dates specified.
-        $scope.calculateOverallTotal = function(deals, months, dist, contract, distType){
+        $scope.calculateOverallTotal = function(deals, months, dist, distType){
             let values = months.map(month => {
-                return $scope.calculateDistValueTotal(deals, month, dist, contract, distType)
+                return $scope.calculateDistValueTotal(deals, month, dist, distType)
             }).filter(value => value !== '')
             let total = 0;
             angular.forEach(values, function(item){

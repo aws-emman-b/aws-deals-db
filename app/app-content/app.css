@@ -587,3 +587,18 @@ td{
     }
 }
 /*END Francis Nash Jasmin April 22, 2022*/
+
+/* START
+* Francis Nash Jasmin
+* May 11, 2022/
+
+/*Added stylings for multiselect dropdown in export page. */
+.multiselect-parent .dropdown-toggle {
+	font-size: 12px;
+}
+  
+.multiselect-parent .dropdown-menu {
+	font-size: 12px;
+	
+}
+/*END Francis Nash Jasmin May 16, 2022*/
