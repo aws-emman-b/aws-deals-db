@@ -29,22 +29,36 @@
                         <div class="sorter" ng-click="sortColumn(field.name)" ng-class="sortClass(field.name)"/>
                     </div>
                 </th>
+                <th class="tHeaders" style="text-align: center;">Active</th>
                 <th></th>
             </thead>
             <tbody>
                 <tr>
-                    <tr ng-repeat="client in clients | orderBy : column : reverse | filter : searchText | filter: {status: true} | pagination: (currentPage - 1) * pageSize | limitTo: pageSize ">
+                    <!-- START 05162022 Dullao, Joshua -->
+                    <!-- Removed the status filter -->
+                    <tr ng-repeat="client in clients | orderBy : column : reverse | filter : searchText | pagination: (currentPage - 1) * pageSize | limitTo: pageSize " >
+                    <!-- END 05162022 Dullao, Joshua -->
+                    
                         <td class="tContents" ng-repeat="field in module.fields | filter:{ showInList: true} ">
                             {{client[field.name]}}
                         </td>
+                        <!-- START 05162022 Dullao, Joshua -->
+                        <!-- Added an active or inactive checkbox -->
+                        <td class="tools">
+                            <input type="checkbox" ng-model="client.status" ng-change="deleteClient(client._id)" />
+                        </td>
+                        <!-- END 05162022 Dullao, Joshua -->
                         <td class="tools">
                             <a>
                                 <i class="fa fa-list-alt" aria-hidden="true" ui-sref="ClientForm({_id: client._id})" data-toggle="tooltip" title="Edit"></i>
                             </a>
                             &nbsp;
-                            <a>
+                            <!-- START 05162022 Dullao, Joshua -->
+                            <!-- Removed the delete button -->
+                            <!-- <a>
                                 <i class="fa fa-trash" aria-hidden="true" ng-click="deleteClient(client._id)" data-toggle="tooltip" title="Deactivate"></i>
-                            </a>
+                            </a> -->
+                        <!-- END 05162022 Dullao, Joshua -->
                         </td>
                     </tr>
                 </tr>
