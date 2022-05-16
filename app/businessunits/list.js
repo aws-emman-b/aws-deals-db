@@ -31,8 +31,11 @@
         getBUFields();
 
         function getAllBUs() {
-            ModulesService.getAllModuleDocs('businessunits').then(function(businessUnits) {                
-                $scope.businessUnits = businessUnits.filter(unit => unit.status === true);
+            ModulesService.getAllModuleDocs('businessunits').then(function(businessUnits) {      
+                // START 05162022 Dullao, Joshua
+                // Displays all client from the database          
+                $scope.businessUnits = businessUnits;
+                // END 05162022 Dullao, Joshua
             }).catch(function(err) {
 
             }).finally(function() {
@@ -78,11 +81,26 @@
                 toSave.moduleDoc = moduleDoc;
                 
                 //set status field to false to not display client
-                toSave.moduleDoc.status = false;
+                // toSave.moduleDoc.status = false;
+
+                //START 05132022 Dullao, Joshua
+                //set the status as true/false when checked
+                if(moduleDoc.status == false){
+                    toSave.moduleDoc.status = true;
+                    ngToast.success('Business Unit Reactivated');
+                } else{
+                    toSave.moduleDoc.status = false;
+                    ngToast.success('Business Unit Deactivated');
+                }
+                //END 05132022 Dullao, Joshua 
+                //console.log(toSave);
 
                 //update if found
                 ModulesService.updateModuleDoc(toSave).then(function() {
-                    ngToast.success('Business Unit deactivated');
+                    // START 05122022 Dullao, Joshua
+                    // Transferred the message
+                    // ngToast.success('Business Unit deactivated');
+                    // END 05122022 Dullao, Joshua 
                     $state.transitionTo('BUList');
                     getAllBUs();
                 }).catch(function(err){
