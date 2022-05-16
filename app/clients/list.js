@@ -121,9 +121,14 @@
                 * filtered the clients so only those with a status of true 
                 * will be passed
                 */              
-                $scope.clients = clients.filter(unit => unit.status === true);
+                // $scope.clients = clients.filter(unit => unit.status === true);
                 /*END Dullao, Joshua 02/11/2022*/
-               
+
+                // START 05162022 Dullao, Joshua
+                // Displays all client from the database
+                $scope.clients = clients;
+                // END 05162022 Dullao, Joshua
+                $scope.clientLength = Object.size(clients);
             }).catch(function(err) {
                 console.log(err);
             }).finally(function() {
@@ -153,12 +158,25 @@
                 toSave.moduleDoc = moduleDoc;
                 
                 //set status field to false to not display client
-                toSave.moduleDoc.status = false;
+
+                //START 05122022 Dullao, Joshua
+                //set the status as true/false when checked
+                if(moduleDoc.status == false){
+                    toSave.moduleDoc.status = true;
+                    ngToast.success('Client Reactivated');
+                } else{
+                    toSave.moduleDoc.status = false;
+                    ngToast.success('Client Deactivated');
+                }
+                //END 05122022 Dullao, Joshua 
                 //console.log(toSave);
 
                 //update if found
                 ModulesService.updateModuleDoc(toSave).then(function() {
-                    ngToast.success('Client deactivated');
+                    // START 05162022 Dullao, Joshua
+                    // Transferred the message
+                    // ngToast.success('Client deactivated');
+                    // END 05162022 Dullao, Joshua
                     $state.transitionTo('clientList');
                     getAllClients();
                 }).catch(function(err){
