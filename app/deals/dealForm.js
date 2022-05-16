@@ -187,6 +187,16 @@
         //called once
         getAllBUs();
 
+        /*
+        * START Francis Nash Jasmin 2022/05/11
+        * Added conditions to enable/disable edit and delete buttons based on user roles.
+        */
+        $scope.dealAuthors = [];
+        $scope.canEditDeal = $stateParams.ID === '' ? true : false;
+        $scope.canDeleteDeal = false;
+        $scope.dealID = $stateParams.ID;
+        /* END Francis Nash Jasmin 2022/05/16 */
+
         //if there is a parameter on the url, it means that a deal is loaded and will be updated
         if ($stateParams.ID !== '') {
             //get one then store to $scope.dealForm;
@@ -202,7 +212,24 @@
                 $scope.startingMonthYear = $scope.dealForm.profile['Duration (Start)'];
                 /* END Francis Nash Jasmin 2022/02/21 */
                 $scope.showUpload = false;
-                //console.log($scope.dealForm);
+
+                /*
+                * START Francis Nash Jasmin 2022/05/11
+                * Added conditions to enable/disable edit and delete buttons based on user roles.
+                */
+                $scope.dealAuthors = aDeal['Change History'].map(hist => hist.user);
+                $scope.canEditDeal = ($rootScope.user.role.toUpperCase() === 'ADMIN') || 
+                                        (aDeal['Author'] === $rootScope.user.email) || 
+                                        ($scope.dealAuthors.includes($rootScope.user.firstName + ' ' + $rootScope.user.lastName)) ||
+                                        (aDeal.profile['AWS Resp (Dev) person'] === $rootScope.user.email) ||
+                                        (aDeal.profile['AWS Resp (Sales) person'] === $rootScope.user.email) ||
+                                        (aDeal.profile['AWS Resp (Dev) person'] === $rootScope.user.firstName + ' ' + $rootScope.user.lastName) ||
+                                        (aDeal.profile['AWS Resp (Sales) person'] === $rootScope.user.firstName + ' ' + $rootScope.user.lastName);
+                                        
+                $scope.canDeleteDeal = ($rootScope.user.role.toUpperCase() === 'ADMIN') || 
+                                        (aDeal['Author'] === $rootScope.user.email) || 
+                                        ($scope.dealAuthors.includes($rootScope.user.firstName + ' ' + $rootScope.user.lastName));
+                /* END Francis Nash Jasmin 2022/05/16 */
             }).catch(function () {
                 //$scope.message = 'Cannot find the deal';
                 $scope.showUpload = false;
@@ -285,6 +312,31 @@
                 ngToast.danger(e.message);
             }
         }
+
+        /*
+        * START Francis Nash Jasmin 2022/05/11
+        * Added delete functionality.
+        */
+        $scope.deleteDeal = function() {
+            try {
+                if ($stateParams.ID !== '') {
+                    if(confirm("Are you sure you want to delete this deal?")) {
+                        DealsService.deleteDeal($stateParams.ID)
+                            .then(function () {
+                                ngToast.success('Deal deleted');
+                                $state.transitionTo('dealList');
+                            })
+                            .catch(function (err) {
+                                ngToast.danger(err);
+                            });
+                    }
+                }
+            } catch (e) {
+                ngToast.danger(e.message);
+                $state.transitionTo('dealList');
+            }
+        }
+        /* END Francis Nash Jasmin 2022/05/16 */
 
         //update the distribution table headers whenever input starting month is changed
         $scope.$watch('startingMonthYear', function () {
@@ -452,20 +504,20 @@
             won't accept the first value of the array
             */
             //use variables like sumRes as temporary sum
-            var i, resJP, resGD, revJP, revGD, cm, resSum, revSum, cmSum, forCompute, editedProp;
+            var i, resJP, resPH, revJP, revPH, cm, resSum, revSum, cmSum, forCompute, editedProp;
             var start = moment($scope.startingMonthYear).subtract(1, 'months').format('YYYY-MM-DD');
             var end = moment($scope.startingMonthYear).add(12, 'month').format('YYYY-MM-DD');
             //for direct or indirect
             for (i = 0; i < $scope.contracts.length; i++) {
                 //console.log($scope.dealForm.distribution[$scope.contracts[i]].res);
                 //reset per contract
-                resJP = [], resGD = [], revJP = [], revGD = [], cm = [];
+                resJP = [], resPH = [], revJP = [], revPH = [], cm = [];
                 resSum = 0, revSum = 0, cmSum = 0;
                 //compute total resource
                 if ($scope.dealForm.distribution[$scope.contracts[i]] !== undefined) {
                     /**
                      * check if not undefined to avoid displaying errors
-                     * for res & rev, need to check both jp & gd if not undefined to avoid errors
+                     * for res & rev, need to check both jp & ph if not undefined to avoid errors
                      * */
                     //use object.values since they are all integers
                     
@@ -502,10 +554,10 @@
                             /* END Francis Nash Jasmin 2022/03/15 */
                         }
 
-                        //for GD
-                        if ($scope.dealForm.distribution[$scope.contracts[i]].res.gd !== undefined) {
+                        //for PH
+                        if ($scope.dealForm.distribution[$scope.contracts[i]].res.ph !== undefined) {
                             forCompute = {};
-                            Object.assign(forCompute, $scope.dealForm.distribution[$scope.contracts[i]].res.gd);
+                            Object.assign(forCompute, $scope.dealForm.distribution[$scope.contracts[i]].res.ph);
                             for (var prop in forCompute) {
                                 editedProp = prop.replace(/\//, '-') + '-01';
                                 if (!moment(editedProp)
@@ -516,15 +568,15 @@
                             }
 
                             /* START Francis Nash Jasmin 2022/03/15 Added parsing of values to Float when computing for totals. */
-                            resGD = Object.values(forCompute).map(function (val) { 
+                            resPH = Object.values(forCompute).map(function (val) { 
                                 return parseFloat(val); 
                             });
                             /* END Francis Nash Jasmin 2022/03/15 */
                         }
 
                         //compute total resource
-                        if (resJP.length > 0 || resGD.length > 0) {
-                            resSum = resJP.concat(resGD).reduce(function (total, value) {
+                        if (resJP.length > 0 || resPH.length > 0) {
+                            resSum = resJP.concat(resPH).reduce(function (total, value) {
                                 return (value !== undefined && value !== null) ? total + value : total + 0;
                             });
                         }
@@ -551,10 +603,10 @@
                             });
                             /* END Francis Nash Jasmin 2022/03/15 */
                         }
-                        //for GD
-                        if ($scope.dealForm.distribution[$scope.contracts[i]].rev.gd !== undefined) {
+                        //for PH
+                        if ($scope.dealForm.distribution[$scope.contracts[i]].rev.ph !== undefined) {
                             forCompute = {};
-                            Object.assign(forCompute, $scope.dealForm.distribution[$scope.contracts[i]].rev.gd);
+                            Object.assign(forCompute, $scope.dealForm.distribution[$scope.contracts[i]].rev.ph);
                             for (var prop in forCompute) {
                                 editedProp = prop.replace(/\//, '-') + '-01';
                                 if (!moment(editedProp)
@@ -565,15 +617,15 @@
                             }
 
                             /* START Francis Nash Jasmin 2022/03/15 Added parsing of values to Float when computing for totals. */
-                            revGD = Object.values(forCompute).map(function (val) { 
+                            revPH = Object.values(forCompute).map(function (val) { 
                                 return parseFloat(val); 
                             });
                             /* END Francis Nash Jasmin 2022/03/15 */
                         }
 
                         //compute total revenue
-                        if (revJP.length > 0 || revGD.length > 0) {
-                            revSum = revJP.concat(revGD).reduce(function (total, value) {
+                        if (revJP.length > 0 || revPH.length > 0) {
+                            revSum = revJP.concat(revPH).reduce(function (total, value) {
                                 return (value !== undefined && value !== null) ? total + value : total + 0;
                             });
                         }

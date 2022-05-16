@@ -81,7 +81,7 @@ router.post('/addDeal', function(req, res, next) {
     
     //console.log(req.body);
 
-    dealsService.addDeal(req.body, req.session.user.firstName + ' ' + req.session.user.lastName)
+    dealsService.addDeal(req.body, req.session.user.firstName + ' ' + req.session.user.lastName, req.session.user.email)
     .then(function(deal) {
         res.status(200).send(deal);
     })
