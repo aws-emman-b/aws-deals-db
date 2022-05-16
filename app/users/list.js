@@ -55,8 +55,11 @@
         getUserFields();
 
         function getAllUsers() {
-            ModulesService.getAllModuleDocs('users').then(function(users) {                
-                $scope.users = users.filter(unit => unit.status === true);
+            ModulesService.getAllModuleDocs('users').then(function(users) { 
+                // START 05162022 Dullao, Joshua
+                // Displays all users from the database                   
+                $scope.users = users;
+                // END 05162022 Dullao, Joshua
             }).catch(function(err) {
 
             }).finally(function() {
@@ -88,12 +91,28 @@
                 toSave.moduleDoc = moduleDoc;
                 
                 //set status field to false to not display client
-                toSave.moduleDoc.status = false;
+                // toSave.moduleDoc.status = false;
+
+                
+                //START 05132022 Dullao, Joshua
+                //set the status as true/false when checked
+                if(moduleDoc.status == false){
+                    toSave.moduleDoc.status = true;
+                    ngToast.success('User Reactivated');
+                } else{
+                    toSave.moduleDoc.status = false;
+                    ngToast.success('User Deactivated');
+                }
+                //END 05132022 Dullao, Joshua 
+
                 //console.log(toSave);
 
                 //update if found
                 ModulesService.updateModuleDoc(toSave).then(function() {
-                    ngToast.success('User deactivated');
+                    // START 05122022 Dullao, Joshua
+                    // Transferred the message
+                    // ngToast.success('User deactivated');
+                    // END 05122022 Dullao, Joshua 
                     $state.transitionTo('UserList');
                     getAllUsers();
                 }).catch(function(err){

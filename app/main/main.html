@@ -29,10 +29,7 @@
                     <a class="nav_deals col-md-9" ui-sref="dealList">Deals</a> 
                     <i class="fa fa-plus-square col-md-2" ui-sref="dealForm" title="Add New Deal" ></i>
                 </div>
-                <div class="row navTabs" ui-sref-active="active">
-                    <a class="nav_clients col-md-9" ui-sref="clientList">Clients</a>
-                    <i class="fa fa-plus-square col-md-2 " ui-sref="ClientForm" title="Add New Client"></i>
-                </div>
+               
                 <!-- /*  END Dullao, Joshua 02/23/2022 */  -->
                 
 
@@ -50,6 +47,17 @@
                 <label class='navCategory'>Admin</label>
                 <a ui-sref="fields" ui-sref-active="active">Fields</a>
                 <div>
+                     <!-- /*
+                    * START Dullao, Joshua 2022/05/12
+                    * 
+                    * Transferred the clients tab to the admin tab.
+                    * 
+                    */ -->
+                    <div class="row navTabs" ui-sref-active="active">
+                        <a class="nav_clients col-md-9" ui-sref="clientList">Clients</a>
+                        <i class="fa fa-plus-square col-md-2 " ui-sref="ClientForm" title="Add New Client"></i>
+                    </div>
+                     <!-- /*  END Dullao, Joshua 2022/05/12 */  -->
                     <div class="row navTabs" ui-sref-active="active">
                         <a class="nav_BU col-md-9" ui-sref="BUList">Business Units</a> 
                         <i class="fa fa-plus-square col-md-2" ui-sref="BUForm" data-toggle="tooltip" title="Add New Business Unit"></i>
