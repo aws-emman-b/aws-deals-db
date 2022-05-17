@@ -20,7 +20,6 @@
 
     function Controller($scope, $rootScope, $state, ModulesService, TableService, ngToast, $filter) {
         $scope.loading = true;
-        $scope.selectedView = 'alternate';
         
         $scope.currentPage = 1;
         $scope.pageSize = 15;
@@ -166,7 +165,14 @@
             styleActive: true,
             scrollableHeight: '300px',
             scrollable: true,
-	        enableSearch: true,
+            selectByGroups: ['GD', 'ESD'],
+            groupByTextProvider(groupValue) { 
+                switch (groupValue) { 
+                    case 'GD': return 'GD'; 
+                    case 'ESD': return 'ESD'; 
+                    case 'Other': return 'Other'; 
+                }
+            }, 
             smartButtonTextProvider(selectionArray) {
                 if (selectionArray.length === 1) {
                     return selectionArray[0].label;
@@ -175,6 +181,30 @@
                 }
             }
         };
+
+        function assignDropdownValues(arr1, arr2) {
+            let dropdownValues = [...arr1, ...arr2].sort()
+                .map(function(dev) {
+                    return {
+                        id: dev.BU !== undefined ? dev.BU : dev,
+                        label: dev.BU !== undefined ? dev.BU : dev,
+                        division: dev.Division !== undefined ? dev.Division : 'Other'
+                    }
+                }).reduce(function(acc, curr) {
+                    let findIndex = acc.findIndex(function(item) {
+                        return item.id === curr.id
+                    })
+                
+                    if (findIndex === -1) {
+                        acc.push(curr)
+                    } else {
+                        acc[findIndex] = (Object.assign({}, acc[findIndex], curr))
+                    }
+                    return acc;
+                }, []);
+
+            return dropdownValues;
+        }
 
         // get deals from db
         ModulesService.getAllModuleDocs('deals').then(function (allDeals) {
@@ -202,27 +232,9 @@
                 devModule = $scope.businessUnits.filter(function(businessUnit) {
                     return businessUnit['Category'] === 'Dev';
                 });
-                
-                $scope.sd = [...new Set([...$scope.deals.map(deal => deal.profile['SD']), ...sdModule])].filter(function (el) {
-                    return el != null;
-                }).sort().map(dev => {
-                    return {
-                        id: dev.BU !== undefined ? dev.BU : dev,
-                        label: dev.BU !== undefined ? dev.BU : dev,
-                        division: dev.Division
-                    }
-                });
-                
-                $scope.devBU = [...new Set([...$scope.deals.map(deal => deal.profile['AWS Resp (Dev) BU']), ...devModule])].filter(function (el) {
-                    return el != null;
-                }).sort().map(dev => {
-                    return {
-                        id: dev.BU !== undefined ? dev.BU : dev,
-                        label: dev.BU !== undefined ? dev.BU : dev,
-                        division: dev.Division
-                    }
-                });
 
+                $scope.sd = assignDropdownValues($scope.deals.map(deal => deal.profile['SD']), sdModule);
+                $scope.devBU = assignDropdownValues($scope.deals.map(deal => deal.profile['AWS Resp (Dev) BU']), devModule);
             }).catch(function (err) {
 
             });
