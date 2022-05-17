@@ -28,31 +28,8 @@
                 </div>
             </div>
             <br/>
-            <div class="form-inline" ng-class="{'has-error': myForm['essential Person in Charge'].$invalid}">
-                 <!-- /*
-                    * START Francis Nash Jasmin 2022/05/06
-                    * 
-                    * Changed the Person in Charge to Person in Charge
-                    * 
-                    */ -->
-                <label>Person in Charge:</label>
-                <!-- END Jasmin, Francis -->
-                <span style="color:red" ng-if="getField('essential', 'Person in Charge').required">*</span>
-                <select class="form-control input-sm pull-right" name="essential Person in Charge" ng-model="dealForm.essential['Person in Charge']" ng-required="getField('essential', 'Person in Charge').required"
-                uib-tooltip="{{getTooltipMessage(myForm['essential Person in Charge'])}}" tooltip-enable="{{myForm['essential Person in Charge'].$invalid}}">
-                    <option value="">- select -</option>
-                    <!-- /*
-                    * START Francis Nash Jasmin 2022/02/10
-                    * 
-                    * Fixed bug where user appears as blank when no first name or last name is given.
-                    * 
-                    */ -->
-                    <option ng-repeat="user in users" value="{{user.email}}">                        
-                        {{(user.firstName !== undefined || user.lastName !== undefined) ? user.firstName + ' ' + user.lastName : user.nickname}}
-                    </option>
-                    <!-- /*  END Francis Nash Jasmin 2022/02/11 */ -->
-                </select>
-            </div>
+            <!--DELETE REYNALDO PENA JR. 20220513
+                Deleted the Person In Charge Field-->
         </div>
         <div class="col-md-4">
             <!-- <div class="input-group" ng-show="showUpload">
@@ -235,7 +212,12 @@
                                             <select class="form-control input-sm" ng-model="dealForm.profile['AWS Resp (Sales) BU']" name="profile AWS Resp (Sales) BU" ng-required="getField('profile', 'AWS Resp (Sales) BU').required"
                                             uib-tooltip="{{getTooltipMessage(myForm['profile AWS Resp (Sales) BU'])}}" tooltip-enable="{{myForm['profile AWS Resp (Sales) BU'].$invalid}}">
                                                 <option value="">- select -</option>
-                                                <option ng-repeat="businessUnit in salesBU" value="{{businessUnit.BU}}">{{businessUnit.BU}}</option>
+                                               <!--START REYNALDO PENA JR. 20220513
+                                                    The dropdown options changes to the countries-->
+                                                    <option ng-repeat="option in getField('profile', 'Country').options" value="{{option}}">
+                                                        {{option}}
+                                                    </option>
+                                                    <!--END REYNALDO PENA JR. 20220513-->
                                             </select>
                                         </div>
                                     </div>
@@ -803,7 +785,10 @@
                                     <b style="color:red">JP</b>
                                     <br/>
                                     <br/>
+                                    <!--START REYNALDO PENA JR 20220513
+                                    Replaced GD to PH-->
                                     <b style="color: navy">PH</b>
+                                     <!--END REYNALDO PENA JR 20220513-->
                                 </td>
                                 <!-- /*
                                 * START Francis Nash Jasmin 2022/02/21
@@ -841,7 +826,10 @@
                                     <b style="color:red">JP</b>
                                     <br/>
                                     <br/>
+                                    <!--START REYNALDO PENA JR 20220513
+                                    Replaced GD to PH-->
                                     <b style="color: navy">PH</b>
+                                     <!--END REYNALDO PENA JR 20220513-->
                                 </td>
                                 <!-- /*
                                 * START Francis Nash Jasmin 2022/02/21
@@ -921,7 +909,11 @@
                                     <b style="color:red">JP</b>
                                     <br/>
                                     <br/>
+                                    <!--START REYNALDO PENA JR 20220513
+                                    Replaced GD to PH-->
                                     <b style="color: navy">PH</b>
+                                     <!--END REYNALDO PENA JR 20220513-->
+
                                 </td>
                                 <!-- /*
                                 * START Francis Nash Jasmin 2022/02/21
@@ -959,7 +951,10 @@
                                     <b style="color:red">JP</b>
                                     <br/>
                                     <br/>
+                                    <!--START REYNALDO PENA JR 20220513
+                                    Replaced GD to PH-->
                                     <b style="color: navy">PH</b>
+                                     <!--END REYNALDO PENA JR 20220513-->
                                 </td>
                                 <!-- /*
                                 * START Francis Nash Jasmin 2022/02/21

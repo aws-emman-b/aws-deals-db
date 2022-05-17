@@ -9,6 +9,11 @@
         $scope.businessUnitForm = {};
         $scope.module = {};
         $scope.userList = {};
+        /**
+         * START REYNALDO PENA JR 20220516
+         * Added a BUList for the dropdown options of SD Group*/
+        $scope.BUList = {};
+        /* END REYNALDO PENA JR. 20220516*/
 
         function getBUFields() {
             ModulesService.getModuleByName('businessunits').then(function(aModule) {
@@ -19,6 +24,25 @@
         }
 
         getBUFields();
+
+        /**
+         * Start REYNALDO PENA JR. 20220516
+         * Gets all business units in the db  */ 
+        function getAllBusinessUnits(){
+            ModulesService.getAllModuleDocs('businessunits').then(function(businessunits){
+                $scope.businessunits = businessunits;
+                for(var key in businessunits){
+                    $scope.BUList[key] = businessunits[key];
+                }
+                console.log($scope.BUList);
+            }).catch(function(err){
+
+            });
+        }
+
+        getAllBusinessUnits();
+
+        /*END REYNALDO PENA JR. 20220516 */
 
         function getAllUsers() {
             ModulesService.getAllModuleDocs('users').then(function(users) {                
@@ -101,7 +125,19 @@
                 });
             }
         
-    }
+        }
+
+        /**
+         * START Francis Nash Jasmin 20220517
+         * Clears the SD Group selection when Is it an SD option Yes is selected
+         */
+        $scope.clearSelection = function() {
+            if($scope.businessUnitForm['Is it an SD?'] == 'Yes') {
+                $scope.businessUnitForm['SD Group'] = '';
+            }
+            console.log( $scope.businessUnitForm['SD Group'])
+        }
+        /**END Francis Nash Jasmin 20220517 */
     }
 
 })();
