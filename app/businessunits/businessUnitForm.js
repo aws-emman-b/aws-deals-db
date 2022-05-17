@@ -12,7 +12,7 @@
         /**
          * START REYNALDO PENA JR 20220516
          * Added a BUList for the dropdown options of SD Group*/
-        $scope.BUList = {};
+        $scope.BUList = [];
         /* END REYNALDO PENA JR. 20220516*/
 
         function getBUFields() {
@@ -34,6 +34,7 @@
                 for(var key in businessunits){
                     $scope.BUList[key] = businessunits[key];
                 }
+                $scope.BUList = $scope.BUList.filter(bu => bu['Is it an SD?'] == 'Yes')
                 console.log($scope.BUList);
             }).catch(function(err){
 
