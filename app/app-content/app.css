@@ -524,6 +524,15 @@ td{
 	text-align: right;
 }
 
+/*
+*START Reynaldo Pena Jr. 20220513
+*Center aligns the values under the columns: Level & Confidence
+*/
+.singleDigits{
+	text-align: center;
+}
+/* END Reynaldo Pena Jr. 20220513
+
 /**fixed the padding of nav items */
 .navTabs{
     padding-left: 15px;
