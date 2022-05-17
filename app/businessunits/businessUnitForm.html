@@ -17,10 +17,10 @@
                         <!--END Francis Nash Jasmin-->
                         <!--START Reynaldo Pena Jr. 20220516
                         Created an SD Group option-->
-                        <option ng-if="field.name == 'SD Group'" ng-repeat="option in BUList"  value="{{option.BU}}" >{{option.BU}}</option>
+                        <option ng-if="field.name == 'SD Group'" ng-repeat="option in BUList  | orderBy: 'BU'"  value="{{option.BU}}" >{{option.BU}}</option>
                         <!--END Reynaldo Pena Jr 20220516-->
-                        <option ng-if="field.name != 'Manager'" ng-repeat="option in field.options" value="{{option}}">{{option}}</option>
-                        <option ng-if="field.name == 'Manager'" ng-repeat="option in userList" value="{{option.email}}">{{option.nickname}}</option>
+                        <option ng-if="field.name != 'Manager'" ng-repeat="option in field.options | orderBy: option" value="{{option}}">{{option}}</option>
+                        <option ng-if="field.name == 'Manager'" ng-repeat="option in userList | orderBy: 'nickname'" value="{{option.email}}">{{option.nickname}}</option>
                     </select>
 
                 <textarea class="form-control" ng-model="businessUnitForm[field.name]" ng-if="field.type === 'textarea'" ng-required="field.required">
