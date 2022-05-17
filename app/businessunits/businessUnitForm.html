@@ -8,11 +8,20 @@
                 <input type="{{field.type}}" class="form-control" ng-if="field.type !== 'dropdown' && field.type !== 'textarea'" ng-model="businessUnitForm[field.name]"
                     ng-required="field.required" maxlength="50" /> <!--Reynaldo Pena Jr. START February 17, 2022 Limiting the characters to 50 END February 17, 2022-->
 
-                <select class="form-control" ng-model="businessUnitForm[field.name]" ng-if="field.type === 'dropdown'" ng-required="field.required">
-                    <option value=""></option>
-                    <option ng-if="field.name != 'Manager'" ng-repeat="option in field.options" value="{{option}}">{{option}}</option>
-                    <option ng-if="field.name == 'Manager'" ng-repeat="option in userList" value="{{option.email}}">{{option.nickname}}</option>
-                </select>
+                    <!--START Francis Nash Jasmin 20220517
+                    Created ng-disabled to disable SD Group depending on Is it SD selection
+                    Created ng-change to clear SD Group selected option when Is it an SD option reselects "Yes"
+                    Disables showing a blank option of Is it an SD Field-->
+                    <select class="form-control" ng-model="businessUnitForm[field.name]" ng-if="field.type === 'dropdown'" ng-change="clearSelection()" ng-required="field.required" ng-disabled="field.name == 'SD Group' && businessUnitForm['Is it an SD?'] == 'Yes'">
+                        <option ng-show="field.name != 'Is it an SD?'" value=""></option>
+                        <!--END Francis Nash Jasmin-->
+                        <!--START Reynaldo Pena Jr. 20220516
+                        Created an SD Group option-->
+                        <option ng-if="field.name == 'SD Group'" ng-repeat="option in BUList"  value="{{option.BU}}" >{{option.BU}}</option>
+                        <!--END Reynaldo Pena Jr 20220516-->
+                        <option ng-if="field.name != 'Manager'" ng-repeat="option in field.options" value="{{option}}">{{option}}</option>
+                        <option ng-if="field.name == 'Manager'" ng-repeat="option in userList" value="{{option.email}}">{{option.nickname}}</option>
+                    </select>
 
                 <textarea class="form-control" ng-model="businessUnitForm[field.name]" ng-if="field.type === 'textarea'" ng-required="field.required">
                         </textarea>
