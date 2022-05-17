@@ -12,16 +12,20 @@
 
 <div class="row">
     <div class="col-md-10 form-inline">
-        <label for="pageSize">Page size: </label>
+         <!--START REYNALDO PENA JR 20220513
+        Commented out the Page Size field-->
+
+        <!--<label for="pageSize">Page size: </label>-->
         <!-- /*
         * START Francis Nash Jasmin 2022/02/10
         * 
         * Restricted input of decimal point in input page size.
         * 
         */ -->
-        <input id="pageSize" type="number" ng-model="pageSize" class="form-control" min="1" max={{deals.length}}
-            onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+        <!--<input id="pageSize" type="number" ng-model="pageSize" class="form-control" min="1" max={{deals.length}}
+            onkeypress="return event.charCode >= 48 && event.charCode <= 57">-->
         <!-- /*  END Francis Nash Jasmin 2022/02/11 */ -->
+        <!--END REYNALDO PENA JR 20220513-->
         <label>Options: </label>
         <select class="form-control displayOptionsBox" ng-model="displayOption" ng-change="getDeals()">
             <option>Active</option>
@@ -175,10 +179,14 @@
                     * Float numbers to the right
                     *
                     *-->
-                    <td class="tContents" ng-repeat="profileField in fields.profile" ng-if="profileField.showInList" 
-                    ng-class="{'numbers': profileField.name === 'Revenue' || profileField.name === 'CM' ||profileField.name === 'Level' || profileField.name === 'Resource Size (MM)' || profileField.name === 'Resource Size (FTE)' }">
+                    <!-- START REYNALDO PENA JR. 20220513
+                    Added a class 'singleDigits' for the columns Level and Confidence-->
+                    <td  class="tContents" ng-repeat="profileField in fields.profile" ng-if="profileField.showInList" 
+                    ng-class="{'numbers': profileField.name === 'Revenue' || profileField.name === 'CM' || profileField.name === 'Resource Size (MM)' || profileField.name === 'Resource Size (FTE)',
+                    'singleDigits': profileField.name === 'Level' || profileField.name === 'Confidence'}">
                         {{deal.profile[profileField.name].toLocaleString('en', {useGrouping: true})}}
                     </td>
+                    <!--END REYNALDO PENA JR. 20220513-->
                     <!--/END Dullao, Joshua 02/02/2022-->
                     <td class="tContents" ng-repeat="processField in fields.process" ng-if="processField.showInList">
                         {{deal.process[processField.name]}} 
