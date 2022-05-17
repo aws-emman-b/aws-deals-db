@@ -60,8 +60,14 @@
                 <input type="file" class="form-control input-sm" id="newDealFile" accept="application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                     />
             </div> -->
-            <button type="submit" class="btn btn-success pull-right" ng-disabled="myForm.$invalid">Submit</button>
+            <!-- /*
+            * START Francis Nash Jasmin 2022/05/11
+            * Added condition to disable edit and delete deals based on user role.
+            */ -->
+            <button type="submit" class="btn btn-success pull-right" ng-disabled="myForm.$invalid || !canEditDeal">Submit</button>
         </div>
+        <button type="button" class="btn btn-danger" ng-show="canDeleteDeal" ng-disabled="dealID === ''" ng-click="deleteDeal()">Delete Deal</button>
+        <!-- /*  END Francis Nash Jasmin 2022/05/16 */ -->
     </div>
     <hr class="dealsCollapsible">
     <div class="row">
@@ -797,7 +803,7 @@
                                     <b style="color:red">JP</b>
                                     <br/>
                                     <br/>
-                                    <b style="color: navy">GD</b>
+                                    <b style="color: navy">PH</b>
                                 </td>
                                 <!-- /*
                                 * START Francis Nash Jasmin 2022/02/21
@@ -815,10 +821,10 @@
                                             style="text-align: right;"
                                             />
                                     </div>
-                                    <div class="form-group" ng-class="{'has-error': myForm['distribution ' + contract + ' res gd ' + monthYear].$invalid}">
-                                        <input type="text" min="0" max="9999" step="1" class="form-control input-sm pull-right" name="{{'distribution ' + contract + ' res gd ' + monthYear}}"
-                                            ng-model="dealForm.distribution[contract].res.gd[monthYear]" 
-                                            uib-tooltip="{{getTooltipMessage(myForm['distribution ' + contract + ' res gd ' + monthYear])}}" tooltip-enable="{{myForm['distribution ' + contract + ' res gd ' + monthYear].$invalid}}"
+                                    <div class="form-group" ng-class="{'has-error': myForm['distribution ' + contract + ' res ph ' + monthYear].$invalid}">
+                                        <input type="text" min="0" max="9999" step="1" class="form-control input-sm pull-right" name="{{'distribution ' + contract + ' res ph ' + monthYear}}"
+                                            ng-model="dealForm.distribution[contract].res.ph[monthYear]" 
+                                            uib-tooltip="{{getTooltipMessage(myForm['distribution ' + contract + ' res ph ' + monthYear])}}" tooltip-enable="{{myForm['distribution ' + contract + ' res ph ' + monthYear].$invalid}}"
                                             number-input
                                             ng-maxlength="9"
                                             style="text-align: right;"
@@ -835,7 +841,7 @@
                                     <b style="color:red">JP</b>
                                     <br/>
                                     <br/>
-                                    <b style="color: navy">GD</b>
+                                    <b style="color: navy">PH</b>
                                 </td>
                                 <!-- /*
                                 * START Francis Nash Jasmin 2022/02/21
@@ -852,10 +858,10 @@
                                             style="text-align: right;"
                                             />
                                     </div>
-                                    <div class="form-group" ng-class="{'has-error': myForm['distribution ' + contract + ' rev gd ' + monthYear].$invalid}">
-                                        <input type="text" min="0" step="1" class="form-control input-sm pull-right" name="{{'distribution ' + contract + ' rev gd ' + monthYear}}"
-                                            ng-model="dealForm.distribution[contract].rev.gd[monthYear]" 
-                                            uib-tooltip="{{getTooltipMessage(myForm['distribution ' + contract + ' rev gd ' + monthYear])}}" tooltip-enable="{{myForm['distribution ' + contract + ' rev gd ' + monthYear].$invalid}}"
+                                    <div class="form-group" ng-class="{'has-error': myForm['distribution ' + contract + ' rev ph ' + monthYear].$invalid}">
+                                        <input type="text" min="0" step="1" class="form-control input-sm pull-right" name="{{'distribution ' + contract + ' rev ph ' + monthYear}}"
+                                            ng-model="dealForm.distribution[contract].rev.ph[monthYear]" 
+                                            uib-tooltip="{{getTooltipMessage(myForm['distribution ' + contract + ' rev ph ' + monthYear])}}" tooltip-enable="{{myForm['distribution ' + contract + ' rev ph ' + monthYear].$invalid}}"
                                             number-input
                                             style="text-align: right;"
                                             />
@@ -915,7 +921,7 @@
                                     <b style="color:red">JP</b>
                                     <br/>
                                     <br/>
-                                    <b style="color: navy">GD</b>
+                                    <b style="color: navy">PH</b>
                                 </td>
                                 <!-- /*
                                 * START Francis Nash Jasmin 2022/02/21
@@ -933,10 +939,10 @@
                                             style="text-align: right;"
                                             />
                                     </div>
-                                    <div class="form-group" ng-class="{'has-error': myForm['distribution ' + contract + ' res gd ' + monthYear].$invalid}">
-                                        <input type="text" min="0" max="9999" step="1" class="form-control input-sm pull-right" name="{{'distribution ' + contract + ' res gd ' + monthYear}}"
-                                            ng-model="dealForm.distribution[contract].res.gd[monthYear]" 
-                                            uib-tooltip="{{getTooltipMessage(myForm['distribution ' + contract + ' res gd ' + monthYear])}}" tooltip-enable="{{myForm['distribution ' + contract + ' res gd ' + monthYear].$invalid}}"
+                                    <div class="form-group" ng-class="{'has-error': myForm['distribution ' + contract + ' res ph ' + monthYear].$invalid}">
+                                        <input type="text" min="0" max="9999" step="1" class="form-control input-sm pull-right" name="{{'distribution ' + contract + ' res ph ' + monthYear}}"
+                                            ng-model="dealForm.distribution[contract].res.ph[monthYear]" 
+                                            uib-tooltip="{{getTooltipMessage(myForm['distribution ' + contract + ' res ph ' + monthYear])}}" tooltip-enable="{{myForm['distribution ' + contract + ' res ph ' + monthYear].$invalid}}"
                                             number-input
                                             ng-maxlength="9"
                                             style="text-align: right;"
@@ -953,7 +959,7 @@
                                     <b style="color:red">JP</b>
                                     <br/>
                                     <br/>
-                                    <b style="color: navy">GD</b>
+                                    <b style="color: navy">PH</b>
                                 </td>
                                 <!-- /*
                                 * START Francis Nash Jasmin 2022/02/21
@@ -970,10 +976,10 @@
                                             style="text-align: right;"
                                             />
                                     </div>
-                                    <div class="form-group" ng-class="{'has-error': myForm['distribution ' + contract + ' rev gd ' + monthYear].$invalid}">
-                                        <input type="text" min="0" step="1" class="form-control input-sm pull-right" name="{{'distribution ' + contract + ' rev gd ' + monthYear}}"
-                                            ng-model="dealForm.distribution[contract].rev.gd[monthYear]" 
-                                            uib-tooltip="{{getTooltipMessage(myForm['distribution ' + contract + ' rev gd ' + monthYear])}}" tooltip-enable="{{myForm['distribution ' + contract + ' rev gd ' + monthYear].$invalid}}"
+                                    <div class="form-group" ng-class="{'has-error': myForm['distribution ' + contract + ' rev ph ' + monthYear].$invalid}">
+                                        <input type="text" min="0" step="1" class="form-control input-sm pull-right" name="{{'distribution ' + contract + ' rev ph ' + monthYear}}"
+                                            ng-model="dealForm.distribution[contract].rev.ph[monthYear]" 
+                                            uib-tooltip="{{getTooltipMessage(myForm['distribution ' + contract + ' rev ph ' + monthYear])}}" tooltip-enable="{{myForm['distribution ' + contract + ' rev ph ' + monthYear].$invalid}}"
                                             number-input
                                             style="text-align: right;"
                                             />

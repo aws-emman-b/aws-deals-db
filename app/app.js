@@ -2,7 +2,7 @@
     'use strict';
  
     angular
-        .module('app', ['ui.router', 'ui.bootstrap', 'ngToast', 'ngFileUpload', 'ngFileSaver'])
+        .module('app', ['ui.router', 'ui.bootstrap', 'ngToast', 'ngFileUpload', 'ngFileSaver', 'angularjs-dropdown-multiselect'])
         .config(config)
         .run(run);
 

@@ -84,7 +84,7 @@ function generateLogs(dealIDs) {
 }
 /* END Francis Nash Jasmin 2022/02/23 */
 
-function addDeal(deal, user) {
+function addDeal(deal, user, email) {
     var deferred = Q.defer();
 
     var ID = "DL-0000";
@@ -144,6 +144,13 @@ function addDeal(deal, user) {
         if (deal.profile['Level'] === '1') {
             deal.closedDate = getCurrentDate();
         }
+
+        /*
+        * START Francis Nash Jasmin 2022/05/11
+        * Added Author field to deal object.
+        */
+        deal['Author'] = email;
+        /*  END Francis Nash Jasmin 2022/05/16 */ 
 
         db.deals.insert(
             deal,
@@ -377,20 +384,33 @@ function deleteDeal(ID) {
     var deferred = Q.defer();
 
     //set the deleted flag to true
-    db.deals.update({ ID: ID }, { $set: { deleted: true } }, function (err, writeResult) {
-        if (err) {
+    // db.deals.update({ ID: ID }, { $set: { deleted: true } }, function (err, writeResult) {
+    //     if (err) {
+    //         deferred.reject(err);
+    //     }
+    //     else {
+    //         //n is used to know if the document was removed
+    //         if (writeResult.result.nModified === 0) {
+    //             deferred.reject({ notFound: true });
+    //         }
+    //         else {
+    //             deferred.resolve();
+    //         }
+    //     }
+    // });
+
+    /*
+    * START Francis Nash Jasmin 2022/05/11
+    * Changed deleteDeal method to remove deal from the database.
+    */
+    db.deals.remove({ ID: ID }, function (err) {
+        if (err){
             deferred.reject(err);
-        }
-        else {
-            //n is used to know if the document was removed
-            if (writeResult.result.nModified === 0) {
-                deferred.reject({ notFound: true });
-            }
-            else {
-                deferred.resolve();
-            }
-        }
+        };
+
+        deferred.resolve();
     });
+    /*  END Francis Nash Jasmin 2022/05/16 */ 
 
     return deferred.promise;
 }
@@ -603,19 +623,24 @@ function preprocessDeals(dealArray) {
                 return obj;
             }, {});
         
+        /*
+        * START Francis Nash Jasmin 2022/05/11
+        * Changed gd values to ph.
+        */
         // Used to create the values for the distribution field
         let resJP = getKeys(filteredMonths, dealObj, 'res', true)
-        let resGD = getKeys(filteredMonths, dealObj, 'res', false)
+        let resPH = getKeys(filteredMonths, dealObj, 'res', false)
         let revJP = getKeys(filteredMonths, dealObj, 'rev', true)
-        let revGD = getKeys(filteredMonths, dealObj, 'rev', false)
+        let revPH = getKeys(filteredMonths, dealObj, 'rev', false)
         let cm = getKeys(filteredMonths, dealObj, 'cm', false)
 
         // add distribution here, key name should be yyyy/mm only
         deal.distribution['Direct to Client'].res['jp'] = resJP;
-        deal.distribution['Direct to Client'].res['gd'] = resGD;
+        deal.distribution['Direct to Client'].res['ph'] = resPH;
         deal.distribution['Direct to Client'].rev['jp'] = revJP;
-        deal.distribution['Direct to Client'].rev['gd'] = revGD;
+        deal.distribution['Direct to Client'].rev['ph'] = revPH;
         deal.distribution['Direct to Client'].cm = cm;
+        /* END Francis Nash Jasmin 2022/05/16 */
 
         /*
         * START Francis Nash Jasmin 2022/04/26
@@ -626,15 +651,15 @@ function preprocessDeals(dealArray) {
         var cmSum = 0;
 
         //compute total resource
-        if (Object.values(resJP).length > 0 || Object.values(resGD).length > 0) {
-            resSum = Object.values(resJP).concat(Object.values(resGD)).reduce(function (total, value) {
+        if (Object.values(resJP).length > 0 || Object.values(resPH).length > 0) {
+            resSum = Object.values(resJP).concat(Object.values(resPH)).reduce(function (total, value) {
                 return (value !== undefined && value !== null) ? total + value : total + 0;
             });
         }
 
         //compute total revenue
-        if (Object.values(revJP).length > 0 || Object.values(revGD).length > 0) {
-            revSum = Object.values(revJP).concat(Object.values(revGD)).reduce(function (total, value) {
+        if (Object.values(revJP).length > 0 || Object.values(revPH).length > 0) {
+            revSum = Object.values(revJP).concat(Object.values(revPH)).reduce(function (total, value) {
                 return (value !== undefined && value !== null) ? total + value : total + 0;
             });
         }
@@ -663,7 +688,7 @@ function preprocessDeals(dealArray) {
 // Sample structure in database:
 // distribution -> Direct to Client -> res -> jp -> 2022/04: "12"
 // type is res, rev, or cm
-// isJP tells whether the values fall under jp or gd
+// isJP tells whether the values fall under jp or ph
 function getKeys(filteredMonths, deal, type, isJP) {
     // check if column names have the same ending (_1, _2, _3...), same ending means they fall on the same month
     // remove J first if isJP is true, e.g. MM_6J to MM_6
@@ -776,18 +801,23 @@ function preprocessDealsMultiSheets(dealArray, intraMMData, intraRevData, intraC
             deal.status['Action'] = dealObj['Action'];
             deal.status['Step to Close'] = dealObj['Step to Close'];
 
+            /*
+            * START Francis Nash Jasmin 2022/05/11
+            * Changed gd values to ph.
+            */
             // DISTRIBUTION FIELDS
             deal.distribution['Intra-Company'].res['jp'] = getDistData(intraMMData, dealObj, true);
-            deal.distribution['Intra-Company'].res['gd'] = getDistData(intraMMData, dealObj, false);
+            deal.distribution['Intra-Company'].res['ph'] = getDistData(intraMMData, dealObj, false);
             deal.distribution['Intra-Company'].rev['jp'] = getDistData(intraRevData, dealObj, true);
-            deal.distribution['Intra-Company'].rev['gd'] = getDistData(intraRevData, dealObj, false);
+            deal.distribution['Intra-Company'].rev['ph'] = getDistData(intraRevData, dealObj, false);
             deal.distribution['Intra-Company'].cm = getDistData(intraCMData, dealObj, true);
 
             deal.distribution['Direct to Client'].res['jp'] = getDistData(directMMData, dealObj, true);
-            deal.distribution['Direct to Client'].res['gd'] = getDistData(directMMData, dealObj, false);
+            deal.distribution['Direct to Client'].res['ph'] = getDistData(directMMData, dealObj, false);
             deal.distribution['Direct to Client'].rev['jp'] = getDistData(directRevData, dealObj, true);
-            deal.distribution['Direct to Client'].rev['gd'] = getDistData(directRevData, dealObj, false);
+            deal.distribution['Direct to Client'].rev['ph'] = getDistData(directRevData, dealObj, false);
             deal.distribution['Direct to Client'].cm = getDistData(directCMData, dealObj, true);
+            /* END Francis Nash Jasmin 2022/05/16 */
 
             processedDeals.push(deal);
         }
@@ -815,7 +845,7 @@ function getDistData(distData, dealObj, isJP) {
                 start.add(1, 'month');
             }
 
-            // Keys that do not end in _1 indicate JP values, otherwise they are GD.
+            // Keys that do not end in _1 indicate JP values, otherwise they are PH.
             let values = Object.keys(deal)
                 .filter(key => {
                     if(isJP) {
@@ -954,7 +984,7 @@ function importDeals(req, res) {
             /* END Francis Nash Jasmin 2022/05/06 */
 
             // As an object array, add all deals to the database at once, filter out duplicate ids.
-            addImportedDeals(deals, req.session.user.firstName + ' ' + req.session.user.lastName)
+            addImportedDeals(deals, req.session.user.firstName + ' ' + req.session.user.lastName, req.session.user.email)
             .then(function({ importedIDs, duplicateIDs }) {
                 // Get added deal IDs and duplicate IDs.
                 // Call generate logs function
@@ -993,7 +1023,7 @@ function renameDuplicate(dealID) {
 }
 /* END Francis Nash Jasmin 2022/05/06 */
 
-function addImportedDeals(importedDeals, user) {
+function addImportedDeals(importedDeals, user, email) {
     var deferred = Q.defer();
 
     var duplicateIDs = [];
@@ -1025,6 +1055,13 @@ function addImportedDeals(importedDeals, user) {
             if (deal.profile['Level'] === '1') {
                 deal.closedDate = getCurrentDate();
             }
+
+            /*
+            * START Francis Nash Jasmin 2022/05/11
+            * Added Author field to deal object.
+            */
+            deal['Author'] = email;
+            /*  END Francis Nash Jasmin 2022/05/16 */ 
         })
         
         db.deals.insertMany(
