@@ -21,6 +21,7 @@ var mongo = require('mongoskin');
 var db = mongo.db(config.connectionString, { native_parser: true });
 var fs = require('fs');
 var emailService = require('services/email.service');
+var moduleService = require('services/modules.service');
 db.bind('deals');
 
 var fs = require('fs');
@@ -580,7 +581,7 @@ function getStep(stepJA) {
 }
 
 
-function preprocessDeals(dealArray) {
+function preprocessDeals(dealArray, businessUnits) {
     var processedDeals = [];
     dealArray.forEach(dealObj => {
         let deal = {
@@ -613,7 +614,7 @@ function preprocessDeals(dealArray) {
         deal.profile['AWS Resp (Sales) BU'] = dealObj.BU;
         deal.profile['AWS Resp (Dev) person'] = dealObj.dspRespDev;
         deal.profile['AWS Resp (Dev) BU'] = dealObj.BUDev;
-        deal.profile['SD'] = dealObj.BUDev;
+        deal.profile['SD'] = getSD(dealObj.BUDev, businessUnits);
 
         // get the fields that starts with Month
         let filteredMonths = Object.keys(dealObj)
@@ -737,7 +738,7 @@ function getKeys(filteredMonths, deal, type, isJP) {
 * Added code for preprocessing excel file contents that have multiple sheets.
 */
 // This preprocess method is used for an excel file with multiple sheets.
-function preprocessDealsMultiSheets(dealArray, intraMMData, intraRevData, intraCMData, directMMData, directRevData, directCMData) {
+function preprocessDealsMultiSheets(dealArray, intraMMData, intraRevData, intraCMData, directMMData, directRevData, directCMData, businessUnits) {
     var processedDeals = [];
     dealArray.forEach(dealObj => {
         if(dealObj['No'].startsWith('DL')) {
@@ -780,7 +781,7 @@ function preprocessDealsMultiSheets(dealArray, intraMMData, intraRevData, intraC
             deal.profile['AWS Resp (Sales) person'] = dealObj['AWS Sales'];
             deal.profile['AWS Resp (Dev) person'] = dealObj['AWS Dev'];
             deal.profile['AWS Resp (Dev) BU'] = dealObj['BU Dev'];
-            deal.profile['SD'] = dealObj['BU Dev'];
+            deal.profile['SD'] = getSD(dealObj['BU Dev'], businessUnits);
             deal.profile['Key Assignment'] = dealObj['Key Assign'];
             if(dealObj['Remark'] !== undefined) {
                 deal.profile['Remark'] = dealObj['Remark'];
@@ -823,6 +824,13 @@ function preprocessDealsMultiSheets(dealArray, intraMMData, intraRevData, intraC
         }
     })
     return processedDeals;
+}
+
+function getSD(buDev, businessUnits) {
+    let sd = businessUnits.find((bu) => {
+        return bu.BU == buDev
+    });
+    return sd !== undefined ? sd['SD Group'] : '';
 }
 
 // Used to get distribution data (resources, revenue, cm) for excel file with multiple sheets.
@@ -881,6 +889,12 @@ function getDistData(distData, dealObj, isJP) {
 }
 /* END Francis Nash Jasmin 2022/05/06 */
 
+var businessUnits = [];
+
+moduleService.getAllModuleDocs('businessunits').then(function(bu){
+    businessUnits = bu;
+})
+
 function importDeals(req, res) {
     var deferred = Q.defer();
     var dir = './uploads';
@@ -928,7 +942,7 @@ function importDeals(req, res) {
                 var xlData = xlsx.utils.sheet_to_json(spreadsheet.Sheets[sheet_name_list[0]]);
     
                 // Preprocess deals (convert dates, step level, month headers)
-                deals = preprocessDeals(xlData);
+                deals = preprocessDeals(xlData, businessUnits);
                 
             } else {
                 // List of sheets:
@@ -951,7 +965,7 @@ function importDeals(req, res) {
                 
                 directMMData = xlsx.utils.sheet_to_json(spreadsheet.Sheets[sheet_name_list.find(sheet => sheet.includes('Direct MM'))]);
                 directRevData = xlsx.utils.sheet_to_json(spreadsheet.Sheets[sheet_name_list.find(sheet => sheet.includes('Direct Rev'))]);
-                directCMData = xlsx.utils.sheet_to_json(spreadsheet.Sheets[sheet_name_list.find(sheet => sheet.includes('Direct CM'))]);
+                directCMData = xlsx.utils.sheet_to_json(spreadsheet.Sheets[sheet_name_list.find(sheet => sheet.includes('Direct CM') || sheet.includes('Direct GP'))]);
                 
                 let merged = [];
 
@@ -967,7 +981,7 @@ function importDeals(req, res) {
                 }
 
                 // Used to create the deal objects with their distribution values.
-                deals = preprocessDealsMultiSheets(merged, intraMMData, intraRevData, intraCMData, directMMData, directRevData, directCMData);
+                deals = preprocessDealsMultiSheets(merged, intraMMData, intraRevData, intraCMData, directMMData, directRevData, directCMData, businessUnits);
                 
                 // USed to find duplicate deal IDs in the deal array and rename the duplicate deal IDs by appending _1, _2... to the deal IDs.
                 let renamedDeals = [];

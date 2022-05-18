@@ -163,16 +163,9 @@
 
         $scope.myDropdownSettings = {
             styleActive: true,
-            scrollableHeight: '300px',
+            scrollableHeight: '200px',
             scrollable: true,
-            selectByGroups: ['GD', 'ESD'],
-            groupByTextProvider(groupValue) { 
-                switch (groupValue) { 
-                    case 'GD': return 'GD'; 
-                    case 'ESD': return 'ESD'; 
-                    case 'Other': return 'Other'; 
-                }
-            }, 
+            // selectByGroups: ['ESD', 'GD'],
             smartButtonTextProvider(selectionArray) {
                 if (selectionArray.length === 1) {
                     return selectionArray[0].label;
@@ -182,13 +175,14 @@
             }
         };
 
-        function assignDropdownValues(arr1, arr2) {
-            let dropdownValues = [...arr1, ...arr2].sort()
+        function assignDropdownValues(arr) {
+            let dropdownValues = arr
                 .map(function(dev) {
                     return {
                         id: dev.BU !== undefined ? dev.BU : dev,
                         label: dev.BU !== undefined ? dev.BU : dev,
-                        division: dev.Division !== undefined ? dev.Division : 'Other'
+                        division: dev.Division !== undefined ? dev.Division : 'Other',
+                        sdGroup: dev['SD Group'] !== undefined ? dev['SD Group'] : 'Other'
                     }
                 }).reduce(function(acc, curr) {
                     let findIndex = acc.findIndex(function(item) {
@@ -201,7 +195,19 @@
                         acc[findIndex] = (Object.assign({}, acc[findIndex], curr))
                     }
                     return acc;
-                }, []);
+                }, [])
+                .sort(function(a, b) {
+                    let fa = a.id.toLowerCase(),
+                        fb = b.id.toLowerCase();
+
+                    if (fa < fb) {
+                        return -1;
+                    }
+                    if (fa > fb) {
+                        return 1;
+                    }
+                    return 0;
+                });
 
             return dropdownValues;
         }
@@ -212,9 +218,7 @@
             $scope.filteredDeals = $scope.deals;
             $scope.dealCount = $scope.filteredDeals.length;
 
-            $scope.divisions = [...new Set($scope.deals.map(deal => deal.profile['Division']).filter(function (el) {
-                return el != null;
-            }))];
+            $scope.divisions = ['ESD', 'GD'];
 
             let devModule, sdModule;
 
@@ -233,8 +237,10 @@
                     return businessUnit['Category'] === 'Dev';
                 });
 
-                $scope.sd = assignDropdownValues($scope.deals.map(deal => deal.profile['SD']), sdModule);
-                $scope.devBU = assignDropdownValues($scope.deals.map(deal => deal.profile['AWS Resp (Dev) BU']), devModule);
+                $scope.sd = assignDropdownValues(sdModule);
+                localStorage.setItem('sd', JSON.stringify($scope.sd));
+                $scope.devBU = assignDropdownValues(devModule);
+                localStorage.setItem('devBU', JSON.stringify($scope.devBU));
             }).catch(function (err) {
 
             });
@@ -262,6 +268,9 @@
 
         getAllFields();
 
+        var executed = false;
+        var selected = $scope.divisionOption;
+
         $scope.filterDeals = function () {
             $scope.filteredDeals = $scope.deals;
 
@@ -269,6 +278,23 @@
                 $scope.filteredDeals = $scope.filteredDeals.filter(function (aDeal) {
                     return aDeal.profile['Division'] === $scope.divisionOption;
                 });
+
+                if(!executed) {
+                    executed = true;
+                    selected = $scope.divisionOption;
+                    $scope.sd = JSON.parse(localStorage.getItem('sd')).filter(sd => sd.division.toLowerCase() == $scope.divisionOption.toLowerCase());
+                    $scope.devBU = JSON.parse(localStorage.getItem('devBU')).filter(bu => bu.division.toLowerCase() == $scope.divisionOption.toLowerCase());
+                } else if(selected !== $scope.divisionOption) {
+                    selected = $scope.divisionOption;
+                    $scope.sd = JSON.parse(localStorage.getItem('sd')).filter(sd => sd.division.toLowerCase() == $scope.divisionOption.toLowerCase());
+                    $scope.devBU = JSON.parse(localStorage.getItem('devBU')).filter(bu => bu.division.toLowerCase() == $scope.divisionOption.toLowerCase());
+                }
+            } else {
+                if(executed) {
+                    executed = false;
+                    $scope.sd = JSON.parse(localStorage.getItem('sd'));
+                    $scope.devBU = JSON.parse(localStorage.getItem('devBU'));
+                }
             }
 
             if($scope.sdOption.length !== 0) {
