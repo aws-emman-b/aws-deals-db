@@ -55,7 +55,10 @@
   <label>Business Unit: </label>
   <select class = "form-control" ng-model = "selectedBU" ng-change = "reloadAll(); selectedDiv = '--ALL--'">
     <option value="--ALL--">--ALL--</option>
-    <option ng-repeat = "bu in optionsBU">{{bu.BU}}</option>
+    <!-- START 05172022 Dullao, Joshua -->
+    <!-- Sort the BU in ASC -->
+    <option ng-repeat = "bu in optionsBU | orderBy:'BU'">{{bu.BU}}</option>
+    <!-- END 05172022 Dullao, Joshua -->
   </select>
 
   <label>Timeline view: </label>
@@ -63,6 +66,15 @@
     <option value="monthly">Monthly</option>
     <option value="quarterly">Quarterly</option>
   </select>
+
+  <!-- START 05172022 Dullao, Joshua -->
+  <!-- Added a fiscal year dropdown filter -->
+  <label>Fiscal Year: </label>
+  <select class = "form-control" ng-model = "selectedFiscalYear" ng-change = "reloadAll(); ">
+    <option value="--ALL--">--ALL--</option>
+    <option ng-repeat = "year in fiscalYears" value="{{year}}">{{year}}-{{year + 1}}</option>
+  </select>
+  <!-- END 05172022 Dullao, Joshua -->
 
   <!--<div class="pull-right">
     <label>Options(Level): </label>
