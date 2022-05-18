@@ -497,6 +497,12 @@
             }
         }, true);
 
+        //START Reynaldo Pena Jr 20220518
+        $scope.unitOrder = function(level){
+             return parseInt(level);
+            }
+        //END Reynaldo Pena Jr. 20220518
+
         //this function computes total resource, revenue, and CM for the CURRENT fiscal year
         function computeDistribution() {
             /*
