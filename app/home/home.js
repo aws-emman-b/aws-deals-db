@@ -6,7 +6,6 @@
       .controller('HomeController', Controller);
   
   function Controller($scope, $rootScope, $state, UserService, ModulesService, InputValidationService, ngToast, $stateParams) {  
-     
       function getTimeStamp(myDate){
           var newDate = myDate[1] + "/" + myDate[2] + "/" + myDate[0];
           return new Date(newDate).getTime();
@@ -75,6 +74,10 @@
       $scope.selectedBU = '--ALL--';
       $scope.selectedDiv = '--ALL--';
       $scope.selectedTimeline = 'monthly';
+      // START 05172022 Dullao, Joshua
+      // selected Fiscal Year
+      $scope.selectedFiscalYear = new Date().getFullYear().toString();
+      // END 05172022 Dullao, Joshua
       //$scope.stackedOptions = 'Revenue';
       $scope.isGD = true;
       $scope.isESD = false;
@@ -133,9 +136,20 @@
 
       var isInit = false;
 
+      // START 05172022 Dullao, Joshua
+      // Fiscal Years array
+      $scope.fiscalYears = [];
+      // END 05172022 Dullao, Joshua
+
+
       function init(){
           ModulesService.getAllModuleDocs('deals').then(function (allDeals) {
               //console.log(allDeals);
+              // START 05172022 Jasmin, Francis Nash
+              // Fiscal Years 
+              $scope.fiscalYears = [... new Set(allDeals.map(deal => new Date(deal.essential['Due Date']).getFullYear()).sort())];
+              // END 05172022 Jasmin, Francis Nash
+
               if($scope.selectedDiv != '--ALL--'){
 
                 for(var i = 0; i < allDeals.length; i++){
@@ -162,7 +176,17 @@
                   //console.log(deals);
                 }
               }
-              
+              // START 05172022 Jasmin, Francis Nash
+              // condition on selected fiscal year
+              if($scope.selectedFiscalYear != '--ALL--'){
+                deals = deals.filter(deal => {
+                  let date = new Date(deal.essential['Due Date']);
+                  return (date.getMonth() > 2 && date.getFullYear() == $scope.selectedFiscalYear) || (date.getMonth() <= 2 && date.getFullYear() - 1 == $scope.selectedFiscalYear);
+                }).sort((deal1, deal2) => {
+                  return deal1.essential['Due Date'].localeCompare(deal2.essential['Due Date']);
+                })
+              }
+              // END 05172022 Jasmin, Francis Nash
               //console.log(deals.length);
               loadBUs();
           }).catch(function (err) {
@@ -231,7 +255,7 @@
             console.log(err);
           });
       }
-
+      
       function loadCharts() {
           
           var totalRev = 0;
@@ -265,21 +289,20 @@
             dealRevenuePerDateQ.push(['Q'+(q+1), 0]);
             dealCMPerDateQ.push(['Q'+(q+1), 0]);
           }
-
-          //START 05062022 Dullao, Joshua
-          //Used the dealUniqueDate instead of dealPerUniqueMonth
+          // START 05172022 Dullao, Joshua
+          //Reverted back the original code
           //initialize stacked chart deals
-          for(var i = 0; i < dealPerUniqueDate.length; i++){
-            dealRevenueLevel1.push([dealPerUniqueDate[i], 0]);
-            dealRevenueLevel2.push([dealPerUniqueDate[i], 0]);
-            dealRevenueLevel3.push([dealPerUniqueDate[i], 0]);
-            dealRevenueLevel4.push([dealPerUniqueDate[i], 0]);
+          for(var i = 0; i < dealPerUniqueMonth.length; i++){
+            dealRevenueLevel1.push([dealPerUniqueMonth[i], 0]);
+            dealRevenueLevel2.push([dealPerUniqueMonth[i], 0]);
+            dealRevenueLevel3.push([dealPerUniqueMonth[i], 0]);
+            dealRevenueLevel4.push([dealPerUniqueMonth[i], 0]);
 
             //for deals revenue levels 5 and 9
-            dealRevenueLevel5.push([dealPerUniqueDate[i], 0]);
-            dealRevenueLevel9.push([dealPerUniqueDate[i], 0]);
+            dealRevenueLevel5.push([dealPerUniqueMonth[i], 0]);
+            dealRevenueLevel9.push([dealPerUniqueMonth[i], 0]);
           }
-          //END 05062022 Dullao, Joshua
+          // END Dullao, Joshua C.
 
           //initialize quarterly bar chart deals
           for(var q = 0; q < 4; q++){
@@ -360,14 +383,12 @@
               /*console.log(deals[j].profile['Level'] + ' ' + deals[j].profile.Revenue + ' ' + 
                 getMonthOnly(monthly) + ' ' + deals[j].essential['Due Date']);*/
 
-
+              // START 05172022 Dullao, Joshua
+              // Reverted it back to the original code
               //Load data in monthly hbar chart
               //level 1
-
-              //START 05062022 Dullao, Joshua
-              //Used the getTimeStamp instead of getMonthOnly
               for(var k = 0; k < dealRevenueLevel1.length; k++){
-                if(dealRevenueLevel1[k][0] == getTimeStamp(monthly) && deals[j].profile['Level'] == 1){
+                if(dealRevenueLevel1[k][0] == getMonthOnly(monthly) && deals[j].profile['Level'] == 1){
                   if(isNaN(deals[j].profile.Revenue)){
                     dealRevenueLevel1[k][1] += 0;
                   }else{
@@ -378,7 +399,7 @@
 
               //level 2
               for(var k = 0; k < dealRevenueLevel2.length; k++){
-                if(dealRevenueLevel2[k][0] == getTimeStamp(monthly) && deals[j].profile['Level'] == 2){
+                if(dealRevenueLevel2[k][0] == getMonthOnly(monthly) && deals[j].profile['Level'] == 2){
                   if(isNaN(deals[j].profile.Revenue)){
                     dealRevenueLevel2[k][1] += 0;
                   }else{
@@ -389,7 +410,7 @@
 
               //level 3
               for(var k = 0; k < dealRevenueLevel3.length; k++){
-                if(dealRevenueLevel3[k][0] == getTimeStamp(monthly) && deals[j].profile['Level'] == 3){
+                if(dealRevenueLevel3[k][0] == getMonthOnly(monthly) && deals[j].profile['Level'] == 3){
                   if(isNaN(deals[j].profile.Revenue)){
                     dealRevenueLevel3[k][1] += 0;
                   }else{
@@ -400,7 +421,7 @@
 
               //level 4
               for(var k = 0; k < dealRevenueLevel4.length; k++){
-                if(dealRevenueLevel4[k][0] == getTimeStamp(monthly) && deals[j].profile['Level'] == 4){
+                if(dealRevenueLevel4[k][0] == getMonthOnly(monthly) && deals[j].profile['Level'] == 4){
                   if(isNaN(deals[j].profile.Revenue)){
                     dealRevenueLevel4[k][1] += 0;
                   }else{
@@ -412,7 +433,7 @@
               //Added by: Glenn
               //level 5
               for(var k = 0; k < dealRevenueLevel5.length; k++){
-                if(dealRevenueLevel5[k][0] == getTimeStamp(monthly) && deals[j].profile['Level'] == 5){
+                if(dealRevenueLevel5[k][0] == getMonthOnly(monthly) && deals[j].profile['Level'] == 5){
                   if(isNaN(deals[j].profile.Revenue)){
                     dealRevenueLevel5[k][1] += 0;
                   }else{
@@ -424,7 +445,7 @@
               //Added by: Glenn
               //level 9
               for(var k = 0; k < dealRevenueLevel9.length; k++){
-                if(dealRevenueLevel9[k][0] == getTimeStamp(monthly) && deals[j].profile['Level'] == 9){
+                if(dealRevenueLevel9[k][0] == getMonthOnly(monthly) && deals[j].profile['Level'] == 9){
                   if(isNaN(deals[j].profile.Revenue)){
                     dealRevenueLevel9[k][1] += 0;
                   }else{
@@ -432,7 +453,7 @@
                   }
                 }
               }
-              //END 05062022 Dullao, Joshua
+              //END 05172022 Dullao, Joshua
 
               //Added by Glenn
               //Load data in monthly hbar chart
@@ -504,30 +525,29 @@
           }
 
           //dealRevenueLevel1.sort(function(a, b) { return monthNames[a[0].split(' ')[0]] - monthNames[b[0].split(' ')[0]];});
-//START 05062022 Dullao, Joshua
-//Commented codes as it is not necessary
-          // sort deals revenue level by month
-          // dealRevenueLevel1.sort(function(a, b) {
-          //  return monthNames[a[0].split(' ')[0]] - monthNames[b[0].split(' ')[0]];
-          // });
-          // dealRevenueLevel2.sort(function(a, b) {
-          //   return monthNames[a[0].split(' ')[0]] - monthNames[b[0].split(' ')[0]];
-          // });
-          // dealRevenueLevel3.sort(function(a, b) {
-          //   return monthNames[a[0].split(' ')[0]] - monthNames[b[0].split(' ')[0]];
-          // });
-          // dealRevenueLevel4.sort(function(a, b) {
-          //   return monthNames[a[0].split(' ')[0]] - monthNames[b[0].split(' ')[0]];
-          // });
 
-          // //deal revenues for level 5 and 9
-          // dealRevenueLevel5.sort(function(a, b) {
-          //   return monthNames[a[0].split(' ')[0]] - monthNames[b[0].split(' ')[0]];
-          // });
-          // dealRevenueLevel9.sort(function(a, b) {
-          //   return monthNames[a[0].split(' ')[0]] - monthNames[b[0].split(' ')[0]];
-          // });
-// END 05062022 Dullao, Joshua
+          // sort deals revenue level by month
+          dealRevenueLevel1.sort(function(a, b) {
+           return monthNames[a[0].split(' ')[0]] - monthNames[b[0].split(' ')[0]];
+          });
+          dealRevenueLevel2.sort(function(a, b) {
+            return monthNames[a[0].split(' ')[0]] - monthNames[b[0].split(' ')[0]];
+          });
+          dealRevenueLevel3.sort(function(a, b) {
+            return monthNames[a[0].split(' ')[0]] - monthNames[b[0].split(' ')[0]];
+          });
+          dealRevenueLevel4.sort(function(a, b) {
+            return monthNames[a[0].split(' ')[0]] - monthNames[b[0].split(' ')[0]];
+          });
+
+          //deal revenues for level 5 and 9
+          dealRevenueLevel5.sort(function(a, b) {
+            return monthNames[a[0].split(' ')[0]] - monthNames[b[0].split(' ')[0]];
+          });
+          dealRevenueLevel9.sort(function(a, b) {
+            return monthNames[a[0].split(' ')[0]] - monthNames[b[0].split(' ')[0]];
+          });
+          
           //set deals by Timeline Selection
           //Change chart timeline
           if($scope.selectedTimeline == 'monthly'){
@@ -567,14 +587,15 @@
           var scaleXData = {};
           var seriesData = [];
 
+
           if($scope.selectedTimeline == 'monthly'){
 
             scaleXData = {
-              //START 05062022 Dullao, Joshua 
-              //Display the current fiscal year
-              minValue: getTimeStamp([new Date().getFullYear(), '04', '01']),
-              maxValue: getTimeStamp([new Date().getFullYear() +1, '03', '31']),
-              //END 05062022 Dullao, Joshua
+              // START 05172022 Dullao, Joshua
+              // Removed the fiscal year constraint
+              // minValue: getTimeStamp([new Date().getFullYear(), '04', '01']),
+              // maxValue: getTimeStamp([new Date().getFullYear() + 1, '03', '31']),
+              // END 05172022 Dullao, Joshua
               zooming: true,
               // zoomTo:[0,15],
               step: 'day',
@@ -583,6 +604,7 @@
                 all: '%M %d'
               }
             };
+
             seriesData = [  // Insert your series data here.
               { values : dealRevenuePerDate.sort(), text: 'Revenue' },
               { values : dealCMPerDate.sort(), text: 'CM' }
@@ -594,6 +616,7 @@
               "zooming": true,
               "zoomTo":[0,15],
             };
+
             seriesData =  [{
                 "values": dealRevenuePerDateQ,
                 "text": "Revenue",
@@ -648,7 +671,10 @@
               },
               "scale-y":{
                 "short":true,
-                "shortUnit":"K"
+                // START 05172022 Dullao, Joshua
+                // Shortened the y scale values
+                // "shortUnit":"K",
+                // END 05172022 Dullao, Joshua
               },
               "scale-x":scaleXData,
               "series":seriesData
@@ -705,12 +731,14 @@
               "plot": {
                 "bars-space-left": 0.15,
                 "bars-space-right": 0.15,
-              //START 05062022 Dullao, Joshua
-              //Limit the displayed labels only to max values
+                "stacked": true,
+                'stack-type': "normal",
                 "valueBox":{
-                  type: "max" 
+                  // "placement":"top-out",
+                  // "short":true,
+                  type: "none",
+                  "thousands-separator": ", "
                 }
-              //END 05062022 Dullao, Joshua
               },
               "preview":{
                 "adjustLayout": true,
@@ -719,23 +747,16 @@
                   "backgroundColor":"#E3E3E5"
                 }
               },
-              //START 05062022 Dullao, Joshua
-              //Added the fiscal year limit to the revenue bar chart
-              "scale-x":{
-              "min-value": getTimeStamp([new Date().getFullYear(), '04', '01']),
-              "max-value": getTimeStamp([new Date().getFullYear() +1, '03', '31']),
-              "zooming": true,
-              "zoomTo":[0,15],
-              "step": 'month',
-              "transform":{
-                "type": 'date',
-                "all": '%M %d'
-              }
+              "scale-x": {
+                "zooming": true,
+                "zoomTo":[0,15],
               },
-              //END 05062022 Dullao, Joshua
               "scale-y": {
                 "short":true,
-                "shortUnit":"K"
+                // START 05172022 Dullao, Joshua
+                // Shortened the y scale values
+                // "shortUnit":"K",
+                // END 05172022 Dullao, Joshua
               },
               "tooltip": {
                 "visible": false
@@ -744,46 +765,55 @@
                 "line-width": "100%",
                 "alpha": 0.18,
                 "plot-label": {
+                  // START 05172022 Dullao, Joshua
+                  // Added thousands comma separator
+                  "thousands-separator": ", ",
+                  // END 05172022 Dullao, Joshua
                   "header-text": "%kv Sales"
                 }
               },
-              "series": [{
-                  "values": dealRevenueLevel9Bar,
-                  "alpha": 0.95,
-                  "borderRadiusTopLeft": 7,
-                  "text": "Level 9",
-                },
-                {
-                  "values": dealRevenueLevel5Bar,
-                  "borderRadiusTopLeft": 7,
-                  "alpha": 0.95,
-                  "text": "Level 5"
-                },
-                {
-                  "values": dealRevenueLevel4Bar,
-                  "alpha": 0.95,
-                  "borderRadiusTopLeft": 7,
-                  "text": "Level 4"
-                },
-                {
-                  "values": dealRevenueLevel3Bar,
-                  "borderRadiusTopLeft": 7,
-                  "alpha": 0.95,
-                  "text": "Level 3"
-                },
-                {
-                  "values": dealRevenueLevel2Bar,
-                  "borderRadiusTopLeft": 7,
-                  "alpha": 0.95,
-                  "text": "Level 2"
-                },
-                {
-                  "values": dealRevenueLevel1Bar,
-                  "borderRadiusTopLeft": 7,
-                  "alpha": 0.95,
-                  "text": "Level 1"
-                }
-              ]
+              "series":  [
+
+              // START 05172022 Dullao, Joshua
+              // Removed Level 9 from the chart and removed the border radius
+              //   {
+              //   "values": dealRevenueLevel9Bar,
+              //   "alpha": 0.95,
+              //   // "borderRadiusTopLeft": 7,
+              //   "text": "Level 9",
+              // },
+              {
+                "values": dealRevenueLevel5Bar,
+                // "borderRadiusTopLeft": 7,
+                "alpha": 0.95,
+                "text": "Level 5"
+              },
+              {
+                "values": dealRevenueLevel4Bar,
+                "alpha": 0.95,
+                // "borderRadiusTopLeft": 7,
+                "text": "Level 4"
+              },
+              {
+                "values": dealRevenueLevel3Bar,
+                // "borderRadiusTopLeft": 7,
+                "alpha": 0.95,
+                "text": "Level 3"
+              },
+              {
+                "values": dealRevenueLevel2Bar,
+                // "borderRadiusTopLeft": 7,
+                "alpha": 0.95,
+                "text": "Level 2"
+              },
+              {
+                "values": dealRevenueLevel1Bar,
+                // "borderRadiusTopLeft": 7,
+                "alpha": 0.95,
+                "text": "Level 1"
+              }
+              //END 05172022 Dullao, Joshua
+            ]
             }]
           };
           zingchart.render({
