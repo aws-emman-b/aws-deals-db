@@ -103,7 +103,18 @@ function addDeal(deal, user, email) {
         */
         //use .length to get number of documents
         if ((deals.length > 0 && deals['ID'] === undefined)) {
-            previousID = deals[deals.length - 1].ID;
+            previousID = deals.sort(function(a, b) {
+                let fa = a.ID.toLowerCase(),
+                    fb = b.ID.toLowerCase();
+
+                if (fa < fb) {
+                    return -1;
+                }
+                if (fa > fb) {
+                    return 1;
+                }
+                return 0;
+            })[deals.length - 1].ID;
             IDnumber = previousID.slice(3, 7);
             IDnumber++;
             if (IDnumber <= 9) {
