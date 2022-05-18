@@ -8,7 +8,7 @@
     function Controller($scope, $state, ModulesService, ngToast, $stateParams) {
         $scope.businessUnitForm = {};
         $scope.module = {};
-        $scope.userList = {};
+        $scope.userList = [];
         /**
          * START REYNALDO PENA JR 20220516
          * Added a BUList for the dropdown options of SD Group*/
