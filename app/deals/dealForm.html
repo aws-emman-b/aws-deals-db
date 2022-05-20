@@ -324,7 +324,7 @@
                                             <option value="">- select -</option>
                                             <!-- <option ng-repeat="businessUnit in businessUnits | 
                                             filter: (dealForm.profile['Division']) | orderBy:'BU'" value="{{businessUnit}}" ng-hide="businessUnit.BU === 'ALL'" >{{businessUnit.BU}}</option> -->
-                                          <option ng-hide="businessUnit.BU === 'ALL'" ng-repeat="businessUnit in businessUnits | orderBy:'BU'" value="{{businessUnit.BU}}">{{businessUnit.BU}}</option> 
+                                            <option ng-hide="businessUnit.BU === 'ALL'" ng-repeat="businessUnit in businessUnits | filter: (dealForm.profile['Division']) | orderBy:'BU'" value="{{businessUnit.BU}}">{{businessUnit.BU}}</option>  
                                         </select>
                                     </div>
                                 </td>
@@ -482,8 +482,7 @@
                                                 <option value="">- select -</option>
                                                 <!--START Reynaldo Pena Jr 20220518
                                             Sorts ASC order for the options-->
-                                                <option ng-repeat="businessUnit in devBU | orderBy: 'BU'" value="{{businessUnit.BU}}">{{businessUnit.BU}}</option>
-                                                <!--END Reynaldo Pena Jr.-->
+                                                <option ng-repeat="businessUnit in devBU | orderBy: 'BU' | filter: (dealForm.profile['Division'])" value="{{businessUnit.BU}}">{{businessUnit.BU}}</option>                                                <!--END Reynaldo Pena Jr.-->
                                             </select>
                                         </div>
                                     </div>

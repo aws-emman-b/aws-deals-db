@@ -177,7 +177,7 @@
                 });
 
                 $scope.devBU = $scope.businessUnits.filter(function(businessUnit) {
-                    return businessUnit['Category'] === 'Dev';
+                    return businessUnit['Category'] === 'Dev' && businessUnit['Is it an SD?'] == 'No' && businessUnit['Division'];
                 });
 
                 //START Reynaldo Pena Jr. 20220519
