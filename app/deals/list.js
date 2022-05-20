@@ -95,6 +95,24 @@
 
         $scope.getDeals = function () {
             ModulesService.getAllModuleDocs('deals').then(function (allDeals) {
+                /**
+                 * START Reynaldo Pena Jr. 20220518
+                 * Sorts the lsit to ASC order
+                 */
+
+                $scope.deals = allDeals.sort(function(a,b){
+                    let fa = a.ID.toLowerCase(),
+                        fb = b.ID.toLowerCase();
+
+                    if (fa < fb) {
+                        return -1;
+                    }
+                    if (fa > fb) {
+                        return 1;
+                    }
+                    return 0;
+                });
+                //END Reynaldo Pena Jr. 20220518
                 $scope.deals = allDeals;
                 switch ($scope.displayOption) {
                     //display levels 2,3,4,5 only
