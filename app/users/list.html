@@ -2,6 +2,16 @@
 </div>
 <div class="row">
     <div class="col-md-10 form-inline">
+        <!--START Francis Nash Jasmin 20220519
+        Added Options Dropdown-->
+        <label>Options: </label>
+        <select class="form-control displayOptionsBox" ng-model="displayOption" ng-change="getAllUsers()">
+            <option>Active</option>
+            <option>Inactive</option>
+            <option>ALL</option>
+        </select>
+        &nbsp;&nbsp;
+        <!--END Francis Nash Jasmin 20220519-->
         <label for="pageSize">Page size: </label>
          <!--/*
         *START Dullao, Joshua 02/11/2022

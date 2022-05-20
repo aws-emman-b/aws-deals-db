@@ -54,12 +54,40 @@
 
         getUserFields();
 
-        function getAllUsers() {
+        //START Francis Nash Jasmin 20220518
+        //Added sorting the list in ASC order and filters based on status.
+        $scope.displayOption = 'Active';
+
+        $scope.getAllUsers = function() {
             ModulesService.getAllModuleDocs('users').then(function(users) { 
                 // START 05162022 Dullao, Joshua
                 // Displays all users from the database                   
-                $scope.users = users;
+                $scope.users = users.sort(function(a, b) {
+                    let fa = a.nickname.toLowerCase(),
+                        fb = b.nickname.toLowerCase();
+    
+                    if (fa < fb) {
+                        return -1;
+                    }
+                    if (fa > fb) {
+                        return 1;
+                    }
+                    return 0;
+                });
                 // END 05162022 Dullao, Joshua
+                switch ($scope.displayOption) {
+                    case 'Active': {
+                        $scope.users = $scope.users.filter(function (user) {
+                            return user.status &&  user.status !== false;
+                        });
+                    } break;
+
+                    case 'Inactive': {
+                        $scope.users = $scope.users.filter(function (user) {
+                            return user.status === false || !user.status;
+                        });
+                    }
+                }
             }).catch(function(err) {
 
             }).finally(function() {
@@ -67,7 +95,8 @@
             });
         }
 
-        getAllUsers();
+        $scope.getAllUsers();
+        //END Francis Nash Jasmin 20220519
 
         $scope.sortColumn = function (fieldName) {
             //$scope.column = category + '.' + fieldName;
