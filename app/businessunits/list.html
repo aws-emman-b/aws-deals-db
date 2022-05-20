@@ -3,6 +3,16 @@
         <label for="pageSize">Page size: </label>
         <input id="pageSize" type="number" ng-model="pageSize" class="form-control" min="1" max={{businessUnits.length}} step="1"  onkeypress="return event.charCode >= 48 && event.charCode <= 57">
         <input type="text" class="form-control" ng-model="searchText" placeholder="Search">
+    <!--START Reynaldo Pena Jr. 20220519
+    Added Options Dropdown-->
+    <label>Options: </label>
+    <select class="form-control displayOptionsBox" ng-model="displayOption" ng-change="getAllBUs()">
+        <option>Active</option>
+        <option>Inactive</option>
+        <option>ALL</option>
+    </select>
+    &nbsp;&nbsp;
+    <!--END Reynaldo Pena Jr. 20220519-->
     </div>
     <div class="col-md-2 pull-right">
         <button class="btn btn-primary" ui-sref="BUForm">New BU</button>

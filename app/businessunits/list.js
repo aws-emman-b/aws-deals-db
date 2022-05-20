@@ -15,7 +15,7 @@
         $scope.module = {};
         $scope.currentPage = 1;
         $scope.pageSize = 10;
-
+        $scope.displayOption = 'Active';
         $scope.reverse = false;
 
         //showInList not yet implemented, therefore searchbar will search all
@@ -30,12 +30,44 @@
 
         getBUFields();
 
-        function getAllBUs() {
+        $scope.getAllBUs = function() {
             ModulesService.getAllModuleDocs('businessunits').then(function(businessUnits) {      
                 // START 05162022 Dullao, Joshua
                 // Displays all client from the database          
                 $scope.businessUnits = businessUnits;
                 // END 05162022 Dullao, Joshua
+                /**
+                 * START Reynaldo Pena Jr. 20220518
+                 * Sorts the list ASC order
+                 * Created an Option dropdown
+                 */
+                $scope.businessUnits = businessUnits.sort(function(a,b){
+                    let fa = a.BU.toLowerCase(),
+                        fb = b.BU.toLowerCase();
+
+                    if (fa < fb){
+                        return -1;
+                    }
+                    if (fa > fb){
+                        return 1;
+                    }
+                    return 0;
+                });
+
+                switch($scope.displayOption){
+                    case 'Active': {
+                        $scope.businessUnits = $scope.businessUnits.filter(function(businessUnits){
+                            return businessUnits.status !== false;
+                        });
+                    } break;
+
+                    case 'Inactive': {
+                        $scope.businessUnits = $scope.businessUnits.filter(function(businessUnits){
+                            return businessUnits.status === false;
+                        });
+                    }
+                    }
+                //END Reynaldo Pena Jr. 20220520
             }).catch(function(err) {
 
             }).finally(function() {
@@ -43,7 +75,7 @@
             });
         }
 
-        getAllBUs();
+        $scope.getAllBUs();
 
         $scope.sortColumn = function (fieldName) {
             //$scope.column = category + '.' + fieldName;
