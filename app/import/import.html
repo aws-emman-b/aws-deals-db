@@ -25,12 +25,16 @@
         />
         &nbsp;
         &nbsp;
+        <!--START Francis Nash Jasmin 20220519
+        Added tooltip to preview button-->
         <button 
             type="submit" 
             class="btn btn-success"  
             ng-click="importExcel()"
             ng-disabled="uploadForm.$invalid"
+            title="This may take some time depending on the number of deals to be exported."
         >
+        <!--END Francis Nash Jasmin 20220519-->
             Preview
         </button>
         <br />
@@ -334,7 +338,7 @@
                 <tr ng-repeat="deal in importedDealsMultipleSheets">
                     <td class="tContents">{{ deal['No'] }}</td>
                     <td class="tContents">{{ deal['Deal name'] }}</td>
-                    <td class="tContents">{{ deal['Due Date'] }}</td>
+                    <td class="tContents">{{ formatDate(deal['Due Date']) }}</td>
                     <td class="tContents">{{ deal['Assignees'].split(',').pop() }}</td>
                     <td class="tContents">{{ deal['Country'] }}</td>
                     <td class="tContents">{{ deal['Div'] }}</td>
@@ -349,8 +353,8 @@
                     <td class="tContents">{{ deal['Budget'] }}</td>
                     <td class="tContents">{{ deal['FTE'] }}</td>
                     <td class="tContents">{{ deal['CM Yen'] }}</td>
-                    <td class="tContents">{{ deal['Start'] }}</td>
-                    <td class="tContents">{{ deal['End'] }}</td>
+                    <td class="tContents">{{ formatDate(deal['Start']) }}</td>
+                    <td class="tContents">{{ formatDate(deal['End']) }}</td>
                     <td class="tContents">{{ deal['AWS Sales'] }}</td>
                     <td class="tContents">{{ deal['AWS Dev'] }}</td>
                     <td class="tContents">{{ deal['BU Dev'] }}</td>
