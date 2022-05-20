@@ -279,9 +279,12 @@
           //console.log(dealPerUniqueMonth);
           
           //initialize time series deals
-          for(var i = 0; i < dealPerUniqueDate.length; i++){
-            dealRevenuePerDate.push([dealPerUniqueDate[i], 0]);
-            dealCMPerDate.push([dealPerUniqueDate[i], 0]);
+          // START 05182022 Dullao, Joshua 
+          // Used dealUniquePerMonth instead of dealUniquePerDate
+          for(var i = 0; i < dealPerUniqueMonth.length; i++){
+            dealRevenuePerDate.push([dealPerUniqueMonth[i], 0]);
+            dealCMPerDate.push([dealPerUniqueMonth[i], 0]);
+          //END 05182022 Dullao, Joshua
           }
 
           //initialize quarterlt time series deals
@@ -325,7 +328,10 @@
 
             //for monthly line chart
             for(var k = 0; k < dealRevenuePerDate.length; k++){
-              if(dealRevenuePerDate[k][0] == getTimeStamp(monthly)){
+              // START 05202022 Dullao, Joshua
+              // Used getMonthOnly instead of getTimeStamp
+              if(dealRevenuePerDate[k][0] == getMonthOnly(monthly)){
+              // END 05202022 Dullao, Joshua
                 if(isNaN(deals[j].profile.Revenue)){
                   dealRevenuePerDate[k][1] += 0;
                 }else{
@@ -335,7 +341,10 @@
             }
 
             for(var k = 0; k < dealCMPerDate.length; k++){
-              if(dealCMPerDate[k][0] == getTimeStamp(monthly)){
+              // START 05202022 Dullao, Joshua
+              // Used getMonthOnly instead of getTimeStamp
+              if(dealCMPerDate[k][0] == getMonthOnly(monthly)){
+              // END 05202022 Dullao, Joshua
                 if(isNaN(deals[j].profile.CM)){
                   dealCMPerDate[k][1] += 0;
                 }else{
@@ -526,6 +535,16 @@
 
           //dealRevenueLevel1.sort(function(a, b) { return monthNames[a[0].split(' ')[0]] - monthNames[b[0].split(' ')[0]];});
 
+          // START 05202022 Dullao, Joshua
+          // Added sort for the dealRevenuePerDate and dealCMPerDate
+          dealRevenuePerDate.sort(function(a, b) {
+            return monthNames[a[0].split(' ')[0]] - monthNames[b[0].split(' ')[0]];
+           });
+           dealCMPerDate.sort(function(a, b) {
+             return monthNames[a[0].split(' ')[0]] - monthNames[b[0].split(' ')[0]];
+           });
+          // END 05202022 Dullao, Joshua
+
           // sort deals revenue level by month
           dealRevenueLevel1.sort(function(a, b) {
            return monthNames[a[0].split(' ')[0]] - monthNames[b[0].split(' ')[0]];
@@ -597,18 +616,25 @@
               // maxValue: getTimeStamp([new Date().getFullYear() + 1, '03', '31']),
               // END 05172022 Dullao, Joshua
               zooming: true,
+              // START 05202022 Dullao, Joshua
+              // Removed unnecessary codes 
               // zoomTo:[0,15],
-              step: 'day',
-              transform:{
-                type: 'date',
-                all: '%M %d'
-              }
+              // step: 'day',
+              // transform:{
+              //   type: 'date',
+              //   all: '%M %d'
+              // }
+              //END 05202022 Dullao, Joshua
             };
 
             seriesData = [  // Insert your series data here.
-              { values : dealRevenuePerDate.sort(), text: 'Revenue' },
-              { values : dealCMPerDate.sort(), text: 'CM' }
+            // START 05202022 Dullao, Joshua
+            // Removed the sort function
+              { values : dealRevenuePerDate, text: 'Revenue' },
+              { values : dealCMPerDate, text: 'CM' }
+            // END 05202022 Dullao, Joshua
             ];
+            
 
           } else if($scope.selectedTimeline == 'quarterly'){
 
@@ -657,6 +683,10 @@
               "plot":{
                 "aspect": "spline",
                 "lineWidth": 2,
+                // START 05202022 Dullao, Joshua
+                // Added a comma separator 
+                "thousands-separator": ", ",
+                // END 05202022 Dullao, Joshua
                 "marker":{
                   "borderWidth": 0,
                   "size": 5
@@ -668,6 +698,17 @@
                 "mask":{
                   "backgroundColor":"#E3E3E5"
                 }
+              },
+              // START 05192022 Dullao, Joshua
+              // Added a crosshair-x label
+              "crosshair-x": {
+                "line-width": "100%",
+                "alpha": 0.18,
+                "plot-label": {
+                  "thousands-separator": ", ",
+                  "header-text": "%kv Sales"
+                }
+              // END 05192022 Dullao, Joshua
               },
               "scale-y":{
                 "short":true,
