@@ -98,6 +98,10 @@
             return size;
         };
 
+        //START Francis Nash Jasmin 20220518
+        //Added sorting the list in ASC order and filters based on status.
+        $scope.displayOption = 'Active';
+
         /*
             Function name: getAllClients
             Author(s): Flamiano, Glenn
@@ -106,7 +110,7 @@
             Parameter(s): none
             Return: none
         */
-        function getAllClients() {
+        $scope.getAllClients = function() {
             /*ClientService.getAllClients().then(function (clients) {
                 //console.log(clients);
                 $scope.allClients = clients;
@@ -126,16 +130,42 @@
 
                 // START 05162022 Dullao, Joshua
                 // Displays all client from the database
-                $scope.clients = clients;
+                $scope.clients = clients.sort(function(a, b) {
+                    let fa = a.cmpnyNameShort.toLowerCase(),
+                        fb = b.cmpnyNameShort.toLowerCase();
+    
+                    if (fa < fb) {
+                        return -1;
+                    }
+                    if (fa > fb) {
+                        return 1;
+                    }
+                    return 0;
+                });
                 // END 05162022 Dullao, Joshua
                 $scope.clientLength = Object.size(clients);
+
+                switch ($scope.displayOption) {
+                    case 'Active': {
+                        $scope.clients = $scope.clients.filter(function (client) {
+                            return client.status && client.status !== false;
+                        });
+                    } break;
+
+                    case 'Inactive': {
+                        $scope.clients = $scope.clients.filter(function (client) {
+                            return client.status === false || !client.status;
+                        });
+                    }
+                }
             }).catch(function(err) {
                 console.log(err);
             }).finally(function() {
                 $scope.loading = false;
             });
         }
-        getAllClients();
+        $scope.getAllClients();
+        //END Francis Nash Jasmin 20220519
 
         //get client fields
         function getclientFields() {

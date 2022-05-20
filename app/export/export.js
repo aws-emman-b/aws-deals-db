@@ -268,8 +268,12 @@
 
         getAllFields();
 
+        // These variables are used to make sure the code for filtering the dropdown contents are executed only once. 
+        // Error encountered when these variables are not used are: Error: $rootScope:infdig Infinite $digest Loop
         var executed = false;
+        var executedSD = false;
         var selected = $scope.divisionOption;
+        var selectedSD = $scope.sdOption.length;
 
         $scope.filterDeals = function () {
             $scope.filteredDeals = $scope.deals;
@@ -301,7 +305,26 @@
                 $scope.filteredDeals = $scope.filteredDeals.filter(function (aDeal) {
                     return $scope.sdOption.map(sd => sd.id).includes(aDeal.profile['SD']);
                 });
-            } 
+
+                if(!executedSD) {
+                    executedSD = true;
+                    selectedSD = $scope.sdOption.length;
+
+                    $scope.devBU = JSON.parse(localStorage.getItem('devBU')).filter(bu => {
+                        return $scope.sdOption.map(sd => sd.id).includes(bu.sdGroup)
+                    });
+                } else if(selectedSD !== $scope.sdOption.length) {
+                    selectedSD = $scope.sdOption.length;
+                    $scope.devBU = JSON.parse(localStorage.getItem('devBU')).filter(bu => {
+                        return $scope.sdOption.map(sd => sd.id).includes(bu.sdGroup)
+                    });
+                }
+            } else {
+                if(executedSD) {
+                    executedSD = false;
+                    $scope.devBU = JSON.parse(localStorage.getItem('devBU'));
+                }
+            }
 
             if($scope.buDevOption.length !== 0) {
                 $scope.filteredDeals = $scope.filteredDeals.filter(function (aDeal) {

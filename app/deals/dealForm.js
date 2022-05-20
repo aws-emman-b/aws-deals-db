@@ -177,8 +177,13 @@
                 });
 
                 $scope.devBU = $scope.businessUnits.filter(function(businessUnit) {
-                    return businessUnit['Category'] === 'Dev';
+                    return businessUnit['Category'] === 'Dev' && businessUnit['Is it an SD?'] == 'No' && businessUnit['Division'];
                 });
+
+                //START Reynaldo Pena Jr. 20220519
+                // Only displays SD Groups in SD Field
+                $scope.businessUnits = $scope.businessUnits.filter(bu => bu['Is it an SD?'] == 'Yes')
+                //END Reynaldo Pena Jr. 20220519
             }).catch(function (err) {
 
             });
@@ -275,6 +280,7 @@
                                 })
                                 
                                 // Call attachFile from backend to upload files. Uses ng-file-upload.
+                                // NOTE: CHANGE THE URL OF LOCALHOST WHEN DEPLOYING TO A SERVER.
                                 renamedFiles.map(attachment => {
                                     Upload.upload({
                                         url: 'http://localhost:5000/api/deals/attachFile',
@@ -826,6 +832,53 @@
             }
         }
 
+        //START Francis Nash Jasmin 20220518
+        //Added setting of SRB Number for new deals.
+        function setSRBNo() {
+            if($stateParams.ID === '') {
+                let previousID;
+                let IDnumber;
+                let ID = 'PS-0000';
+
+                ModulesService.getAllModuleDocs('deals').then(function (allDeals) { 
+                    let deals = allDeals;      
+                    
+                    previousID = deals.sort(function(a, b) {
+                        let fa = a.ID.toLowerCase(),
+                            fb = b.ID.toLowerCase();
+        
+                        if (fa < fb) {
+                            return -1;
+                        }
+                        if (fa > fb) {
+                            return 1;
+                        }
+                        return 0;
+                    })[deals.length - 1].ID;
+
+                    IDnumber = previousID.slice(3, 7);
+                    IDnumber++;
+                    if (IDnumber <= 9) {
+                        // 0-9
+                        ID = previousID.slice(0, 6) + IDnumber;
+                    } else if (IDnumber > 9 && IDnumber <= 99) {
+                        // 10-99
+                        ID = previousID.slice(0, 5) + IDnumber;
+                    } else if (IDnumber > 99 && IDnumber <= 999) {
+                        // 100-999
+                        ID = previousID.slice(0, 4) + IDnumber;
+                    } else {
+                        // 1000 above
+                        ID = previousID.slice(0, 3) + IDnumber;
+                    }
+                    $scope.dealForm.process['SRB No'] = ID.replace('DL', 'PS');
+                }).catch(function (err) {});
+            }
+        }
+
+        setSRBNo()
+        //END Francis Nash Jasmin 20220519
+
         /*
         * START Francis Nash Jasmin 2022/03/10
         * Added functions for downloading and deleting attachments of an already existing deal.
@@ -1058,6 +1111,7 @@ angular.module('app').controller('UploadCtrl', ['Upload', '$window', '$scope', '
         if(deal.ID !== undefined) {
             // Code is executed when there is an existing deal.
             // Calls attachFile function from backend to upload file.
+            // NOTE: CHANGE THE URL OF LOCALHOST WHEN DEPLOYING TO A SERVER.
             Upload.upload({
                 url: 'http://localhost:5000/api/deals/attachFile',
                 data: { file: renamedFile, 'description': description, 'deal': deal } 
